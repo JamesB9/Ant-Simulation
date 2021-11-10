@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{79496a12-983d-4c08-850f-cb3b804ddc70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Simulation">
+      <UniqueIdentifier>{d5786f02-f4b2-431f-842f-14a12b16a457}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="kernel.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Components.hpp">
+      <Filter>src\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities.hpp">
+      <Filter>src\Simulation</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
