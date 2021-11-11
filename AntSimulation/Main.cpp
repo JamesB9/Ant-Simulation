@@ -1,6 +1,9 @@
+#pragma once
 #include "EntitySystem.cuh"
+#include "ItemGrid.cuh"
 #include <SFML/Graphics.hpp>
 #include <thread>
+#include <iostream>
 
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int threadCount, int threadIndex) {
 	int entitiesPerThread = entities->entityCount / threadCount;
@@ -19,8 +22,8 @@ void setVertexData(sf::VertexArray* vertices, Entities* entities) {
 
 int main() {
 	// Window
-	
-	sf::RenderWindow window(sf::VideoMode(1600, 1600), "Ant Colony Simulation");
+
+	sf::RenderWindow window(sf::VideoMode(800, 800), "Ant Colony Simulation");
 
 	// Camera
 	sf::View view;
@@ -28,6 +31,7 @@ int main() {
 	view.setSize(sf::Vector2f(800.0f, 800.0f));
 	view.setCenter(sf::Vector2f(800.0f / 2.0f, 800.0f / 2.0f));
 	window.setView(view);
+	view.setSize(400, 400);
 
 	// FPS
 	sf::Clock deltaClock;
@@ -35,12 +39,17 @@ int main() {
 
 
 	// SETUP SIMULATION
+	//ents
 	Entities entities;
 	initEntities(entities);
 	sf::VertexArray vertices(sf::Points, entities.entityCount);
 	for (int i = 0; i < entities.entityCount; i++) {
 		vertices[i].color = sf::Color::Red;
 	}
+	//itemGrid
+	ItemGrid itemGrid;
+	initItemGrid(itemGrid, 800, 800);
+	//renderers
 
 	// THREADS
 	int threadCount = 10;
@@ -85,7 +94,6 @@ int main() {
 		threads.clear();
 		*/
 		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
-
 		window.draw(vertices);
 		//printf("%f\n", entities.positions[0].x);
 
