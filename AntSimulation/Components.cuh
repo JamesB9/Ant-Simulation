@@ -1,3 +1,5 @@
+#pragma once
+
 // 2D position: just x,y coordinates
 struct PositionComponent
 {
