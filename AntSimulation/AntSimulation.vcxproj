@@ -83,16 +83,18 @@
     <CudaCompile Include="ItemGrid.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GridRendering.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MapRendering.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ant.cuh" />
     <ClInclude Include="Components.cuh" />
     <ClInclude Include="Entities.cuh" />
     <ClInclude Include="ItemGrid.cuh" />
-    <ClInclude Include="ItemGridRenderer.cpp" />
-    <ClInclude Include="ItemGridRenderer.h" />
+    <ClInclude Include="Render.h" />
     <ClInclude Include="Utilities.cuh" />
+    <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

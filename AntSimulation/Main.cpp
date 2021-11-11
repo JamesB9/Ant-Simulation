@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Ant.cuh"
-#include "ItemGridRenderer.h"
+#include "ItemGrid.cuh"
 #include <SFML/Graphics.hpp>
 #include <thread>
 #include <iostream>
@@ -51,7 +51,6 @@ int main() {
 	ItemGrid itemGrid;
 	initItemGrid(itemGrid, 800, 800);
 	//renderers
-	GridRenderer* gridRender = new GridRenderer(itemGrid);
 
 	// THREADS
 	int threadCount = 10;
@@ -84,11 +83,8 @@ int main() {
 
 		//printf("%f -> ", entities.positions[0].x);
 
-
 		simulateEntities(entities, deltaTime);
 		setVertexData(vertices, entities);
-		gridRender->calculateVertices();
-
 
 		/*
 		for (int i = 0; i < threadCount; i++) {
@@ -101,7 +97,6 @@ int main() {
 		threads.clear();
 		*/
 		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
-		window.draw(gridRender->grid);
 		window.draw(vertices);
 		//printf("%f\n", entities.positions[0].x);
 
