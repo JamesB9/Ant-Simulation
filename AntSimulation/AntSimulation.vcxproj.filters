@@ -9,17 +9,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu">
-      <Filter>src</Filter>
-    </CudaCompile>
     <CudaCompile Include="Ant.cu">
       <Filter>src\Simulation</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cu">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>src</Filter>
     </ClCompile>
