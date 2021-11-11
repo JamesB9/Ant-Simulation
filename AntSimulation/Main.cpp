@@ -5,15 +5,15 @@
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int threadCount, int threadIndex) {
 	int entitiesPerThread = entities->entityCount / threadCount;
 	for (int i = entitiesPerThread * threadIndex; i < (entitiesPerThread * threadIndex) + entitiesPerThread; i++) {
-		(*vertices)[i].position.x = entities->positions[i].x;
-		(*vertices)[i].position.y = entities->positions[i].y;
+		(*vertices)[i].position.x = entities->moves[i].x;
+		(*vertices)[i].position.y = entities->moves[i].y;
 	}
 }
 
-void setVertexData(sf::VertexArray& vertices, Entities& entities) {
-	for (int i = 0; i < entities.entityCount; i++) {
-		vertices[i].position.x = entities.positions[i].x;
-		vertices[i].position.y = entities.positions[i].y;
+void setVertexData(sf::VertexArray* vertices, Entities* entities) {
+	for (int i = 0; i < entities->entityCount; i++) {
+		(*vertices)[i].position.x = entities->moves[i].x;
+		(*vertices)[i].position.y = entities->moves[i].y;
 	}
 }
 
@@ -73,7 +73,7 @@ int main() {
 
 		//printf("%f -> ", entities.positions[0].x);
 		simulateEntitiesOnGPU(entities, deltaTime);
-		setVertexData(vertices, entities);
+		setVertexData(&vertices,&entities);
 		/*
 		for (int i = 0; i < threadCount; i++) {
 			threads.push_back(std::thread(setVertexDataThreaded, &vertices, &entities, threadCount, i));

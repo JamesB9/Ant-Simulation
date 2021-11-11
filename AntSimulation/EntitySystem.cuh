@@ -6,8 +6,6 @@
 #include "math.h"
 #include "Entities.cuh"
 
-
-PositionComponent* createPositionComponentArray(int n);
 MoveComponent* createMoveComponentArray(int n);
 SniffComponent* createSniffComponentArray(int n);
 

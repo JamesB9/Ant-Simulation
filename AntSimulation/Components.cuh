@@ -2,14 +2,10 @@
 #define LEAVING_HOME 0;
 #define FOUND_FOOD 1;
 
-struct PositionComponent
-{
-    float x, y;
-};
-
 struct MoveComponent
 {
-    float velx, vely, rotation;
+    float x, y;
+    float speed, rotation;
 };
 
 struct SniffComponent 
