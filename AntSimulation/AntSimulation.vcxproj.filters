@@ -9,7 +9,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Ant.cu">
+    <CudaCompile Include="EntitySystem.cu">
       <Filter>src\Simulation</Filter>
     </CudaCompile>
   </ItemGroup>
@@ -25,7 +25,7 @@
     <ClInclude Include="Entities.cuh">
       <Filter>src\Simulation</Filter>
     </ClInclude>
-    <ClInclude Include="Ant.cuh">
+    <ClInclude Include="EntitySystem.cuh">
       <Filter>src\Simulation</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,6 +9,7 @@
 
 PositionComponent* createPositionComponentArray(int n);
 MoveComponent* createMoveComponentArray(int n);
+SniffComponent* createSniffComponentArray(int n);
 
 int initEntities(Entities& entities);
-int simulateEntities(Entities& entities, float deltaTime);
+int simulateEntitiesOnGPU(Entities& entities, float deltaTime);

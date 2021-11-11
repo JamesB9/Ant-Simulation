@@ -1,4 +1,4 @@
-#include "Ant.cuh"
+#include "EntitySystem.cuh"
 #include <SFML/Graphics.hpp>
 #include <thread>
 
@@ -72,7 +72,7 @@ int main() {
 		}
 
 		//printf("%f -> ", entities.positions[0].x);
-		simulateEntities(entities, deltaTime);
+		simulateEntitiesOnGPU(entities, deltaTime);
 		setVertexData(vertices, entities);
 		/*
 		for (int i = 0; i < threadCount; i++) {

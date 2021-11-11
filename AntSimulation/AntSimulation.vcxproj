@@ -79,13 +79,13 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="Ant.cu" />
+    <CudaCompile Include="EntitySystem.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Ant.cuh" />
+    <ClInclude Include="EntitySystem.cuh" />
     <ClInclude Include="Components.cuh" />
     <ClInclude Include="Entities.cuh" />
   </ItemGroup>
