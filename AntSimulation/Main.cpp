@@ -6,6 +6,8 @@
 #include <thread>
 #include <iostream>
 
+#include "ThreadPoolManager.h"
+
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int threadCount, int threadIndex) {
 	int entitiesPerThread = entities->entityCount / threadCount;
 	for (int i = entitiesPerThread * threadIndex; i < (entitiesPerThread * threadIndex) + entitiesPerThread; i++) {
@@ -32,7 +34,6 @@ int main() {
 	view.setSize(sf::Vector2f(800.0f, 800.0f));
 	view.setCenter(sf::Vector2f(800.0f / 2.0f, 800.0f / 2.0f));
 	window.setView(view);
-	view.setSize(400, 400);
 
 	// FPS
 	sf::Clock deltaClock;
@@ -53,8 +54,10 @@ int main() {
 	//renderers
 
 	// THREADS
-	int threadCount = 10;
-	std::vector<std::thread> threads;
+	//int threadCount = 10;
+	//std::vector<std::thread> threads;
+	ThreadPoolManager tmanager;
+	task vertexData = { true, [&vertices, &entities] {setVertexData(vertices,entities); } };
 
 	while (window.isOpen()) {
 		// FPS
@@ -84,8 +87,11 @@ int main() {
 		//printf("%f -> ", entities.positions[0].x);
 
 		simulateEntities(entities, deltaTime);
-		setVertexData(vertices, entities);
+		//setVertexData(vertices, entities);
 
+		
+		tmanager.queueJob(vertexData);
+		
 		/*
 		for (int i = 0; i < threadCount; i++) {
 			threads.push_back(std::thread(setVertexDataThreaded, &vertices, &entities, threadCount, i));
@@ -100,7 +106,7 @@ int main() {
 		window.draw(vertices);
 		//printf("%f\n", entities.positions[0].x);
 
-		printf("%d\n", fps);
+		//printf("%d\n", fps);
 
 		// Update the window
 		window.setView(view);

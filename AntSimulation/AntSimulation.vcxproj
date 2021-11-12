@@ -86,6 +86,7 @@
     <ClCompile Include="GridRendering.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MapRendering.cpp" />
+    <ClCompile Include="ThreadPoolManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ant.cuh" />
@@ -93,6 +94,7 @@
     <ClInclude Include="Entities.cuh" />
     <ClInclude Include="ItemGrid.cuh" />
     <ClInclude Include="Render.h" />
+    <ClInclude Include="ThreadPoolManager.h" />
     <ClInclude Include="Utilities.cuh" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
