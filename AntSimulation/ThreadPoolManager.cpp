@@ -29,7 +29,7 @@ void ThreadPoolManager::queueWait()
 			//Do the job we picked up (Lock if asked to)
 			if (!Job.lockNeeded) { lock.unlock(); }
 
-			cout << "Thread [#" << this_thread::get_id() << "] Starting Job" << endl;
+			//cout << "Thread [#" << this_thread::get_id() << "] Starting Job" << endl;
 			Job.func();
 
 			if (Job.lockNeeded) { lock.unlock(); }

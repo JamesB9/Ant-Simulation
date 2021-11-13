@@ -18,8 +18,10 @@ void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int th
 
 void setVertexData(sf::VertexArray& vertices, Entities& entities) {
 	for (int i = 0; i < entities.entityCount; i++) {
-		vertices[i].position.x = entities.positions[i].x;
-		vertices[i].position.y = entities.positions[i].y;
+		vertices[i].position.x = 
+			entities.positions[i].x;
+		vertices[i].position.y = 
+			entities.positions[i].y;
 	}
 }
 
@@ -58,6 +60,7 @@ int main() {
 	//std::vector<std::thread> threads;
 	ThreadPoolManager tmanager;
 	task vertexData = { true, [&vertices, &entities] {setVertexData(vertices,entities); } };
+	task simEnts = { true, [&entities, &deltaTime] {simulateEntities(entities, deltaTime); } };
 
 	while (window.isOpen()) {
 		// FPS
@@ -86,10 +89,10 @@ int main() {
 
 		//printf("%f -> ", entities.positions[0].x);
 
-		simulateEntities(entities, deltaTime);
+		//simulateEntities(entities, deltaTime);
 		//setVertexData(vertices, entities);
-
 		
+		tmanager.queueJob(simEnts);
 		tmanager.queueJob(vertexData);
 		
 		/*
@@ -106,7 +109,7 @@ int main() {
 		window.draw(vertices);
 		//printf("%f\n", entities.positions[0].x);
 
-		//printf("%d\n", fps);
+		printf("%d\n", fps);
 
 		// Update the window
 		window.setView(view);
