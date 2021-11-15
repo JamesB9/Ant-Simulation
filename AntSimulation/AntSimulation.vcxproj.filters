@@ -7,15 +7,31 @@
     <Filter Include="src\Simulation">
       <UniqueIdentifier>{d5786f02-f4b2-431f-842f-14a12b16a457}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Rendering">
+      <UniqueIdentifier>{22e9aad2-77e2-4bf0-aa2a-c9c418f2ddef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Utilities">
+      <UniqueIdentifier>{54938059-8a5a-4238-bef2-f6814dd54d81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Simulation\DS">
+      <UniqueIdentifier>{09a85227-16c4-44d9-8812-179363edfafc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Ant.cu">
+    <CudaCompile Include="EntitySystem.cu">
       <Filter>src\Simulation</Filter>
     </CudaCompile>
+    <CudaCompile Include="ItemGrid.cu">
+      <Filter>src\Simulation\DS</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Ant.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="GridRenderer.cpp">
+      <Filter>src\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -25,8 +41,20 @@
     <ClInclude Include="Entities.cuh">
       <Filter>src\Simulation</Filter>
     </ClInclude>
-    <ClInclude Include="Ant.cuh">
+    <ClInclude Include="EntitySystem.cuh">
       <Filter>src\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities.cuh">
+      <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities.h">
+      <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemGrid.cuh">
+      <Filter>src\Simulation\DS</Filter>
+    </ClInclude>
+    <ClInclude Include="GridRenderer.hpp">
+      <Filter>src\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

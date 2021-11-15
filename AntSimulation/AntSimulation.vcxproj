@@ -79,15 +79,21 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="Ant.cu" />
+    <CudaCompile Include="EntitySystem.cu" />
+    <CudaCompile Include="ItemGrid.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GridRenderer.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Ant.cuh" />
+    <ClInclude Include="EntitySystem.cuh" />
     <ClInclude Include="Components.cuh" />
     <ClInclude Include="Entities.cuh" />
+    <ClInclude Include="GridRenderer.hpp" />
+    <ClInclude Include="ItemGrid.cuh" />
+    <ClInclude Include="Utilities.cuh" />
+    <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

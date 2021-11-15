@@ -1,10 +1,19 @@
-// 2D position: just x,y coordinates
-struct PositionComponent
-{
-    float x, y;
-};
+#pragma once
+#define LEAVING_HOME 0;
+#define FOUND_FOOD 1;
 
 struct MoveComponent
 {
-    float velx, vely, rotation;
+    float x, y;
+    float speed, rotation;
+};
+
+struct SniffComponent
+{
+    float sniffMaxDistance;
+};
+
+struct ActivityComponent
+{
+
 };

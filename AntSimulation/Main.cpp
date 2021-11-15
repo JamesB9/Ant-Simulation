@@ -1,25 +1,29 @@
-#include "Ant.cuh"
+#pragma once
+#include "EntitySystem.cuh"
+#include "ItemGrid.cuh"
 #include <SFML/Graphics.hpp>
 #include <thread>
+#include <iostream>
+#include "GridRenderer.hpp"
 
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int threadCount, int threadIndex) {
 	int entitiesPerThread = entities->entityCount / threadCount;
 	for (int i = entitiesPerThread * threadIndex; i < (entitiesPerThread * threadIndex) + entitiesPerThread; i++) {
-		(*vertices)[i].position.x = entities->positions[i].x;
-		(*vertices)[i].position.y = entities->positions[i].y;
+		(*vertices)[i].position.x = entities->moves[i].x;
+		(*vertices)[i].position.y = entities->moves[i].y;
 	}
 }
 
-void setVertexData(sf::VertexArray& vertices, Entities& entities) {
-	for (int i = 0; i < entities.entityCount; i++) {
-		vertices[i].position.x = entities.positions[i].x;
-		vertices[i].position.y = entities.positions[i].y;
+void setVertexData(sf::VertexArray* vertices, Entities* entities) {
+	for (int i = 0; i < entities->entityCount; i++) {
+		(*vertices)[i].position.x = entities->moves[i].x;
+		(*vertices)[i].position.y = entities->moves[i].y;
 	}
 }
 
 int main() {
 	// Window
-	
+
 	sf::RenderWindow window(sf::VideoMode(950, 950), "Ant Colony Simulation");
 
 	// Camera
@@ -28,6 +32,7 @@ int main() {
 	view.setSize(sf::Vector2f(800.0f, 800.0f));
 	view.setCenter(sf::Vector2f(800.0f / 2.0f, 800.0f / 2.0f));
 	window.setView(view);
+	view.setSize(400, 400);
 
 	// FPS
 	sf::Clock deltaClock;
@@ -35,12 +40,20 @@ int main() {
 
 
 	// SETUP SIMULATION
+	//ents
 	Entities entities;
 	initEntities(entities);
 	sf::VertexArray vertices(sf::Points, entities.entityCount);
 	for (int i = 0; i < entities.entityCount; i++) {
 		vertices[i].color = sf::Color::Red;
 	}
+	//itemGrid
+	ItemGrid itemGrid;
+	initItemGrid(itemGrid, 800, 800);
+
+	//Renderers
+	GridRenderer gridRenderer(itemGrid);
+
 
 	// THREADS
 	int threadCount = 10;
@@ -71,9 +84,10 @@ int main() {
 			}
 		}
 
-		//printf("%f -> ", entities.positions[0].x);
-		simulateEntities(entities, deltaTime);
-		setVertexData(vertices, entities);
+
+		window.draw(gridRenderer.getVertexArray());
+		simulateEntitiesOnGPU(entities, deltaTime);
+		setVertexData(&vertices,&entities);
 		/*
 		for (int i = 0; i < threadCount; i++) {
 			threads.push_back(std::thread(setVertexDataThreaded, &vertices, &entities, threadCount, i));
@@ -85,7 +99,6 @@ int main() {
 		threads.clear();
 		*/
 		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
-
 		window.draw(vertices);
 		//printf("%f\n", entities.positions[0].x);
 
