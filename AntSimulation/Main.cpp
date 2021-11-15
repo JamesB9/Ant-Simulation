@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <thread>
 #include <iostream>
+#include "GridRenderer.hpp"
 
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int threadCount, int threadIndex) {
 	int entitiesPerThread = entities->entityCount / threadCount;
@@ -49,7 +50,10 @@ int main() {
 	//itemGrid
 	ItemGrid itemGrid;
 	initItemGrid(itemGrid, 800, 800);
-	//renderers
+
+	//Renderers
+	GridRenderer gridRenderer(itemGrid);
+
 
 	// THREADS
 	int threadCount = 10;
@@ -80,7 +84,8 @@ int main() {
 			}
 		}
 
-		//printf("%f -> ", entities.positions[0].x);
+
+		window.draw(gridRenderer.getVertexArray());
 		simulateEntitiesOnGPU(entities, deltaTime);
 		setVertexData(&vertices,&entities);
 		/*

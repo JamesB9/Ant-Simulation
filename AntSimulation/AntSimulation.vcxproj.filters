@@ -24,15 +24,13 @@
     <CudaCompile Include="ItemGrid.cu">
       <Filter>src\Simulation\DS</Filter>
     </CudaCompile>
+    <CudaCompile Include="Ant.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="GridRendering.cpp">
-      <Filter>src\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="MapRendering.cpp">
+    <ClCompile Include="GridRenderer.cpp">
       <Filter>src\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
@@ -49,14 +47,14 @@
     <ClInclude Include="Utilities.cuh">
       <Filter>src\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="Render.h">
-      <Filter>src\Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="Utilities.h">
       <Filter>src\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="ItemGrid.cuh">
       <Filter>src\Simulation\DS</Filter>
+    </ClInclude>
+    <ClInclude Include="GridRenderer.hpp">
+      <Filter>src\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
