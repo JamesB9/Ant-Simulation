@@ -66,7 +66,7 @@ int main() {
 	//std::vector<std::thread> threads;
 	ThreadPoolManager tmanager;
 	task vertexData = { true, [&vertices, &entities] {setVertexData(vertices,entities); } };
-	task simEnts = { true, [&entities, &deltaTime] {simulateEntities(entities, deltaTime); } };
+	task simEnts = { true, [&entities, &deltaTime] {simulateEntitiesOnGPU(entities, deltaTime); } };
 
 	while (window.isOpen()) {
 		// FPS
