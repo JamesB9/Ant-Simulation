@@ -24,7 +24,6 @@
     <CudaCompile Include="ItemGrid.cu">
       <Filter>src\Simulation\DS</Filter>
     </CudaCompile>
-    <CudaCompile Include="Ant.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -35,6 +34,9 @@
     </ClCompile>
     <ClCompile Include="ThreadPoolManager.cpp">
       <Filter>src\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="MapRendering.cpp">
+      <Filter>src\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +63,9 @@
     </ClInclude>
     <ClInclude Include="ThreadPoolManager.h">
       <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Render.h">
+      <Filter>src\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
