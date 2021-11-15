@@ -21,9 +21,12 @@ using namespace std;
 #include <cstdlib>
 
 void initArray(Map& map);
+void initBlankMap(Map& map, int height, int width);
 void generateMap(Map& map);
 void fillMap(Map& map);
 void smoothMap(Map& map);
+void floodFill(Map& map);
+int getNeighbourWallCount(Map& map, int x, int y, int delta);
 
 void initMap(Map& map) {
 	map.height = 100;
@@ -31,6 +34,8 @@ void initMap(Map& map) {
 	map.percentFill = 50;
 
 	initArray(map);
+	generateMap(map);
+	printMap(map);
 }
 void initMap(Map& map,int height, int width) {
 	map.height = height;
@@ -44,13 +49,41 @@ void initMap(Map& map,int height, int width) {
 
 
 void generateMap(Map& map) {
+
+	bool enableTiming = true;
+	std::chrono::steady_clock::time_point t1;
+	std::chrono::steady_clock::time_point t2;
+	float deltaTime;
+
+	if(enableTiming)
+		t1 = std::chrono::high_resolution_clock::now();
+	
 	fillMap(map);
+
+	if (enableTiming) {
+		t2 = std::chrono::high_resolution_clock::now();
+		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
+		cout << "   Fill Map:                 " << deltaTime << endl;
+	}
+
+	for (int i = 0; i < 8; i++) {
+		if(enableTiming)
+			t1 = std::chrono::high_resolution_clock::now();
+		smoothMap(map);
+		if (enableTiming) {
+			t2 = std::chrono::high_resolution_clock::now();
+			deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
+			cout << "   Smooth Map (" << i << "):           " << deltaTime << endl;
+		}
+	}
+	//floodFill(map);
+	printMap(map);
+
 };
 
 void fillMap(Map& map) {
-
-	std::chrono::steady_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-
+	srand(1111);
+	
 	for (int i = 0; i < map.width; i++) {
 		for (int j = 0; j < map.height; j++) {
 			if (i == 0 || i == map.width - 1 || j == 0 || j == map.height - 1 || i == 1 || i == map.width - 2 || j == 1 || j == map.height - 2) {
@@ -63,12 +96,41 @@ void fillMap(Map& map) {
 		}
 	}
 
-	std::chrono::steady_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-	float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
-
-	cout << "   Fill Map:                 " << deltaTime << endl;
+	
 };
-void smooth(Map& map);
+void smoothMap(Map& map) {
+	for (int i = 0; i < map.width; i++) {
+		for (int j = 0; j < map.height; j++) {
+			int wallCount = getNeighbourWallCount(map, i, j, 1);
+			if (wallCount > 4) {
+				map.map[i][j] = 1;
+			}
+			else if (wallCount < 4) {
+				map.map[i][j] = 0;
+			}
+		}
+	}
+};
+/*void floodFill(Map& map) {
+	Map visitedMap;
+	initBlankMap(visitedMap, map.height, map.height);
+	memcpy(visitedMap.map, map.map, map.height * map.width * sizeof(int));
+
+
+	
+	for (int i = 0; i < map.height; i++) {
+		for (int j = 0; j < map.width; j++) {
+			if (visitedMap.map[i][j] == 0) {
+				visitedMap.map[i][j] = 1;
+				cout << i << "," << j << ":" << visitedMap.map[i][j] << "," << map.map[i][j] << endl;
+				break;
+			}
+		}
+	}
+}*/
+
+
+//Util Functions
 void printMap(Map& map) {
 	for (int i = 0; i < map.width; i++) {
 		for (int j = 0; j < map.height; j++) {
@@ -77,6 +139,26 @@ void printMap(Map& map) {
 		cout << "\n" << endl;
 	}
 };
+int getNeighbourWallCount(Map& map, int x, int y, int delta) {
+
+	if (delta <= 0) return 0;
+	//cout << x << "," << y << endl;
+	int wallCount = 0;
+	for (int nX = x - delta; nX <= x + delta; nX++) {
+		for (int nY = y - delta; nY <= y + delta; nY++) {
+			if (nX >= 0 && nX < map.width && nY >= 0 && nY < map.height) {
+				if (map.map[nX][nY] == 1) {
+					//cout << "|" << nX << "," << nY;
+					if (!(nX == x && nY == y)) {
+						wallCount++;
+					}
+				}
+			}
+		}
+	}
+	//cout << wallCount << endl;
+	return wallCount;
+}
 void initArray(Map& map) {
 	map.map = (int**)malloc(map.height * sizeof(int*));
 	if (map.map) {
@@ -90,4 +172,10 @@ void initArray(Map& map) {
 		}
 	}
 };
+void initBlankMap(Map& map, int height, int width) {
+	map.height = height;
+	map.width = width;
+	map.percentFill = 0;
+	initArray(map);
+}
 

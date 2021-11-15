@@ -74,7 +74,7 @@ int main() {
 	GridRenderer gridRenderer(itemGrid);
 	//Map
 	Map map;
-	initMap(map, 20, 20);
+	initMap(map, 80, 80);
 
 	// THREADS
 	//int threadCount = 10;
