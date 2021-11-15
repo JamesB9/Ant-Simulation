@@ -6,6 +6,9 @@
 #include <iostream>
 #include "GridRenderer.hpp"
 
+#include "ThreadPoolManager.h"
+#include "Render.h"
+
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int threadCount, int threadIndex) {
 	int entitiesPerThread = entities->entityCount / threadCount;
 	for (int i = entitiesPerThread * threadIndex; i < (entitiesPerThread * threadIndex) + entitiesPerThread; i++) {
@@ -14,10 +17,12 @@ void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int th
 	}
 }
 
-void setVertexData(sf::VertexArray* vertices, Entities* entities) {
-	for (int i = 0; i < entities->entityCount; i++) {
-		(*vertices)[i].position.x = entities->moves[i].x;
-		(*vertices)[i].position.y = entities->moves[i].y;
+void setVertexData(sf::VertexArray& vertices, Entities& entities) {
+	for (int i = 0; i < entities.entityCount; i++) {
+		vertices[i].position.x =
+			entities.moves[i].x;
+		vertices[i].position.y =
+			entities.moves[i].y;
 	}
 }
 
@@ -32,7 +37,6 @@ int main() {
 	view.setSize(sf::Vector2f(800.0f, 800.0f));
 	view.setCenter(sf::Vector2f(800.0f / 2.0f, 800.0f / 2.0f));
 	window.setView(view);
-	view.setSize(400, 400);
 
 	// FPS
 	sf::Clock deltaClock;
@@ -50,14 +54,19 @@ int main() {
 	//itemGrid
 	ItemGrid itemGrid;
 	initItemGrid(itemGrid, 800, 800);
-
-	//Renderers
+	//renderers
+	//Grid
 	GridRenderer gridRenderer(itemGrid);
-
+	//Map
+	Map map;
+	initMap(map, 20, 20);
 
 	// THREADS
-	int threadCount = 10;
-	std::vector<std::thread> threads;
+	//int threadCount = 10;
+	//std::vector<std::thread> threads;
+	ThreadPoolManager tmanager;
+	task vertexData = { true, [&vertices, &entities] {setVertexData(vertices,entities); } };
+	task simEnts = { true, [&entities, &deltaTime] {simulateEntities(entities, deltaTime); } };
 
 	while (window.isOpen()) {
 		// FPS
@@ -84,10 +93,14 @@ int main() {
 			}
 		}
 
+		//printf("%f -> ", entities.positions[0].x);
 
-		window.draw(gridRenderer.getVertexArray());
-		simulateEntitiesOnGPU(entities, deltaTime);
-		setVertexData(&vertices,&entities);
+		//simulateEntities(entities, deltaTime);
+		//setVertexData(vertices, entities);
+
+		tmanager.queueJob(simEnts);
+		tmanager.queueJob(vertexData);
+
 		/*
 		for (int i = 0; i < threadCount; i++) {
 			threads.push_back(std::thread(setVertexDataThreaded, &vertices, &entities, threadCount, i));

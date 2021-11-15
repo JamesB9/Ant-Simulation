@@ -7,7 +7,7 @@ typedef unsigned int EntityID;
 struct Entities {
 
     // Arrays of data for each ant, sizes are all equal
-    const unsigned int entityCount = 100000;
+    const unsigned int entityCount = 1000;
     MoveComponent* moves;
     SniffComponent* sniffs;
 };

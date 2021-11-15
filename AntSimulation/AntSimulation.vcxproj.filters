@@ -33,6 +33,9 @@
     <ClCompile Include="GridRenderer.cpp">
       <Filter>src\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="ThreadPoolManager.cpp">
+      <Filter>src\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.cuh">
@@ -55,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="GridRenderer.hpp">
       <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPoolManager.h">
+      <Filter>src\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
