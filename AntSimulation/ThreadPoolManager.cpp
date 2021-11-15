@@ -2,7 +2,7 @@
 
 ThreadPoolManager::ThreadPoolManager()
 {
-	int threadCount = thread::hardware_concurrency();
+	threadCount = thread::hardware_concurrency();
 	for (auto i = 0; i < threadCount; i++) {
 		threads.push_back(thread(&ThreadPoolManager::queueWait, this));
 	}
@@ -13,8 +13,26 @@ ThreadPoolManager::ThreadPoolManager()
 	}*/
 }
 
-void ThreadPoolManager::terminateThreads()
+void ThreadPoolManager::join()
 {
+	for (auto &t : threads) {
+		t.join();
+	}
+}
+
+void ThreadPoolManager::detach()
+{
+	for (auto& t : threads) {
+		t.detach();
+	}
+}
+
+thread* ThreadPoolManager::getThread(thread::id id) {
+	for (auto& t : threads) {
+		if (t.get_id() == id) {
+			return &t;
+		}
+	}
 }
 
 void ThreadPoolManager::queueWait()
@@ -25,13 +43,14 @@ void ThreadPoolManager::queueWait()
 			//Grab first item from the job queue
 			task Job = jobs.front();
 			jobs.pop(); //Remove that item from the queue;
+			
 
 			//Do the job we picked up (Lock if asked to)
 			if (!Job.lockNeeded) { lock.unlock(); }
 
-			//cout << "Thread [#" << this_thread::get_id() << "] Starting Job" << endl;
-			Job.func();
+			//cout << "Thread [#" << this_thread::get_id() << "] Starting Job #" << Job.t_id << " Locked to: #" << task_lock << endl;
 
+			Job.func();
 			if (Job.lockNeeded) { lock.unlock(); }
 			
 		}
@@ -40,6 +59,10 @@ void ThreadPoolManager::queueWait()
 			continue;
 		}
 	}
+}
+
+bool ThreadPoolManager::queueEmpty() {
+	return jobs.empty();
 }
 
 void ThreadPoolManager::queueJob(task job)

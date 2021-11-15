@@ -24,11 +24,13 @@
 #include "ThreadPoolManager.h"
 #include "Render.h"
 
-void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int threadCount, int threadIndex) {
-	int entitiesPerThread = entities->entityCount / threadCount;
-	for (int i = entitiesPerThread * threadIndex; i < (entitiesPerThread * threadIndex) + entitiesPerThread; i++) {
-		(*vertices)[i].position.x = entities->moves[i].x;
-		(*vertices)[i].position.y = entities->moves[i].y;
+
+void setVertexDataThreaded(sf::VertexArray* vertices, Entities& entities, int threadCount, int threadIndex) {
+	int entitiesPerThread = entities.entityCount / threadCount;
+	//cout << "Threaded Task #" << threadIndex << "/" << threadCount << " - Job: " << entitiesPerThread << " translations, from " << entitiesPerThread * threadIndex << " to " << (entitiesPerThread * threadIndex) + entitiesPerThread-1 << endl;
+	for (int i = entitiesPerThread * threadIndex; i < (entitiesPerThread * threadIndex) + entitiesPerThread-1; i++) {
+		(*vertices)[i].position.x = entities.moves[i].x;
+		(*vertices)[i].position.y = entities.moves[i].y;
 	}
 }
 
@@ -38,6 +40,12 @@ void setVertexData(sf::VertexArray& vertices, Entities& entities) {
 			entities.moves[i].x;
 		vertices[i].position.y =
 			entities.moves[i].y;
+	}
+}
+
+void queueVertexData(ThreadPoolManager& tm, sf::VertexArray* vertices, Entities& entities) {
+	for (int i = 0; i < tm.threadCount; i++) { // For every thread
+		tm.queueJob({ 3, true, [&vertices, &entities, &tm, i] { setVertexDataThreaded(vertices, entities, tm.threadCount, i); } });
 	}
 }
 
@@ -80,8 +88,9 @@ int main() {
 	//int threadCount = 10;
 	//std::vector<std::thread> threads;
 	ThreadPoolManager tmanager;
-	task vertexData = { true, [&vertices, &entities] {setVertexData(vertices,entities); } };
-	task simEnts = { true, [&entities, &deltaTime] {simulateEntitiesOnGPU(entities, deltaTime); } };
+	task vertexData = { 3, true, [&vertices, &entities] {setVertexData(vertices,entities); } };
+	task simEnts = { 2, true, [&entities, &deltaTime] {simulateEntitiesOnGPU(entities, deltaTime); } };
+	task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
 
 	while (window.isOpen()) {
 		// FPS
@@ -110,12 +119,12 @@ int main() {
 
 		//printf("%f -> ", entities.positions[0].x);
 
-		//simulateEntities(entities, deltaTime);
+		//simulateEntitiesOnGPU(entities, deltaTime);
 		//setVertexData(vertices, entities);
-
 		tmanager.queueJob(simEnts);
-		tmanager.queueJob(vertexData);
-
+		//tmanager.join();
+		queueVertexData(tmanager, &vertices, entities);
+		//tmanager.queueJob(vertexData);
 		/*
 		for (int i = 0; i < threadCount; i++) {
 			threads.push_back(std::thread(setVertexDataThreaded, &vertices, &entities, threadCount, i));
@@ -127,7 +136,9 @@ int main() {
 		threads.clear();
 		*/
 		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
+		while (!tmanager.queueEmpty()) {}
 		window.draw(vertices);
+		//tmanager.queueJob(drawFrame);
 		//printf("%f\n", entities.positions[0].x);
 
 		printf("%d\n", fps);
