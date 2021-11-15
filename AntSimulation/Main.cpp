@@ -20,7 +20,7 @@ void setVertexData(sf::VertexArray& vertices, Entities& entities) {
 int main() {
 	// Window
 	
-	sf::RenderWindow window(sf::VideoMode(1600, 1600), "Ant Colony Simulation");
+	sf::RenderWindow window(sf::VideoMode(950, 950), "Ant Colony Simulation");
 
 	// Camera
 	sf::View view;
