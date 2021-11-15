@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "ThreadPoolManager.h"
+#include "Render.h"
 
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int threadCount, int threadIndex) {
 	int entitiesPerThread = entities->entityCount / threadCount;
@@ -54,6 +55,9 @@ int main() {
 	ItemGrid itemGrid;
 	initItemGrid(itemGrid, 800, 800);
 	//renderers
+	//Map
+	Map map;
+	initMap(map, 20, 20);
 
 	// THREADS
 	//int threadCount = 10;
