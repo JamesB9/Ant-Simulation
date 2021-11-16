@@ -29,8 +29,8 @@ int initItemGrid(ItemGrid& itemGrid, int worldX, int worldY) {
 	itemGrid.worldCells = createItemGridCellArray(itemGrid.totalCells);
 	for (int i = 0; i < itemGrid.totalCells; i++) {
 		itemGrid.worldCells[i].foodCount = 32;
-		//itemGrid.worldCells[i].pheromones[0] = 1.0f;
-		//itemGrid.worldCells[i].pheromones[1] = 1.0f;
+		itemGrid.worldCells[i].pheromones[0] = 0.0f;
+		itemGrid.worldCells[i].pheromones[1] = 0.0f;
 	}
 	return 0;
 }

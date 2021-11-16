@@ -26,7 +26,7 @@
 #define FOOD_PHEROMONE 1;
 
 struct Cell {
-	//float pheromones[2] = {0.0f, 0.0f};
+	float pheromones[2];
 	float foodCount;
 };
 

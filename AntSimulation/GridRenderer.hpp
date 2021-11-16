@@ -23,7 +23,8 @@ class GridRenderer {
 public:
 
 	GridRenderer(ItemGrid* grid) : grid{ grid } {
-		vertexArray = sf::VertexArray(sf::Quads, grid->totalCells * 4);
+		//vertexArray = sf::VertexArray(sf::Quads, grid->totalCells * 4);
+		vertexArray = sf::VertexArray(sf::Points, grid->totalCells);
 		init();
 	}
 
