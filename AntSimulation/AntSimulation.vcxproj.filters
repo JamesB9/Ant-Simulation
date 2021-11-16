@@ -35,8 +35,8 @@
     <ClCompile Include="ThreadPoolManager.cpp">
       <Filter>src\Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="MapRendering.cpp">
-      <Filter>src\Rendering</Filter>
+    <ClCompile Include="Map.cpp">
+      <Filter>src\Simulation\DS</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -64,8 +64,8 @@
     <ClInclude Include="ThreadPoolManager.h">
       <Filter>src\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="Render.h">
-      <Filter>src\Rendering</Filter>
+    <ClInclude Include="Map.cuh">
+      <Filter>src\Simulation\DS</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

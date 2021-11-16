@@ -22,7 +22,7 @@
 #include "GridRenderer.hpp"
 
 #include "ThreadPoolManager.h"
-#include "Render.h"
+#include "Map.cuh"
 
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int threadCount, int threadIndex) {
 	int entitiesPerThread = entities->entityCount / threadCount;

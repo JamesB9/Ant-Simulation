@@ -16,7 +16,6 @@
 #pragma once
 
 #include <stdlib.h>
-#include <string>
 
 
 //Pool all render.cpp's here
