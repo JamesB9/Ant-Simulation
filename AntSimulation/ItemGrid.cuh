@@ -26,7 +26,7 @@
 #define FOOD_PHEROMONE 1;
 
 struct Cell {
-	float pheromones[2];
+	//float pheromones[2] = {0.0f, 0.0f};
 	float foodCount;
 };
 
@@ -39,3 +39,4 @@ struct ItemGrid {
 
 int initItemGrid(ItemGrid& itemGrid, int worldX, int worldY);
 Cell* getCell(ItemGrid& itemGrid, float x, float y);
+int getCellIndex(ItemGrid& itemGrid, float x, float y);

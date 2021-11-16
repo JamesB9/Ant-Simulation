@@ -22,21 +22,30 @@ Cell* createItemGridCellArray(int worldSize) {
 }
 
 int initItemGrid(ItemGrid& itemGrid, int worldX, int worldY) {
-	itemGrid.worldCells = createItemGridCellArray(worldX * worldY);
 	itemGrid.worldX = worldX;
 	itemGrid.worldY = worldY;
 	itemGrid.totalCells = worldX * worldY;
 
+	itemGrid.worldCells = createItemGridCellArray(itemGrid.totalCells);
+	for (int i = 0; i < itemGrid.totalCells; i++) {
+		itemGrid.worldCells[i].foodCount = 32;
+		//itemGrid.worldCells[i].pheromones[0] = 1.0f;
+		//itemGrid.worldCells[i].pheromones[1] = 1.0f;
+	}
 	return 0;
 }
 
 Cell* getCell(ItemGrid& itemGrid, float x, float y) {
 	//Take X and Y, convert to 2D reference
-	int posx = floorf(x);
-	int posy = floorf(y);
-	int index = posy * itemGrid.worldX;
-	index += posx;
+	//int posx = floorf(x);
+	//int posy = floorf(y);
+	//int index = posy * itemGrid.worldX;
+	//index += posx;
 
 
-	return &itemGrid.worldCells[index];
+	return &itemGrid.worldCells[getCellIndex(itemGrid, x, y)];
+}
+
+int getCellIndex(ItemGrid& itemGrid, float x, float y) {
+	return (floorf(y) * itemGrid.worldX) + floorf(x);
 }

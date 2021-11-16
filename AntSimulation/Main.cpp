@@ -71,7 +71,8 @@ int main() {
 	initItemGrid(itemGrid, 800, 800);
 	//renderers
 	//Grid
-	GridRenderer gridRenderer(itemGrid);
+	GridRenderer gridRenderer(&itemGrid);
+
 	//Map
 	Map map;
 	initMap(map, 20, 20);
@@ -79,9 +80,9 @@ int main() {
 	// THREADS
 	//int threadCount = 10;
 	//std::vector<std::thread> threads;
-	ThreadPoolManager tmanager;
-	task vertexData = { true, [&vertices, &entities] {setVertexData(vertices,entities); } };
-	task simEnts = { true, [&entities, &deltaTime] {simulateEntitiesOnGPU(entities, deltaTime); } };
+	//ThreadPoolManager tmanager;
+	//task vertexData = { false, [&vertices, &entities] {setVertexData(vertices,entities); } };
+	//task simEnts = { false, [&entities, &deltaTime] {simulateEntitiesOnGPU(entities, deltaTime); } };
 
 	while (window.isOpen()) {
 		// FPS
@@ -89,7 +90,7 @@ int main() {
 		int fps = 1 / deltaTime;
 
 		// SCREEN CLEAR
-		window.clear(sf::Color(10, 10, 10));
+		window.clear(sf::Color(255, 255, 255));
 
 		// Process events
 		sf::Event event;
@@ -107,14 +108,18 @@ int main() {
 				view.setSize(sf::Vector2f(event.size.width, event.size.height));
 			}
 		}
+		//for (int i = 0; i < 100; i++) {
+		//	float f = itemGrid.worldCells[i].foodCount;
+		//}
+		//gridRenderer.update(itemGrid);
+		gridRenderer.render(&window);
 
 		//printf("%f -> ", entities.positions[0].x);
+		simulateEntitiesOnGPU(entities, deltaTime);
+		setVertexData(vertices, entities);
 
-		//simulateEntities(entities, deltaTime);
-		//setVertexData(vertices, entities);
-
-		tmanager.queueJob(simEnts);
-		tmanager.queueJob(vertexData);
+		//tmanager.queueJob(simEnts);
+		//tmanager.queueJob(vertexData);
 
 		/*
 		for (int i = 0; i < threadCount; i++) {

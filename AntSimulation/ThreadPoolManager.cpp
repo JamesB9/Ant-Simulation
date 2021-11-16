@@ -2,7 +2,7 @@
 
 ThreadPoolManager::ThreadPoolManager()
 {
-	int threadCount = thread::hardware_concurrency();
+	int threadCount = 10; //thread::hardware_concurrency();
 	for (auto i = 0; i < threadCount; i++) {
 		threads.push_back(thread(&ThreadPoolManager::queueWait, this));
 	}
