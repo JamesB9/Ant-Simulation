@@ -44,7 +44,7 @@ void setVertexData(sf::VertexArray& vertices, Entities& entities) {
 int main() {
 	// Window
 
-	sf::RenderWindow window(sf::VideoMode(950, 950), "Ant Colony Simulation");
+	sf::RenderWindow window(sf::VideoMode(800, 800), "Ant Colony Simulation");
 
 	// Camera
 	sf::View view;
@@ -67,11 +67,10 @@ int main() {
 		vertices[i].color = sf::Color::Red;
 	}
 	//itemGrid
-	ItemGrid itemGrid;
-	initItemGrid(itemGrid, 800, 800);
+	ItemGrid* itemGrid = initItemGrid(800, 800);
 	//renderers
 	//Grid
-	GridRenderer gridRenderer(&itemGrid);
+	GridRenderer gridRenderer(itemGrid);
 
 	//Map
 	Map map;
@@ -111,11 +110,11 @@ int main() {
 		//for (int i = 0; i < 100; i++) {
 		//	float f = itemGrid.worldCells[i].foodCount;
 		//}
-		//gridRenderer.update(itemGrid);
+		gridRenderer.update(*itemGrid);
 		gridRenderer.render(&window);
 
 		//printf("%f -> ", entities.positions[0].x);
-		simulateEntitiesOnGPU(entities, deltaTime);
+		simulateEntitiesOnGPU(entities, itemGrid, deltaTime);
 		setVertexData(vertices, entities);
 
 		//tmanager.queueJob(simEnts);
@@ -135,7 +134,7 @@ int main() {
 		window.draw(vertices);
 		//printf("%f\n", entities.positions[0].x);
 
-		printf("%d\n", fps);
+		//printf("%d\n", fps);
 
 		// Update the window
 		window.setView(view);

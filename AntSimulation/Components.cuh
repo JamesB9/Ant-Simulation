@@ -30,5 +30,5 @@ struct SniffComponent
 
 struct ActivityComponent
 {
-
+    int currentActivity;
 };

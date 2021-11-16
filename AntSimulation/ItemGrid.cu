@@ -21,18 +21,21 @@ Cell* createItemGridCellArray(int worldSize) {
 	return nArray;
 }
 
-int initItemGrid(ItemGrid& itemGrid, int worldX, int worldY) {
-	itemGrid.worldX = worldX;
-	itemGrid.worldY = worldY;
-	itemGrid.totalCells = worldX * worldY;
+ItemGrid* initItemGrid(int worldX, int worldY) {
+	ItemGrid* itemGrid;
+	cudaMallocManaged(&itemGrid, sizeof(ItemGrid));
 
-	itemGrid.worldCells = createItemGridCellArray(itemGrid.totalCells);
-	for (int i = 0; i < itemGrid.totalCells; i++) {
-		itemGrid.worldCells[i].foodCount = 32;
-		itemGrid.worldCells[i].pheromones[0] = 0.0f;
-		itemGrid.worldCells[i].pheromones[1] = 0.0f;
+	itemGrid->worldX = worldX;
+	itemGrid->worldY = worldY;
+	itemGrid->totalCells = worldX * worldY;
+
+	itemGrid->worldCells = createItemGridCellArray(itemGrid->totalCells);
+	for (int i = 0; i < itemGrid->totalCells; i++) {
+		itemGrid->worldCells[i].foodCount = 32;
+		itemGrid->worldCells[i].pheromones[0] = 0.0f;
+		itemGrid->worldCells[i].pheromones[1] = 0.0f;
 	}
-	return 0;
+	return itemGrid;
 }
 
 Cell* getCell(ItemGrid& itemGrid, float x, float y) {

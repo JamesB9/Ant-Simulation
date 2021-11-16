@@ -25,4 +25,5 @@ struct Entities {
     const unsigned int entityCount = 1000;
     MoveComponent* moves;
     SniffComponent* sniffs;
+    ActivityComponent* activities;
 };
