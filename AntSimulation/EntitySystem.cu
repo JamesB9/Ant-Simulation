@@ -68,7 +68,7 @@ __device__ Cell* getCellDevice2(ItemGrid* itemGrid, float x, float y) {
 }
 
 __device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, ActivityComponent& activity) {
-	Cell* cell = getCellDevice2(itemGrid, move.x, move.y);
+	Cell* cell = getCellDevice2(itemGrid, move.position.x, move.position.y);
 	cell->pheromones[activity.currentActivity] += 0.5f;
 }
 
