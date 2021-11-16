@@ -89,7 +89,7 @@ int main() {
 	//std::vector<std::thread> threads;
 	ThreadPoolManager tmanager;
 	task vertexData = { 3, true, [&vertices, &entities] {setVertexData(vertices,entities); } };
-	task simEnts = { 2, true, [&entities, &deltaTime] {simulateEntitiesOnGPU(entities, deltaTime); } };
+	task simEnts = { 2, true, [&entities, &itemGrid, &deltaTime] {simulateEntitiesOnGPU(entities, itemGrid, deltaTime); } };
 	task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
 
 	while (window.isOpen()) {
