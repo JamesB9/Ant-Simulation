@@ -26,7 +26,10 @@ void generateMap(Map& map);
 void fillMap(Map& map);
 void smoothMap(Map& map);
 void floodFill(Map& map);
+void arrayCopy(Map& from, Map& to);
 int getNeighbourWallCount(Map& map, int x, int y, int delta);
+
+//need to define in .h file
 
 void initMap(Map& map) {
 	map.height = 100;
@@ -76,7 +79,7 @@ void generateMap(Map& map) {
 			cout << "   Smooth Map (" << i << "):           " << deltaTime << endl;
 		}
 	}
-	//floodFill(map);
+	floodFill(map);
 	printMap(map);
 
 };
@@ -87,11 +90,11 @@ void fillMap(Map& map) {
 	for (int i = 0; i < map.width; i++) {
 		for (int j = 0; j < map.height; j++) {
 			if (i == 0 || i == map.width - 1 || j == 0 || j == map.height - 1 || i == 1 || i == map.width - 2 || j == 1 || j == map.height - 2) {
-				map.map[i][j] = 1; //solid outer wall
+				setMapValueAt(map, i, j, 1); //solid outer wall
 			}
 			else {
 				int randa = rand() % 100;
-				map.map[i][j] = (randa < map.percentFill) ? 1 : 0; // 1 = solid, 0 = hollow
+				(randa < map.percentFill) ? setMapValueAt(map, i, j, 1) : setMapValueAt(map, i, j, 0); // 1 = solid, 0 = hollow
 			}
 		}
 	}
@@ -103,38 +106,43 @@ void smoothMap(Map& map) {
 		for (int j = 0; j < map.height; j++) {
 			int wallCount = getNeighbourWallCount(map, i, j, 1);
 			if (wallCount > 4) {
-				map.map[i][j] = 1;
+				setMapValueAt(map, i, j, 1);
 			}
 			else if (wallCount < 4) {
-				map.map[i][j] = 0;
+				setMapValueAt(map, i, j, 0);
 			}
 		}
 	}
 };
-/*void floodFill(Map& map) {
+void floodFill(Map& map) {
 	Map visitedMap;
 	initBlankMap(visitedMap, map.height, map.height);
-	memcpy(visitedMap.map, map.map, map.height * map.width * sizeof(int));
+	//memcpy(visitedMap.map, map.map, map.height * map.width * sizeof(int));
+	arrayCopy(map, visitedMap);
 
-
-	
 	for (int i = 0; i < map.height; i++) {
 		for (int j = 0; j < map.width; j++) {
-			if (visitedMap.map[i][j] == 0) {
-				visitedMap.map[i][j] = 1;
-				cout << i << "," << j << ":" << visitedMap.map[i][j] << "," << map.map[i][j] << endl;
+			if (getMapValueAt(visitedMap,i,j) == 0) {
+				setMapValueAt(visitedMap,i,j,1);
+				cout << i << "," << j << ":" << getMapValueAt(visitedMap, i, j) << "," << getMapValueAt(map, i, j) << endl;
 				break;
 			}
 		}
 	}
-}*/
+}
 
 
 //Util Functions
+void arrayCopy(Map& from, Map& to) {
+	for (int i = 0; i < from.height * from.width; i++) {
+		to.map[i] = from.map[i];
+	}
+}
+
 void printMap(Map& map) {
 	for (int i = 0; i < map.width; i++) {
 		for (int j = 0; j < map.height; j++) {
-			cout << map.map[i][j] << ",";
+			cout << getMapValueAt(map, i, j) << ",";
 		}
 		cout << "\n" << endl;
 	}
@@ -147,7 +155,7 @@ int getNeighbourWallCount(Map& map, int x, int y, int delta) {
 	for (int nX = x - delta; nX <= x + delta; nX++) {
 		for (int nY = y - delta; nY <= y + delta; nY++) {
 			if (nX >= 0 && nX < map.width && nY >= 0 && nY < map.height) {
-				if (map.map[nX][nY] == 1) {
+				if (getMapValueAt(map,nX,nY) == 1) {
 					//cout << "|" << nX << "," << nY;
 					if (!(nX == x && nY == y)) {
 						wallCount++;
@@ -160,16 +168,12 @@ int getNeighbourWallCount(Map& map, int x, int y, int delta) {
 	return wallCount;
 }
 void initArray(Map& map) {
-	map.map = (int**)malloc(map.height * sizeof(int*));
+	map.map = (int*)malloc(map.height * map.width * sizeof(int));
 	if (map.map) {
-
-		for (int i = 0; i < map.width; i++) {
-			map.map[i] = (int*)malloc(map.width * sizeof(int));
-
-			for (int j = 0; j < map.width; j++) {
-				map.map[i][j] = 0;
-			}
+		for (int i = 0; i < (map.height * map.width); i++) {
+			map.map[i] = 0;
 		}
+		
 	}
 };
 void initBlankMap(Map& map, int height, int width) {

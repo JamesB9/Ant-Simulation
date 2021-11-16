@@ -14,6 +14,7 @@
 // 
 //////////////////////////// 80 columns wide //////////////////////////////////
 #pragma once
+
 #include <stdlib.h>
 #include <string>
 
@@ -25,10 +26,17 @@ struct Map {
 	int width;
 	int percentFill;
 
-	int **map;
+	int *map;
 };
 
 void initMap(Map& map);
 void initMap(Map& map, int height, int width);
 
 void printMap(Map& map);
+
+static int getMapValueAt(Map& map, int x, int y) {
+	return map.map[(y * map.width) + x];
+};
+static void setMapValueAt(Map& map, int x, int y, int val) {
+	map.map[(y * map.width) + x] = val;
+}
