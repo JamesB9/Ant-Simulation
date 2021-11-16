@@ -18,11 +18,15 @@
 #include "device_launch_parameters.h"
 
 #include "stdio.h"
+#define _USE_MATH_DEFINES
 #include "math.h"
+
 #include "Entities.cuh"
+#include "ItemGrid.cuh"
 
 MoveComponent* createMoveComponentArray(int n);
 SniffComponent* createSniffComponentArray(int n);
+ActivityComponent* createActivityComponentArray(int n);
 
 int initEntities(Entities& entities);
-int simulateEntitiesOnGPU(Entities& entities, float deltaTime);
+int simulateEntitiesOnGPU(Entities& entities, ItemGrid* itemGrid, float deltaTime);

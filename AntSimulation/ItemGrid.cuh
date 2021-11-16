@@ -37,5 +37,6 @@ struct ItemGrid {
 	Cell* worldCells;
 };
 
-int initItemGrid(ItemGrid& itemGrid, int worldX, int worldY);
+ItemGrid* initItemGrid(int worldX, int worldY);
 Cell* getCell(ItemGrid& itemGrid, float x, float y);
+int getCellIndex(ItemGrid& itemGrid, float x, float y);

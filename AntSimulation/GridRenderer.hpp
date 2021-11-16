@@ -16,20 +16,27 @@
 #include "ItemGrid.cuh"
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System/Vector3.hpp>
+#include <iostream>
 
 class GridRenderer {
 public:
 
-	GridRenderer(ItemGrid& grid) : grid{ grid } {
-		vertexArray = sf::VertexArray(sf::Quads, grid.totalCells * 4);
+	GridRenderer(ItemGrid* grid) : grid{ grid } {
+		//vertexArray = sf::VertexArray(sf::Quads, grid->totalCells * 4);
+		vertexArray = sf::VertexArray(sf::Points, grid->totalCells);
 		init();
 	}
 
 	void render(sf::RenderWindow* window);
 	sf::VertexArray& getVertexArray() { return vertexArray; }
+	void update(ItemGrid& grid);
 private:
 	sf::VertexArray vertexArray;
-	ItemGrid& grid;
+	ItemGrid* grid;
+
+	sf::Vector3f PHEROMONE_0_COLOUR = {0,0,255};
+	sf::Vector3f PHEROMONE_1_COLOUR = {255,0,0};
 
 	void init();
 };

@@ -1,17 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Title:            Ant Simulation
-// Authors:           James Sergeant (100301636), James Burling (100266919), 
+// Authors:           James Sergeant (100301636), James Burling (100266919),
 //					  CallumGrimble (100243142) and Oliver Boys (100277126)
 // File: Main.cpp
 // Description: This is the main driver file for the program.
-// 
+//
 // Change Log:
 //	- 15/11/2021:JS - Added in block comments.
 //
-// Online sources:  
+// Online sources:
 //	- (URL)
-// 
-// 
+//
+//
 //////////////////////////// 80 columns wide //////////////////////////////////
 #pragma once
 #include "EntitySystem.cuh"
@@ -52,7 +52,7 @@ void queueVertexData(ThreadPoolManager& tm, sf::VertexArray* vertices, Entities&
 int main() {
 	// Window
 
-	sf::RenderWindow window(sf::VideoMode(950, 950), "Ant Colony Simulation");
+	sf::RenderWindow window(sf::VideoMode(800, 800), "Ant Colony Simulation");
 
 	// Camera
 	sf::View view;
@@ -75,11 +75,11 @@ int main() {
 		vertices[i].color = sf::Color::Red;
 	}
 	//itemGrid
-	ItemGrid itemGrid;
-	initItemGrid(itemGrid, 800, 800);
+	ItemGrid* itemGrid = initItemGrid(800, 800);
 	//renderers
 	//Grid
 	GridRenderer gridRenderer(itemGrid);
+
 	//Map
 	Map map;
 	initMap(map, 20, 20);
@@ -98,7 +98,7 @@ int main() {
 		int fps = 1 / deltaTime;
 
 		// SCREEN CLEAR
-		window.clear(sf::Color(10, 10, 10));
+		window.clear(sf::Color(255, 255, 255));
 
 		// Process events
 		sf::Event event;
@@ -116,8 +116,15 @@ int main() {
 				view.setSize(sf::Vector2f(event.size.width, event.size.height));
 			}
 		}
+		//for (int i = 0; i < 100; i++) {
+		//	float f = itemGrid.worldCells[i].foodCount;
+		//}
+		gridRenderer.update(*itemGrid);
+		gridRenderer.render(&window);
 
 		//printf("%f -> ", entities.positions[0].x);
+		simulateEntitiesOnGPU(entities, itemGrid, deltaTime);
+		setVertexData(vertices, entities);
 
 		//simulateEntitiesOnGPU(entities, deltaTime);
 		//setVertexData(vertices, entities);
@@ -141,7 +148,7 @@ int main() {
 		//tmanager.queueJob(drawFrame);
 		//printf("%f\n", entities.positions[0].x);
 
-		printf("%d\n", fps);
+		//printf("%d\n", fps);
 
 		// Update the window
 		window.setView(view);

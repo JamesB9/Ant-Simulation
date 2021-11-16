@@ -6,7 +6,7 @@ ThreadPoolManager::ThreadPoolManager()
 	for (auto i = 0; i < threadCount; i++) {
 		threads.push_back(thread(&ThreadPoolManager::queueWait, this));
 	}
-	
+
 	/*for (int i = 0; i < threadCount; i++) {
 		task t = { true, [i] { cout << "Test Job run on thread ID: " << this_thread::get_id() << endl; }};
 		queueJob(t);
@@ -43,7 +43,7 @@ void ThreadPoolManager::queueWait()
 			//Grab first item from the job queue
 			task Job = jobs.front();
 			jobs.pop(); //Remove that item from the queue;
-			
+
 
 			//Do the job we picked up (Lock if asked to)
 			if (!Job.lockNeeded) { lock.unlock(); }
@@ -52,7 +52,7 @@ void ThreadPoolManager::queueWait()
 
 			Job.func();
 			if (Job.lockNeeded) { lock.unlock(); }
-			
+
 		}
 		else {
 			workers.wait(lock);
