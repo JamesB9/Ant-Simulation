@@ -14,6 +14,7 @@
 // 
 //////////////////////////// 80 columns wide //////////////////////////////////
 #include "EntitySystem.cuh"
+#include "Utilities.cuh"
 
 
 MoveComponent* createMoveComponentArray(int n) {
@@ -32,18 +33,27 @@ SniffComponent* createSniffComponentArray(int n) {
 
 __device__ void move(MoveComponent& move, float deltaTime) {
 	// Calculate Velocity
-	float vx = deltaTime * move.speed * sin(move.rotation);
-	float vy = deltaTime * move.speed * cos(move.rotation);
-	move.x += vx;
-	move.y += vy;
+	move.direction += randomInsideUnitCircle(move.position.y) * 0.125f;
+
+	//printf("dirx %.2f, diry %.2f \n", move.direction.x, move.direction.y);
+
+	Vec2f targetVelocity = move.direction * move.maxSpeed;
+	Vec2f targetTurningForce = (targetVelocity - move.velocity) * move.turningForce;
+
+	//printf("tvx %.2f tvy %.2f ttfx %.2f ttfy %.2f \n", targetVelocity.x, targetVelocity.y, targetTurningForce.x, targetTurningForce.y);
+
+	Vec2f acceleration = clamp(targetTurningForce, move.turningForce);
+
+	//printf("acx %.2f acy %.2f \n", acceleration.x, acceleration.y);
+
+	move.velocity = clamp(move.velocity + acceleration * deltaTime, move.maxSpeed);
+	move.position = move.position + (move.velocity * deltaTime);
+	
 }
 
 __device__ void releasePheromone(MoveComponent& move, float deltaTime) {
 	// Calculate Velocity
-	float vx = deltaTime * move.speed * sin(move.rotation);
-	float vy = deltaTime * move.speed * cos(move.rotation);
-	move.x += vx;
-	move.y += vy;
+	
 }
 
 __device__ void sniff(MoveComponent& move, SniffComponent& sniff, float deltaTime) {
@@ -76,6 +86,8 @@ int simulateEntitiesOnGPU(Entities& entities, float deltaTime) {
 	// Wait for GPU to finish before accessing on host
 	cudaDeviceSynchronize();
 
+	//std::cout << entities.moves[0].position.x << ", " << entities.moves[0].position.y << std::endl;
+
 	return 0;
 }
 
@@ -84,10 +96,11 @@ int initEntities(Entities& entities) {
 	entities.sniffs = createSniffComponentArray(entities.entityCount);
 
 	for (unsigned int i = 0; i < entities.entityCount; i++) {
-		entities.moves[i].x = 400;
-		entities.moves[i].y = 400;
-		entities.moves[i].rotation = 3.14159265f*2.0f * i / entities.entityCount;
-		entities.moves[i].speed = 10;
+		entities.moves[i].position = { 400.0f, 400.0f };
+		entities.moves[i].direction = 3.14159265f*2.0f * i / entities.entityCount;
+		entities.moves[i].velocity = { 0.0f, 0.0f };
+		entities.moves[i].maxSpeed = 25.0f;
+		entities.moves[i].turningForce = 25.0f;
 	}
 
 	return 0;

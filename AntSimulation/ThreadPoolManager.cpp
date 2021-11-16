@@ -1,3 +1,19 @@
+///////////////////////////////////////////////////////////////////////////////
+// Title:            Ant Simulation
+// Authors:           James Sergeant (100301636), James Burling (100266919), 
+//					  CallumGrimble (100243142) and Oliver Boys (100277126)
+// File: ThreadPoolManager.cpp
+// Description: Source file for thread pools and their management.
+// 
+// Change Log:
+//	-
+//
+// Online sources:  
+//	- (URL)
+// 
+// 
+//////////////////////////// 80 columns wide //////////////////////////////////
+
 #include "ThreadPoolManager.h"
 
 ThreadPoolManager::ThreadPoolManager()
