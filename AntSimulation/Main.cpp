@@ -29,17 +29,17 @@ void setVertexDataThreaded(sf::VertexArray* vertices, Entities& entities, int th
 	int entitiesPerThread = entities.entityCount / threadCount;
 	//cout << "Threaded Task #" << threadIndex << "/" << threadCount << " - Job: " << entitiesPerThread << " translations, from " << entitiesPerThread * threadIndex << " to " << (entitiesPerThread * threadIndex) + entitiesPerThread-1 << endl;
 	for (int i = entitiesPerThread * threadIndex; i < (entitiesPerThread * threadIndex) + entitiesPerThread-1; i++) {
-		(*vertices)[i].position.x = entities.moves[i].x;
-		(*vertices)[i].position.y = entities.moves[i].y;
+		(*vertices)[i].position.x = entities.moves[i].position.x;
+		(*vertices)[i].position.y = entities.moves[i].position.y;
 	}
 }
 
 void setVertexData(sf::VertexArray& vertices, Entities& entities) {
 	for (int i = 0; i < entities.entityCount; i++) {
 		vertices[i].position.x =
-			entities.moves[i].x;
+			entities.moves[i].position.x;
 		vertices[i].position.y =
-			entities.moves[i].y;
+			entities.moves[i].position.y;
 	}
 }
 
