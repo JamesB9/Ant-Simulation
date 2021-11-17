@@ -205,7 +205,6 @@ int initEntities(Entities& entities) {
 		entities.moves[i].turningForce = entities.moves[i].maxSpeed * 10.0f;
 		entities.moves[i].roamStrength = 2.5f;//2.5f;
 
-		entities.collisions[i].rayCastDistance = 10.0f;
 		entities.collisions[i].avoid = false;
 		entities.collisions[i].targetPosition = {0.0f, 0.0f};
 	}

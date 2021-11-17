@@ -147,13 +147,15 @@ int main() {
 		//printf("%f -> ", entities.positions[0].x);
 		simulateEntitiesOnGPU(entities, itemGrid, deltaTime);
 		setVertexData(vertices, entities);
-		setVertexDataCollision(collisionv, entities);
+
+		//Dev test
+		//setVertexDataCollision(collisionv, entities);
 
 		//simulateEntitiesOnGPU(entities, deltaTime);
 		//setVertexData(vertices, entities);
-		tmanager.queueJob(simEnts);
+		//tmanager.queueJob(simEnts);
 		//tmanager.join();
-		queueVertexData(tmanager, &vertices, entities);
+		//queueVertexData(tmanager, &vertices, entities);
 		//tmanager.queueJob(vertexData);
 		/*
 		for (int i = 0; i < threadCount; i++) {
@@ -168,7 +170,8 @@ int main() {
 		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
 		while (!tmanager.queueEmpty()) {}
 		window.draw(vertices);
-		window.draw(collisionv);
+		//Dev test
+		//window.draw(collisionv);
 		//tmanager.queueJob(drawFrame);
 		//printf("%f\n", entities.positions[0].x);
 
