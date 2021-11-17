@@ -14,15 +14,14 @@
 //
 //////////////////////////// 80 columns wide //////////////////////////////////
 #pragma once
-#include "EntitySystem.cuh"
-#include "ItemGrid.cuh"
 #include <SFML/Graphics.hpp>
 #include <thread>
 #include <iostream>
-#include "GridRenderer.hpp"
 
+#include "GridRenderer.hpp"
+#include "EntitySystem.cuh"
 #include "ThreadPoolManager.h"
-#include "Render.h"
+#include "MarchingSquares.hpp"
 
 
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities& entities, int threadCount, int threadIndex) {
@@ -118,15 +117,33 @@ int main() {
 	GridRenderer gridRenderer(itemGrid);
 
 	//Map
-	Map map;
-	initMap(map, 20, 20);
+	Map* map = makeMapPointer();
+	createMap(*map, 80, 80);
+	//for (int x = 0; x < map.width; x++) {
+	//	for (int y = 0; y < map.height; y++) {
+	//		std::cout << getMapValueAt(map, x, y) << " = " << map[x][y] << std::endl;
+	//	}
+	//}
+	std::vector<sf::Vector2f>* mapVertices = generateMapVertices(*map);
+
+	map->walls = getBoundariesFromVec2f(getVec2fFromVertices(*mapVertices), mapVertices->size());
+	map->wallCount = mapVertices->size() / 2;
+
+	sf::VertexArray* mapArray = getVArrayFromVertices(*mapVertices);
+	sf::Transform mapTransform;
+	mapTransform.scale(10, 10);
+	/*
+	sf::ConvexShape shape = sf::ConvexShape(mapArray->getVertexCount());
+	for (int i = 0; i < mapArray->getVertexCount(); i++) {
+		shape.setPoint(i, (*mapArray)[i].position);
+	}*/
 
 	// THREADS
 	//int threadCount = 10;
 	//std::vector<std::thread> threads;
 	//ThreadPoolManager tmanager;
 	//task vertexData = { 3, true, [&vertices, &entities] {setVertexData(vertices,entities); } };
-	//task simEnts = { 2, true, [&entities, &itemGrid, &deltaTime, &] {simulateEntitiesOnGPU(entities, itemGrid, &thisMap deltaTime); } };
+	//task simEnts = { 2, true, [&entities, &itemGrid, &deltaTime] {simulateEntitiesOnGPU(entities, itemGrid, deltaTime); } };
 	//task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
 
 	//TESTING BOUNDARY COLLISION
@@ -141,7 +158,7 @@ int main() {
 		int fps = 1 / deltaTime;
 
 		// SCREEN CLEAR
-		window.clear(sf::Color(0, 0, 0));
+		window.clear(sf::Color(10, 10, 10));
 
 		// Process events
 		sf::Event event;
@@ -166,7 +183,7 @@ int main() {
 		//gridRenderer.render(&window);
 
 		//printf("%f -> ", entities.positions[0].x);
-		simulateEntitiesOnGPU(entities, itemGrid, deltaTime);
+		simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime);
 		setVertexData(vertices, entities);
 
 		//Dev test
@@ -191,13 +208,13 @@ int main() {
 		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
 		//while (!tmanager.queueEmpty()) {}
 		window.draw(vertices);
-		//Dev test
 		//window.draw(collisionv);
+		window.draw(*mapArray, mapTransform);
+		//window.draw(shape, mapTransform);
 		//tmanager.queueJob(drawFrame);
 		//printf("%f\n", entities.positions[0].x);
 
-		//printf("%d\n", fps);
-
+		printf("%d\n", fps);
 		// Update the window
 		window.setView(view);
 		window.display();

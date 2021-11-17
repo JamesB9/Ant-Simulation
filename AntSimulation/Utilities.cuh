@@ -18,7 +18,48 @@
 #include "device_launch_parameters.h"
 #include "curand.h"
 #include "curand_kernel.h"
-#include "Components.cuh"
+
+
+struct Vec2f {
+    float x, y;
+
+    __host__ __device__ Vec2f operator*=(float& a) {
+        this->x *= a;
+        this->y *= a;
+
+        return *this;
+    }
+
+    __host__ __device__ Vec2f operator*(float a) {
+        return { x * a, y * a };
+    }
+
+    __host__ __device__ Vec2f operator/(float a) {
+        return { x / a, y / a };
+    }
+
+    __host__ __device__ Vec2f operator+(Vec2f a) {
+        return { x + a.x, y + a.y };
+    }
+
+    __host__ __device__ Vec2f operator-(Vec2f a) {
+        return { x - a.x, y - a.y };
+    }
+
+    __host__ __device__ Vec2f operator+=(Vec2f a) {
+        this->x += a.x;
+        this->y += a.y;
+
+        return *this;
+    }
+
+    __host__ __device__ Vec2f operator=(float angle) {
+        this->x = cos(angle);
+        this->y = sin(angle);
+
+        return *this;
+    }
+};
 
 //CUDA Based Utilities
 
@@ -36,7 +77,7 @@ __device__ Vec2f randomInsideUnitCircle(curandState* state) {
 	//r = cudaRand(state) * 360.0f;
 	r = (cudaRand(state) * 360.0f);
 
-	return { 0.0f + (a * cos(r)), 0.0f + (a * sin(r)) };
+	return { 0.0f + (a * (float)cos(r)), 0.0f + (a * (float)sin(r)) };
 	//return { a, r };
 }
 

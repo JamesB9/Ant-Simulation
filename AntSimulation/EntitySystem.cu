@@ -1,21 +1,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Title:            Ant Simulation
-// Authors:           James Sergeant (100301636), James Burling (100266919), 
+// Authors:           James Sergeant (100301636), James Burling (100266919),
 //					  CallumGrimble (100243142) and Oliver Boys (100277126)
 // File: EntitySystem.cu
 // Description: The system that miniuplates the entities data.
-// 
+//
 // Change Log:
 //	- 15/11/2021:JS - Added in block comments.
 //
-// Online sources:  
+// Online sources:
 //	- (URL)
-// 
-// 
+//
+//
 //////////////////////////// 80 columns wide //////////////////////////////////
 #include "EntitySystem.cuh"
-#include "Utilities.cuh"
-
 
 MoveComponent* createMoveComponentArray(int n) {
 	MoveComponent* nArray;
@@ -48,7 +46,7 @@ CollisionComponent* createCollisionComponentArray(int n) {
 __device__ void move(MoveComponent& move, curandState* state, float deltaTime) {
 	//Get random vector where {+1 < x > -1, +1 < y > -1}
 	Vec2f randomDirection = randomInsideUnitCircle(state);
-	
+
 	//Add randomDirection to the current direction
 	move.direction = (move.direction + randomDirection * move.roamStrength);
 
@@ -90,17 +88,18 @@ __device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, Activi
 }
 
 __device__ void sniff(MoveComponent& move, SniffComponent& sniff, float deltaTime) {
-	
+
 }
 
-__device__ void detectWall(MoveComponent& move, CollisionComponent& collision, float deltaTime) {
+__device__ void detectWall(MoveComponent& move, CollisionComponent& collision, Map* map, float deltaTime) {
 	//Notes for wall detection
 	//Cast ray out from and until you hit a 1 in the map
 	//if distance from wall to ant is small enough
 	//	1. Get the angle between the ant and the wall (1) OR Screen Border
 	//	2. invert that angle based on what side of the wall you are on, find the inverse point (mirrored position) of the ant
 	//	3. push that new location to the move function for turning
-	Vec2f topLeft = { 0.0f, 0.0f },
+
+	/*Vec2f topLeft = {0.0f, 0.0f},
 		bottomLeft = { 0.0f, 800.0f },
 		topRight = { 800.0f, 0.0f },
 		bottomRight = { 800.0f, 800.0f };
@@ -109,16 +108,18 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, f
 	Boundary tboundary = { topRight, topLeft, 3 };
 	Boundary bboundary = { bottomLeft, bottomRight, 4 };
 	Boundary boundaries[4] = { lboundary , rboundary , tboundary , bboundary };
-
+	*/
 	//ray position - move.position
 	//ray's angle
 	Vec2f angle = { cos(move.angle),  sin(move.angle) };
+	float targetDistance = 1000000;
 	//printf("at angle: %.2f, %.2f\n", angle.x, angle.y);
-	for (Boundary &wall : boundaries) {
-		const float x1 = wall.p1.x;
-		const float y1 = wall.p1.y;
-		const float x2 = wall.p2.x;
-		const float y2 = wall.p2.y;
+	for (int i = 0; i < map->wallCount; i++) {
+		Boundary& wall = map->walls[i];
+		const float x1 = wall.p1.x * 10.0f;
+		const float y1 = wall.p1.y * 10.0f;
+		const float x2 = wall.p2.x * 10.0f;
+		const float y2 = wall.p2.y * 10.0f;
 
 		const float x3 = move.position.x;
 		const float y3 = move.position.y;
@@ -136,7 +137,7 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, f
 			if (wall.ID == 2) { wall_name = 'R'; }
 			if (wall.ID == 3) { wall_name = 'T'; }
 			if (wall.ID == 4) { wall_name = 'B'; }*/
-			
+
 			collision.targetPosition = { x1 + t * (x2 - x1) , y1 + t * (y2 - y1) };
 
 			//Calculate reflected angle
@@ -148,7 +149,16 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, f
 			collision.refractionPosition = collision.targetPosition + (clamp(u-w, 1.0f) * distance);
 			if (distance < collision.collisionDistance) {//Calculate inverse angle
 				move.direction = u - w;
-
+				/*if (wall.ID == 4) { wall_name = 'B'; }
+				//printf("%c\n", wall_name);
+				Vec2f targetPosition = { x1 + t * (x2 - x1) , y1 + t * (y2 - y1) };
+				collision.avoid = true;
+				float distToTarget = pow(move.position.x - targetPosition.x, 2) + pow(move.position.y - targetPosition.y, 2);
+				if (distToTarget < targetDistance) {
+					collision.targetPosition = targetPosition;
+					collision.avoid = true;
+					targetDistance = distToTarget;
+*/
 				//printf("d = %.2f, n = %.2f, r = %.2f\n", d, n, r);
 			}
 		}
@@ -156,13 +166,14 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, f
 }
 
 __global__ void simulateEntities(
-	MoveComponent* moves, 
+	MoveComponent* moves,
 	SniffComponent* sniffs,
 	ActivityComponent* activities,
 	CollisionComponent* collisions,
-	int entityCount, 
+	int entityCount,
 	float deltaTime,
-	ItemGrid* itemGrid) 
+	ItemGrid* itemGrid,
+	Map* map)
 {
 	//--RNG--
 	curandState state;
@@ -174,23 +185,24 @@ __global__ void simulateEntities(
 	for (int i = index; i < entityCount; i += stride) { // For Each entity for this thread
 		move(moves[i], &state ,deltaTime);
 		releasePheromone(itemGrid, moves[i], activities[i]);
-		detectWall(moves[i], collisions[i], deltaTime);
+		detectWall(moves[i], collisions[i], map, deltaTime);
 	}
 }
 
-int simulateEntitiesOnGPU(Entities& entities, ItemGrid* itemGrid, float deltaTime) {
+int simulateEntitiesOnGPU(Entities& entities, ItemGrid* itemGrid, Map* map, float deltaTime) {
 	// Run kernel on 1M elements on the CPU
 	int blockSize = 256;
 	int numBlocks = (entities.entityCount + blockSize - 1) / blockSize;
-	
+
 	simulateEntities << <numBlocks, blockSize >> > (
-		entities.moves, 
-		entities.sniffs, 
+		entities.moves,
+		entities.sniffs,
 		entities.activities,
 		entities.collisions,
-		entities.entityCount, 
+		entities.entityCount,
 		deltaTime,
-		itemGrid);
+		itemGrid,
+		map);
 
 	// Wait for GPU to finish before accessing on host
 	cudaDeviceSynchronize();

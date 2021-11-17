@@ -23,10 +23,11 @@
 
 #include "Entities.cuh"
 #include "ItemGrid.cuh"
+#include "Map.cuh"
 
 MoveComponent* createMoveComponentArray(int n);
 SniffComponent* createSniffComponentArray(int n);
 ActivityComponent* createActivityComponentArray(int n);
 
 int initEntities(Entities& entities);
-int simulateEntitiesOnGPU(Entities& entities, ItemGrid* itemGrid, float deltaTime);
+int simulateEntitiesOnGPU(Entities& entities, ItemGrid* itemGrid, Map* map, float deltaTime);

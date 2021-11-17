@@ -1,17 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Title:            Ant Simulation
-// Authors:           James Sergeant (100301636), James Burling (100266919), 
+// Authors:           James Sergeant (100301636), James Burling (100266919),
 //					  CallumGrimble (100243142) and Oliver Boys (100277126)
 // File: Entities.cuh
 // Description: The header file for all of the Entities.
-// 
+//
 // Change Log:
 //	- 15/11/2021:JS - Added in block comments.
 //
-// Online sources:  
+// Online sources:
 //	- (URL)
-// 
-// 
+//
+//
 //////////////////////////// 80 columns wide //////////////////////////////////
 #pragma once
 
@@ -22,7 +22,7 @@ typedef unsigned int EntityID;
 struct Entities {
 
     // Arrays of data for each ant, sizes are all equal
-    const unsigned int entityCount = 10000;
+    const unsigned int entityCount = 100;
     MoveComponent* moves;
     SniffComponent* sniffs;
     ActivityComponent* activities;
