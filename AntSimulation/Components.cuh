@@ -22,10 +22,6 @@
 #include "curand_kernel.h"
 #include "Utilities.cuh"
 
-struct BMap {
-    Boundary walls[20];
-};
-
 struct MoveComponent
 {
     Vec2f position;

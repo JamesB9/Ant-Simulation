@@ -18,6 +18,8 @@
 #include "device_launch_parameters.h"
 #include "curand.h"
 #include "curand_kernel.h"
+#define _USE_MATH_DEFINES
+#include <math.h>;
 
 
 struct Vec2f {
@@ -32,6 +34,14 @@ struct Vec2f {
 
     __host__ __device__ Vec2f operator*(float a) {
         return { x * a, y * a };
+    }
+
+    __host__ __device__ Vec2f operator*(Vec2f a) {
+        return { x * a.x, y * a.y };
+    }
+
+    __host__ __device__ Vec2f operator/(Vec2f a) {
+        return { x / a.x, y / a.y };
     }
 
     __host__ __device__ Vec2f operator/(float a) {
@@ -58,6 +68,10 @@ struct Vec2f {
         this->y = sin(angle);
 
         return *this;
+    }
+
+    __host__ __device__ float dotProduct(Vec2f b) {
+        return this->x * b.x + this->y * b.y;
     }
 };
 
@@ -114,5 +128,5 @@ __device__ Vec2f normaliseSurface(Vec2f a, Vec2f b) {
 	float dx = b.x - a.x;
 	float dy = b.y - a.y;
 
-	return { dx, -dy };
+	return { dx, dy };
 }

@@ -73,16 +73,6 @@ void setVertexDataCollision(sf::VertexArray& vertices, Entities& entities) {
 		vertexCounter += 4;
 	}
 }
-void setVertexMap(sf::VertexArray& vertices, BMap& map) {
-	int wallCount = 0;
-	for (int i = 0; i < 20; i+=2) {
-		vertices[i].position.x = map.walls[wallCount].p1.x;
-		vertices[i].position.y = map.walls[wallCount].p1.y;
-		vertices[i+1].position.x = map.walls[wallCount].p2.x;
-		vertices[i+1].position.y = map.walls[wallCount].p2.y;
-		wallCount++;
-	}
-}
 
 
 int main() {
@@ -125,6 +115,15 @@ int main() {
 	//	}
 	//}
 	std::vector<sf::Vector2f>* mapVertices = generateMapVertices(*map);
+
+	/*mapVertices->push_back({0.0f, 0.0f}); //tl
+	mapVertices->push_back({ 0.0f, 80.0f });//bl
+	mapVertices->push_back({ 0.0f, 80.0f });//bl
+	mapVertices->push_back({ 80.0f, 80.0f });//br
+	mapVertices->push_back({ 80.0f, 80.0f });//br
+	mapVertices->push_back({ 80.0f, 0.0f });//tr
+	mapVertices->push_back({ 80.0f, 0.0f });//tr
+	mapVertices->push_back({ 0.0f, 0.0f });//tl*/
 
 	map->walls = getBoundariesFromVec2f(getVec2fFromVertices(*mapVertices), mapVertices->size());
 	map->wallCount = mapVertices->size() / 2;

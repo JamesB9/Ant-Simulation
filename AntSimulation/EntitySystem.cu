@@ -113,6 +113,7 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, M
 	//ray's angle
 	Vec2f angle = { cos(move.angle),  sin(move.angle) };
 	float targetDistance = 1000000;
+	int wallIndex = -1;
 	//printf("at angle: %.2f, %.2f\n", angle.x, angle.y);
 	for (int i = 0; i < map->wallCount; i++) {
 		Boundary& wall = map->walls[i];
@@ -137,32 +138,34 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, M
 			if (wall.ID == 2) { wall_name = 'R'; }
 			if (wall.ID == 3) { wall_name = 'T'; }
 			if (wall.ID == 4) { wall_name = 'B'; }*/
-
-			collision.targetPosition = { x1 + t * (x2 - x1) , y1 + t * (y2 - y1) };
-
-			//Calculate reflected angle
-			Vec2f n = clamp(normaliseSurface(wall.p1, wall.p2), 1.0f);
-			Vec2f u = n * (move.velocity.dotProduct(n) / n.dotProduct(n));
-			Vec2f w = move.velocity - u;
-
-			float distance = sqrtf(powf(collision.targetPosition.x - move.position.x, 2.0f) + powf(collision.targetPosition.y - move.position.y, 2.0f));
-			collision.refractionPosition = collision.targetPosition + (clamp(u-w, 1.0f) * distance);
-			if (distance < collision.collisionDistance) {//Calculate inverse angle
-				move.direction = u - w;
-				/*if (wall.ID == 4) { wall_name = 'B'; }
-				//printf("%c\n", wall_name);
-				Vec2f targetPosition = { x1 + t * (x2 - x1) , y1 + t * (y2 - y1) };
-				collision.avoid = true;
-				float distToTarget = pow(move.position.x - targetPosition.x, 2) + pow(move.position.y - targetPosition.y, 2);
-				if (distToTarget < targetDistance) {
-					collision.targetPosition = targetPosition;
-					collision.avoid = true;
-					targetDistance = distToTarget;
-*/
-				//printf("d = %.2f, n = %.2f, r = %.2f\n", d, n, r);
+			Vec2f targetPosition = { x1 + t * (x2 - x1) , y1 + t * (y2 - y1) };
+			float distance = sqrtf(powf(targetPosition.x - move.position.x, 2.0f) + powf(targetPosition.y - move.position.y, 2.0f));
+			
+			if (distance < targetDistance) {//Calculate inverse angle
+				wallIndex = i;
+				targetDistance = distance;
+				collision.targetPosition = targetPosition;
 			}
 		}
 	}
+	if (wallIndex != -1 && targetDistance < collision.collisionDistance) {
+		//Calculate reflected angle
+		Vec2f n = clamp(normaliseSurface(map->walls[wallIndex].p1, map->walls[wallIndex].p2), 1.0f);
+		Vec2f u = n * (move.velocity.dotProduct(n) / n.dotProduct(n));
+		Vec2f w = move.velocity - u;
+		//Set reflected angle
+		collision.refractionPosition = collision.targetPosition + (clamp(u-w, 1.0f) * targetDistance);
+		//Set direction
+		if (targetDistance < collision.collisionDistance) {
+			move.direction = (u - w);
+		}
+	}
+	else if (wallIndex == -1) {
+		move.position = { 400.0f, 400.0f };
+	}
+	//else {
+	//	collision.refractionPosition = collision.targetPosition;
+	//}
 }
 
 __global__ void simulateEntities(
@@ -225,8 +228,8 @@ int initEntities(Entities& entities) {
 		entities.moves[i].position = { 400.0f, 400.0f };
 		entities.moves[i].direction = 0.0f;
 		entities.moves[i].velocity = { 0.0f, 0.0f };
-		entities.moves[i].maxSpeed = 25.0f;
-		entities.moves[i].turningForce = entities.moves[i].maxSpeed * 15.0f;
+		entities.moves[i].maxSpeed = 15.0f;
+		entities.moves[i].turningForce = entities.moves[i].maxSpeed * 30.0f;
 		entities.moves[i].roamStrength = 2.5f;//2.5f;
 
 		entities.collisions[i].avoid = false;
