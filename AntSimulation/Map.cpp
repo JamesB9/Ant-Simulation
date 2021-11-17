@@ -14,8 +14,9 @@
 // 
 //////////////////////////// 80 columns wide //////////////////////////////////
 using namespace std;
-#include "Render.h"
+#include "Map.cuh"
 
+#include <string>
 #include <iostream>
 #include <chrono>
 #include <cstdlib>
