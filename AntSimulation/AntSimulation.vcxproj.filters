@@ -38,6 +38,9 @@
     <ClCompile Include="Map.cpp">
       <Filter>src\Simulation\DS</Filter>
     </ClCompile>
+    <ClCompile Include="MarchingSquares.cpp">
+      <Filter>src\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.cuh">
@@ -66,6 +69,9 @@
     </ClInclude>
     <ClInclude Include="Map.cuh">
       <Filter>src\Simulation\DS</Filter>
+    </ClInclude>
+    <ClInclude Include="MarchingSquares.hpp">
+      <Filter>src\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

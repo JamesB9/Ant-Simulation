@@ -23,6 +23,7 @@
 
 #include "ThreadPoolManager.h"
 #include "Map.cuh"
+#include "MarchingSquares.hpp"
 
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int threadCount, int threadIndex) {
 	int entitiesPerThread = entities->entityCount / threadCount;
@@ -75,6 +76,21 @@ int main() {
 	//Map
 	Map map;
 	initMap(map, 80, 80);
+	//for (int x = 0; x < map.width; x++) {
+	//	for (int y = 0; y < map.height; y++) {
+	//		std::cout << getMapValueAt(map, x, y) << " = " << map[x][y] << std::endl;
+	//	}
+	//}
+
+	sf::VertexArray* mapArray = generateShape(map);
+	
+	sf::Transform mapTransform;
+	mapTransform.scale(10, 10);
+	/*
+	sf::ConvexShape shape = sf::ConvexShape(mapArray->getVertexCount());
+	for (int i = 0; i < mapArray->getVertexCount(); i++) {
+		shape.setPoint(i, (*mapArray)[i].position);
+	}*/
 
 	// THREADS
 	//int threadCount = 10;
@@ -89,7 +105,7 @@ int main() {
 		int fps = 1 / deltaTime;
 
 		// SCREEN CLEAR
-		window.clear(sf::Color(255, 255, 255));
+		window.clear(sf::Color(10, 10, 10));
 
 		// Process events
 		sf::Event event;
@@ -110,8 +126,8 @@ int main() {
 		//for (int i = 0; i < 100; i++) {
 		//	float f = itemGrid.worldCells[i].foodCount;
 		//}
-		gridRenderer.update(*itemGrid);
-		gridRenderer.render(&window);
+		//gridRenderer.update(*itemGrid);
+		//gridRenderer.render(&window);
 
 		//printf("%f -> ", entities.positions[0].x);
 		simulateEntitiesOnGPU(entities, itemGrid, deltaTime);
@@ -132,10 +148,11 @@ int main() {
 		*/
 		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
 		window.draw(vertices);
+		window.draw(*mapArray, mapTransform);
+		//window.draw(shape, mapTransform);
 		//printf("%f\n", entities.positions[0].x);
 
 		//printf("%d\n", fps);
-
 		// Update the window
 		window.setView(view);
 		window.display();

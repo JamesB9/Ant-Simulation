@@ -63,7 +63,7 @@ void initMap(Map& map,int height, int width) {
 		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
 		cout << "\n   Time to fully generate Map: " << deltaTime << "\n" << endl;
 	}
-	//printMap(map);
+	printMap(map);
 }
 
 

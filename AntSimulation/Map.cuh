@@ -16,7 +16,7 @@
 #pragma once
 
 #include <stdlib.h>
-
+#include <iostream>
 
 //Pool all render.cpp's here
 
@@ -26,6 +26,16 @@ struct Map {
 	int percentFill;
 
 	int *map;
+
+	inline int* operator[](int i) {
+		if (i >= width * height) {
+			std::cout << "Index out of bounds" << std::endl;
+			// return first element.
+			return &map[0];
+		}
+
+		return &map[i];
+	}
 };
 struct Coord {
 	int x;
