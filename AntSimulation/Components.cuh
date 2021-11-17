@@ -36,6 +36,14 @@ struct Vec2f {
         return { x * a, y * a };
     }
 
+    __host__ __device__ Vec2f operator*(Vec2f a) {
+        return { x * a.x, y * a.y };
+    }
+
+    __host__ __device__ Vec2f operator/(Vec2f a) {
+        return { x / a.x, y / a.y };
+    }
+
     __host__ __device__ Vec2f operator/(float a) {
         return { x / a, y / a };
     }
@@ -61,11 +69,19 @@ struct Vec2f {
 
         return *this;
     }
+
+    __host__ __device__ float dotProduct(Vec2f b) {
+        return this->x * b.x + this->y * b.y;
+    }
 };
 
 struct Boundary {
     Vec2f p1, p2;
     int ID;
+};
+
+struct BMap {
+    Boundary walls[20];
 };
 
 struct MoveComponent
@@ -83,7 +99,8 @@ struct SniffComponent
 struct CollisionComponent {
     bool avoid; //Whether or not to follow targetPosition
     Vec2f targetPosition; //Position for ant to priorities
-    float rayCastDistance;
+    float collisionDistance;
+    Vec2f refractionPosition;
 };
 
 struct ActivityComponent

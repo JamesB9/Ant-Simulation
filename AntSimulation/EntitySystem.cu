@@ -105,8 +105,8 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, f
 		topRight = { 800.0f, 0.0f },
 		bottomRight = { 800.0f, 800.0f };
 	Boundary lboundary = { topLeft, bottomLeft, 1 };
-	Boundary rboundary = { topRight, bottomRight, 2 };
-	Boundary tboundary = { topLeft, topRight, 3 };
+	Boundary rboundary = { bottomRight, topRight, 2 };
+	Boundary tboundary = { topRight, topLeft, 3 };
 	Boundary bboundary = { bottomLeft, bottomRight, 4 };
 	Boundary boundaries[4] = { lboundary , rboundary , tboundary , bboundary };
 
@@ -131,14 +131,26 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, f
 		const float u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
 
 		if (t > 0 && t < 1 && u > 0) {
-			char wall_name;
+			/*char wall_name;
 			if (wall.ID == 1) { wall_name = 'L'; }
 			if (wall.ID == 2) { wall_name = 'R'; }
 			if (wall.ID == 3) { wall_name = 'T'; }
-			if (wall.ID == 4) { wall_name = 'B'; }
-			//printf("%c\n", wall_name);
+			if (wall.ID == 4) { wall_name = 'B'; }*/
+			
 			collision.targetPosition = { x1 + t * (x2 - x1) , y1 + t * (y2 - y1) };
-			collision.avoid = true;
+
+			//Calculate reflected angle
+			Vec2f n = clamp(normaliseSurface(wall.p1, wall.p2), 1.0f);
+			Vec2f u = n * (move.velocity.dotProduct(n) / n.dotProduct(n));
+			Vec2f w = move.velocity - u;
+
+			float distance = sqrtf(powf(collision.targetPosition.x - move.position.x, 2.0f) + powf(collision.targetPosition.y - move.position.y, 2.0f));
+			collision.refractionPosition = collision.targetPosition + (clamp(u-w, 1.0f) * distance);
+			if (distance < collision.collisionDistance) {//Calculate inverse angle
+				move.direction = u - w;
+
+				//printf("d = %.2f, n = %.2f, r = %.2f\n", d, n, r);
+			}
 		}
 	}
 }
@@ -201,12 +213,14 @@ int initEntities(Entities& entities) {
 		entities.moves[i].position = { 400.0f, 400.0f };
 		entities.moves[i].direction = 0.0f;
 		entities.moves[i].velocity = { 0.0f, 0.0f };
-		entities.moves[i].maxSpeed = 10.0f;
-		entities.moves[i].turningForce = entities.moves[i].maxSpeed * 10.0f;
+		entities.moves[i].maxSpeed = 25.0f;
+		entities.moves[i].turningForce = entities.moves[i].maxSpeed * 15.0f;
 		entities.moves[i].roamStrength = 2.5f;//2.5f;
 
 		entities.collisions[i].avoid = false;
 		entities.collisions[i].targetPosition = {0.0f, 0.0f};
+		entities.collisions[i].refractionPosition = { 0.0f, 0.0f };
+		entities.collisions[i].collisionDistance = 25.0f;
 	}
 
 	return 0;

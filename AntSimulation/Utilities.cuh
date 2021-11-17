@@ -52,3 +52,26 @@ __device__ Vec2f clamp(Vec2f v, float max) {
 
 	return v;
 }
+
+__device__ float getAngle(Vec2f a, Vec2f b) {
+	float dot = a.x * b.x + a.y * b.y;
+	float det = a.x * b.y - a.y * b.x;
+	return atan2f(det, dot);
+}
+
+__device__ bool isLeft(Vec2f a, Vec2f b, Vec2f c) {
+	return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) > 0;
+}
+
+__device__ float normaliseRadian(float a) {
+	a = fmodf(a, M_PI);
+	if (a < 0) { a += M_PI; }
+	return a;
+}
+
+__device__ Vec2f normaliseSurface(Vec2f a, Vec2f b) {
+	float dx = b.x - a.x;
+	float dy = b.y - a.y;
+
+	return { dx, -dy };
+}

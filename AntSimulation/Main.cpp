@@ -61,9 +61,30 @@ void setVertexDataCollision(sf::VertexArray& vertices, Entities& entities) {
 			entities.moves[i].position.x;
 		vertices[vertexCounter +1].position.y =
 			entities.moves[i].position.y;
-		vertexCounter += 2;
+
+		vertices[vertexCounter+2].position.x =
+			entities.collisions[i].targetPosition.x;
+		vertices[vertexCounter+2].position.y =
+			entities.collisions[i].targetPosition.y;
+
+		vertices[vertexCounter + 3].position.x =
+			entities.collisions[i].refractionPosition.x;
+		vertices[vertexCounter + 3].position.y =
+			entities.collisions[i].refractionPosition.y;
+		vertexCounter += 4;
 	}
 }
+void setVertexMap(sf::VertexArray& vertices, BMap& map) {
+	int wallCount = 0;
+	for (int i = 0; i < 20; i+=2) {
+		vertices[i].position.x = map.walls[wallCount].p1.x;
+		vertices[i].position.y = map.walls[wallCount].p1.y;
+		vertices[i+1].position.x = map.walls[wallCount].p2.x;
+		vertices[i+1].position.y = map.walls[wallCount].p2.y;
+		wallCount++;
+	}
+}
+
 
 int main() {
 	// Window
@@ -103,14 +124,14 @@ int main() {
 	// THREADS
 	//int threadCount = 10;
 	//std::vector<std::thread> threads;
-	ThreadPoolManager tmanager;
-	task vertexData = { 3, true, [&vertices, &entities] {setVertexData(vertices,entities); } };
-	task simEnts = { 2, true, [&entities, &itemGrid, &deltaTime] {simulateEntitiesOnGPU(entities, itemGrid, deltaTime); } };
-	task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
+	//ThreadPoolManager tmanager;
+	//task vertexData = { 3, true, [&vertices, &entities] {setVertexData(vertices,entities); } };
+	//task simEnts = { 2, true, [&entities, &itemGrid, &deltaTime, &] {simulateEntitiesOnGPU(entities, itemGrid, &thisMap deltaTime); } };
+	//task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
 
 	//TESTING BOUNDARY COLLISION
-	sf::VertexArray collisionv(sf::Lines, entities.entityCount*2);
-	for (int i = 0; i < entities.entityCount*2; i+=2) {
+	sf::VertexArray collisionv(sf::Lines, entities.entityCount*4);
+	for (int i = 0; i < entities.entityCount*2; i++) {
 		collisionv[i].color = sf::Color::Green;
 	}
 
@@ -120,7 +141,7 @@ int main() {
 		int fps = 1 / deltaTime;
 
 		// SCREEN CLEAR
-		window.clear(sf::Color(50, 50, 50));
+		window.clear(sf::Color(0, 0, 0));
 
 		// Process events
 		sf::Event event;
@@ -168,7 +189,7 @@ int main() {
 		threads.clear();
 		*/
 		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
-		while (!tmanager.queueEmpty()) {}
+		//while (!tmanager.queueEmpty()) {}
 		window.draw(vertices);
 		//Dev test
 		//window.draw(collisionv);
