@@ -20,6 +20,7 @@ using namespace std;
 #include <iostream>
 #include <chrono>
 #include <cstdlib>
+#include <queue>
 
 void initArray(Map& map);
 void initBlankMap(Map& map, int height, int width);
@@ -32,29 +33,43 @@ int getNeighbourWallCount(Map& map, int x, int y, int delta);
 
 //need to define in .h file
 
+//Timing Data
+bool enableTiming = true;
+
 void initMap(Map& map) {
 	map.height = 100;
 	map.width = 100;
 	map.percentFill = 50;
 
-	initArray(map);
-	generateMap(map);
-	printMap(map);
+	initMap(map, map.height, map.width);
 }
 void initMap(Map& map,int height, int width) {
 	map.height = height;
 	map.width = width;
 	map.percentFill = 48;
 
+	std::chrono::steady_clock::time_point t1;
+	std::chrono::steady_clock::time_point t2;
+	float deltaTime;
+	if(enableTiming)
+		cout << "\nMAP GENERATION" << endl;
+
 	initArray(map);
+	if (enableTiming)
+		t1 = std::chrono::high_resolution_clock::now();
 	generateMap(map);
-	printMap(map);
+	if (enableTiming) {
+		t2 = std::chrono::high_resolution_clock::now();
+		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
+		cout << "\n   Time to fully generate Map: " << deltaTime << "\n" << endl;
+	}
+	//printMap(map);
 }
 
 
 void generateMap(Map& map) {
 
-	bool enableTiming = true;
+	
 	std::chrono::steady_clock::time_point t1;
 	std::chrono::steady_clock::time_point t2;
 	float deltaTime;
@@ -80,9 +95,14 @@ void generateMap(Map& map) {
 			cout << "   Smooth Map (" << i << "):           " << deltaTime << endl;
 		}
 	}
+	if(enableTiming)
+		t1 = std::chrono::high_resolution_clock::now();
 	floodFill(map);
-	printMap(map);
-
+	if (enableTiming) {
+		t2 = std::chrono::high_resolution_clock::now();
+		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
+		cout << "   Flood Fill:               " << deltaTime << endl;
+	}
 };
 
 void fillMap(Map& map) {
@@ -116,17 +136,68 @@ void smoothMap(Map& map) {
 	}
 };
 void floodFill(Map& map) {
-	Map visitedMap;
-	initBlankMap(visitedMap, map.height, map.height);
-	//memcpy(visitedMap.map, map.map, map.height * map.width * sizeof(int));
-	arrayCopy(map, visitedMap);
+	Map visited;
 
-	for (int i = 0; i < map.height; i++) {
-		for (int j = 0; j < map.width; j++) {
-			if (getMapValueAt(visitedMap,i,j) == 0) {
-				setMapValueAt(visitedMap,i,j,1);
-				cout << i << "," << j << ":" << getMapValueAt(visitedMap, i, j) << "," << getMapValueAt(map, i, j) << endl;
-				break;
+	initBlankMap(visited, map.height, map.height);
+	arrayCopy(map, visited);
+
+	for (int i = 0; i < map.width; i++) {
+		for (int j = 0; j < map.height; j++) {
+			if (getMapValueAt(visited, i, j) == 0) {
+
+
+				//cout << i << "," << j << endl;
+
+
+				Coord coord = Coord(i, j);
+				std::queue<Coord> coordQueue;
+				std::queue<Coord> visitedQueue;
+
+				coordQueue.push(coord);
+				visitedQueue.push(coord);
+				while (coordQueue.size() != 0) {
+					Coord coord = coordQueue.front();
+					coordQueue.pop();
+					int x = coord.x;
+					int y = coord.y;
+
+					if ((x - 1 >= 0) && getMapValueAt(visited, x-1, y) == 0) {
+						//cout << "add left" << endl;
+						coordQueue.push(Coord(x - 1, y));
+						visitedQueue.push(Coord(x - 1, y));
+						setMapValueAt(visited, x-1,y, 1);
+					}
+					if ((x + 1 < map.width) && getMapValueAt(visited, x + 1, y) == 0) {
+						//cout << "add right" << endl;
+						coordQueue.push(Coord(x + 1, y));
+						visitedQueue.push(Coord(x + 1, y));
+						setMapValueAt(visited, x + 1, y, 1);
+					}
+					if ((y - 1 >= 0) && getMapValueAt(visited, x, y - 1) == 0) {
+						//cout << "add up" << endl;
+						coordQueue.push(Coord(x, y - 1));
+						visitedQueue.push(Coord(x, y - 1));
+						setMapValueAt(visited, x, y - 1, 1);
+					}
+					if ((y + 1 < map.height) && getMapValueAt(visited, x, y + 1) == 0) {
+						//cout << "add down" << endl;
+						coordQueue.push(Coord(x, y + 1));
+						visitedQueue.push(Coord(x, y + 1));
+						setMapValueAt(visited, x, y + 1, 1);
+					}
+				}
+
+
+				//cout << visitedQueue.size() << endl;
+
+
+				if (visitedQueue.size() <= 80) {//remove all areas smaller than 20
+					while (visitedQueue.size() != 0) {
+						Coord coord = visitedQueue.front();
+						visitedQueue.pop();
+						setMapValueAt(map, coord.x, coord.y, 1);
+					}
+				}
 			}
 		}
 	}

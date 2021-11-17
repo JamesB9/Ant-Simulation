@@ -27,6 +27,14 @@ struct Map {
 
 	int *map;
 };
+struct Coord {
+	int x;
+	int y;
+	Coord(int x, int y) {
+		this->x = x;
+		this->y = y;
+	}
+};
 
 void initMap(Map& map);
 void initMap(Map& map, int height, int width);
