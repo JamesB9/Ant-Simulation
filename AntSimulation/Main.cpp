@@ -1,17 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Title:            Ant Simulation
-// Authors:           James Sergeant (100301636), James Burling (100266919), 
+// Authors:           James Sergeant (100301636), James Burling (100266919),
 //					  CallumGrimble (100243142) and Oliver Boys (100277126)
 // File: Main.cpp
 // Description: This is the main driver file for the program.
-// 
+//
 // Change Log:
 //	- 15/11/2021:JS - Added in block comments.
 //
-// Online sources:  
+// Online sources:
 //	- (URL)
-// 
-// 
+//
+//
 //////////////////////////// 80 columns wide //////////////////////////////////
 #pragma once
 #include "EntitySystem.cuh"
@@ -25,20 +25,44 @@
 #include "Map.cuh"
 #include "MarchingSquares.hpp"
 
-void setVertexDataThreaded(sf::VertexArray* vertices, Entities* entities, int threadCount, int threadIndex) {
-	int entitiesPerThread = entities->entityCount / threadCount;
-	for (int i = entitiesPerThread * threadIndex; i < (entitiesPerThread * threadIndex) + entitiesPerThread; i++) {
-		(*vertices)[i].position.x = entities->moves[i].x;
-		(*vertices)[i].position.y = entities->moves[i].y;
+
+void setVertexDataThreaded(sf::VertexArray* vertices, Entities& entities, int threadCount, int threadIndex) {
+	int entitiesPerThread = entities.entityCount / threadCount;
+	//cout << "Threaded Task #" << threadIndex << "/" << threadCount << " - Job: " << entitiesPerThread << " translations, from " << entitiesPerThread * threadIndex << " to " << (entitiesPerThread * threadIndex) + entitiesPerThread-1 << endl;
+	for (int i = entitiesPerThread * threadIndex; i < (entitiesPerThread * threadIndex) + entitiesPerThread-1; i++) {
+		(*vertices)[i].position.x = entities.moves[i].position.x;
+		(*vertices)[i].position.y = entities.moves[i].position.y;
 	}
 }
 
 void setVertexData(sf::VertexArray& vertices, Entities& entities) {
 	for (int i = 0; i < entities.entityCount; i++) {
 		vertices[i].position.x =
-			entities.moves[i].x;
+			entities.moves[i].position.x;
 		vertices[i].position.y =
-			entities.moves[i].y;
+			entities.moves[i].position.y;
+	}
+}
+
+void queueVertexData(ThreadPoolManager& tm, sf::VertexArray* vertices, Entities& entities) {
+	for (int i = 0; i < tm.threadCount; i++) { // For every thread
+		tm.queueJob({ 3, true, [&vertices, &entities, &tm, i] { setVertexDataThreaded(vertices, entities, tm.threadCount, i); } });
+	}
+}
+
+//Dev testing
+void setVertexDataCollision(sf::VertexArray& vertices, Entities& entities) {
+	int vertexCounter = 0;
+	for (int i = 0; i < entities.entityCount; i++) {
+		vertices[vertexCounter].position.x =
+			entities.collisions[i].targetPosition.x;
+		vertices[vertexCounter].position.y =
+			entities.collisions[i].targetPosition.y;
+		vertices[vertexCounter +1].position.x =
+			entities.moves[i].position.x;
+		vertices[vertexCounter +1].position.y =
+			entities.moves[i].position.y;
+		vertexCounter += 2;
 	}
 }
 
@@ -83,7 +107,7 @@ int main() {
 	//}
 
 	sf::VertexArray* mapArray = generateShape(map);
-	
+
 	sf::Transform mapTransform;
 	mapTransform.scale(10, 10);
 	/*
@@ -95,9 +119,16 @@ int main() {
 	// THREADS
 	//int threadCount = 10;
 	//std::vector<std::thread> threads;
-	//ThreadPoolManager tmanager;
-	//task vertexData = { false, [&vertices, &entities] {setVertexData(vertices,entities); } };
-	//task simEnts = { false, [&entities, &deltaTime] {simulateEntitiesOnGPU(entities, deltaTime); } };
+	ThreadPoolManager tmanager;
+	task vertexData = { 3, true, [&vertices, &entities] {setVertexData(vertices,entities); } };
+	task simEnts = { 2, true, [&entities, &itemGrid, &deltaTime] {simulateEntitiesOnGPU(entities, itemGrid, deltaTime); } };
+	task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
+
+	//TESTING BOUNDARY COLLISION
+	sf::VertexArray collisionv(sf::Lines, entities.entityCount*2);
+	for (int i = 0; i < entities.entityCount*2; i+=2) {
+		collisionv[i].color = sf::Color::Green;
+	}
 
 	while (window.isOpen()) {
 		// FPS
@@ -132,10 +163,14 @@ int main() {
 		//printf("%f -> ", entities.positions[0].x);
 		simulateEntitiesOnGPU(entities, itemGrid, deltaTime);
 		setVertexData(vertices, entities);
+		setVertexDataCollision(collisionv, entities);
 
-		//tmanager.queueJob(simEnts);
+		//simulateEntitiesOnGPU(entities, deltaTime);
+		//setVertexData(vertices, entities);
+		tmanager.queueJob(simEnts);
+		//tmanager.join();
+		queueVertexData(tmanager, &vertices, entities);
 		//tmanager.queueJob(vertexData);
-
 		/*
 		for (int i = 0; i < threadCount; i++) {
 			threads.push_back(std::thread(setVertexDataThreaded, &vertices, &entities, threadCount, i));
@@ -147,9 +182,12 @@ int main() {
 		threads.clear();
 		*/
 		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
+		while (!tmanager.queueEmpty()) {}
 		window.draw(vertices);
+		window.draw(collisionv);
 		window.draw(*mapArray, mapTransform);
 		//window.draw(shape, mapTransform);
+		//tmanager.queueJob(drawFrame);
 		//printf("%f\n", entities.positions[0].x);
 
 		//printf("%d\n", fps);
