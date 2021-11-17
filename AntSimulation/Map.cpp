@@ -16,12 +16,6 @@
 using namespace std;
 #include "Map.cuh"
 
-#include <string>
-#include <iostream>
-#include <chrono>
-#include <cstdlib>
-#include <queue>
-
 void initArray(Map& map);
 void initBlankMap(Map& map, int height, int width);
 void generateMap(Map& map);
@@ -36,14 +30,8 @@ int getNeighbourWallCount(Map& map, int x, int y, int delta);
 //Timing Data
 bool enableTiming = true;
 
-void initMap(Map& map) {
-	map.height = 100;
-	map.width = 100;
-	map.percentFill = 50;
 
-	initMap(map, map.height, map.width);
-}
-void initMap(Map& map,int height, int width) {
+void createMap(Map& map, int width, int height) {
 	map.height = height;
 	map.width = width;
 	map.percentFill = 48;
@@ -51,7 +39,7 @@ void initMap(Map& map,int height, int width) {
 	std::chrono::steady_clock::time_point t1;
 	std::chrono::steady_clock::time_point t2;
 	float deltaTime;
-	if(enableTiming)
+	if (enableTiming)
 		cout << "\nMAP GENERATION" << endl;
 
 	initArray(map);
@@ -63,7 +51,7 @@ void initMap(Map& map,int height, int width) {
 		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
 		cout << "\n   Time to fully generate Map: " << deltaTime << "\n" << endl;
 	}
-	printMap(map);
+	//printMap(map);
 }
 
 

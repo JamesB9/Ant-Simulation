@@ -17,8 +17,21 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <string>
+#include <chrono>
+#include <cstdlib>
+#include <queue>
+
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+#include "Utilities.cuh"
 
 //Pool all render.cpp's here
+
+struct Boundary {
+	Vec2f p1, p2;
+	int ID;
+};
 
 struct Map {
 	int height;
@@ -26,17 +39,10 @@ struct Map {
 	int percentFill;
 
 	int *map;
-
-	inline int* operator[](int i) {
-		if (i >= width * height) {
-			std::cout << "Index out of bounds" << std::endl;
-			// return first element.
-			return &map[0];
-		}
-
-		return &map[i];
-	}
+	Boundary* walls;
+	int wallCount;
 };
+
 struct Coord {
 	int x;
 	int y;
@@ -46,8 +52,13 @@ struct Coord {
 	}
 };
 
-void initMap(Map& map);
-void initMap(Map& map, int height, int width);
+Map* makeMapPointer() {
+	Map* map;
+	cudaMallocManaged(&map, sizeof(Map));
+	return map;
+};
+
+void createMap(Map& map, int width, int height);
 
 void printMap(Map& map);
 

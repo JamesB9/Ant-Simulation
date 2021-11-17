@@ -14,8 +14,6 @@
 // 
 //////////////////////////// 80 columns wide //////////////////////////////////
 #include "EntitySystem.cuh"
-#include "Utilities.cuh"
-
 
 MoveComponent* createMoveComponentArray(int n) {
 	MoveComponent* nArray;
@@ -93,14 +91,15 @@ __device__ void sniff(MoveComponent& move, SniffComponent& sniff, float deltaTim
 	
 }
 
-__device__ void detectWall(MoveComponent& move, CollisionComponent& collision, float deltaTime) {
+__device__ void detectWall(MoveComponent& move, CollisionComponent& collision, Map* map, float deltaTime) {
 	//Notes for wall detection
 	//Cast ray out from and until you hit a 1 in the map
 	//if distance from wall to ant is small enough
 	//	1. Get the angle between the ant and the wall (1) OR Screen Border
 	//	2. invert that angle based on what side of the wall you are on, find the inverse point (mirrored position) of the ant
 	//	3. push that new location to the move function for turning
-	Vec2f topLeft = { 0.0f, 0.0f },
+	
+	/*Vec2f topLeft = {0.0f, 0.0f},
 		bottomLeft = { 0.0f, 800.0f },
 		topRight = { 800.0f, 0.0f },
 		bottomRight = { 800.0f, 800.0f };
@@ -109,16 +108,18 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, f
 	Boundary tboundary = { topLeft, topRight, 3 };
 	Boundary bboundary = { bottomLeft, bottomRight, 4 };
 	Boundary boundaries[4] = { lboundary , rboundary , tboundary , bboundary };
-
+	*/
 	//ray position - move.position
 	//ray's angle
 	Vec2f angle = { cos(move.angle),  sin(move.angle) };
+	float targetDistance = 1000000;
 	//printf("at angle: %.2f, %.2f\n", angle.x, angle.y);
-	for (Boundary &wall : boundaries) {
-		const float x1 = wall.p1.x;
-		const float y1 = wall.p1.y;
-		const float x2 = wall.p2.x;
-		const float y2 = wall.p2.y;
+	for (int i = 0; i < map->wallCount; i++) {
+		Boundary& wall = map->walls[i];
+		const float x1 = wall.p1.x * 10.0f;
+		const float y1 = wall.p1.y * 10.0f;
+		const float x2 = wall.p2.x * 10.0f;
+		const float y2 = wall.p2.y * 10.0f;
 
 		const float x3 = move.position.x;
 		const float y3 = move.position.y;
@@ -137,8 +138,14 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, f
 			if (wall.ID == 3) { wall_name = 'T'; }
 			if (wall.ID == 4) { wall_name = 'B'; }
 			//printf("%c\n", wall_name);
-			collision.targetPosition = { x1 + t * (x2 - x1) , y1 + t * (y2 - y1) };
+			Vec2f targetPosition = { x1 + t * (x2 - x1) , y1 + t * (y2 - y1) };
 			collision.avoid = true;
+			float distToTarget = pow(move.position.x - targetPosition.x, 2) + pow(move.position.y - targetPosition.y, 2);
+			if (distToTarget < targetDistance) {
+				collision.targetPosition = targetPosition;
+				collision.avoid = true;
+				targetDistance = distToTarget;
+			}
 		}
 	}
 }
@@ -150,7 +157,8 @@ __global__ void simulateEntities(
 	CollisionComponent* collisions,
 	int entityCount, 
 	float deltaTime,
-	ItemGrid* itemGrid) 
+	ItemGrid* itemGrid,
+	Map* map) 
 {
 	//--RNG--
 	curandState state;
@@ -162,11 +170,11 @@ __global__ void simulateEntities(
 	for (int i = index; i < entityCount; i += stride) { // For Each entity for this thread
 		move(moves[i], &state ,deltaTime);
 		releasePheromone(itemGrid, moves[i], activities[i]);
-		detectWall(moves[i], collisions[i], deltaTime);
+		detectWall(moves[i], collisions[i], map, deltaTime);
 	}
 }
 
-int simulateEntitiesOnGPU(Entities& entities, ItemGrid* itemGrid, float deltaTime) {
+int simulateEntitiesOnGPU(Entities& entities, ItemGrid* itemGrid, Map* map, float deltaTime) {
 	// Run kernel on 1M elements on the CPU
 	int blockSize = 256;
 	int numBlocks = (entities.entityCount + blockSize - 1) / blockSize;
@@ -178,7 +186,8 @@ int simulateEntitiesOnGPU(Entities& entities, ItemGrid* itemGrid, float deltaTim
 		entities.collisions,
 		entities.entityCount, 
 		deltaTime,
-		itemGrid);
+		itemGrid,
+		map);
 
 	// Wait for GPU to finish before accessing on host
 	cudaDeviceSynchronize();

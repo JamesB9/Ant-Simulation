@@ -36,9 +36,8 @@ void addCase8(std::vector<sf::Vector2f>& vertices, float x, float y, float inc) 
 	vertices.push_back(sf::Vector2f(x + inc / 2, y));
 }
 
-sf::VertexArray* generateShape(Map& map) {
-	//sf::ConvexShape* shape = new sf::ConvexShape();
-	std::vector<sf::Vector2f> vertices;
+std::vector<sf::Vector2f>* generateMapVertices(Map& map) {
+	std::vector<sf::Vector2f>* vertices = new std::vector<sf::Vector2f>();
 
 
 	for (int y = 0; y < map.height; y++) {
@@ -63,51 +62,51 @@ sf::VertexArray* generateShape(Map& map) {
 				break;
 			case 1:
 				// bl triangle
-				addCase1(vertices, x, y, inc);
+				addCase1(*vertices, x, y, inc);
 				break;
 			case 2:
 				// br triangle
-				addCase2(vertices, x, y, inc);
+				addCase2(*vertices, x, y, inc);
 				break;
 			case 3:
 				// bl + br rect
-				addCase3(vertices, x, y, inc);
+				addCase3(*vertices, x, y, inc);
 				break;
 			case 4:
 				// tr triangle
-				addCase4(vertices, x, y, inc);
+				addCase4(*vertices, x, y, inc);
 				break;
 			case 5:
-				addCase8(vertices, x, y, inc);
-				addCase2(vertices, x, y, inc);
+				addCase8(*vertices, x, y, inc);
+				addCase2(*vertices, x, y, inc);
 				break;
 			case 6:
-				addCase6(vertices, x, y, inc);
+				addCase6(*vertices, x, y, inc);
 				break;
 			case 7:
-				addCase8(vertices, x, y, inc);
+				addCase8(*vertices, x, y, inc);
 				break;
 			case 8:
-				addCase8(vertices, x, y, inc);
+				addCase8(*vertices, x, y, inc);
 				break;
 			case 9:
-				addCase6(vertices, x, y, inc);
+				addCase6(*vertices, x, y, inc);
 				break;
 			case 10:
-				addCase1(vertices, x, y, inc);
-				addCase4(vertices, x, y, inc);
+				addCase1(*vertices, x, y, inc);
+				addCase4(*vertices, x, y, inc);
 				break;
 			case 11:
-				addCase4(vertices, x, y, inc);
+				addCase4(*vertices, x, y, inc);
 				break;
 			case 12:
-				addCase3(vertices, x, y, inc);
+				addCase3(*vertices, x, y, inc);
 				break;
 			case 13:
-				addCase2(vertices, x, y, inc);
+				addCase2(*vertices, x, y, inc);
 				break;
 			case 14:
-				addCase1(vertices, x, y, inc);
+				addCase1(*vertices, x, y, inc);
 				break;
 			case 15:
 				break;
@@ -115,6 +114,10 @@ sf::VertexArray* generateShape(Map& map) {
 		}
 	}
 
+	return vertices;
+}
+
+sf::VertexArray* getVArrayFromVertices(std::vector<sf::Vector2f> vertices) {
 	sf::VertexArray* vArray = new sf::VertexArray(sf::Lines, vertices.size());
 	for (sf::Vector2f v : vertices) {
 		vArray->append(sf::Vertex(v, sf::Color::White));
@@ -123,5 +126,11 @@ sf::VertexArray* generateShape(Map& map) {
 	return vArray;
 }
 
+Vec2f* getVec2fFromVertices(std::vector<sf::Vector2f> vertices) {
+	Vec2f* vArray = (Vec2f*) malloc(vertices.size() * sizeof(Vec2f));
+	for (int i = 0; i < vertices.size(); i++) {
+		vArray[i] = {vertices[i].x, vertices[i].y};
+	}
 
-
+	return vArray;
+}

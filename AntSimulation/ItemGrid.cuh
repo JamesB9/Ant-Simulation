@@ -15,12 +15,10 @@
 //////////////////////////// 80 columns wide //////////////////////////////////
 #pragma once
 
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-
-#include "Components.cuh"
 #include "stdio.h"
 #include "math.h"
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 
 #define HOME_PHEROMONE 0;
 #define FOOD_PHEROMONE 1;

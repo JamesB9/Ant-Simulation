@@ -13,6 +13,7 @@
 // 
 // 
 //////////////////////////// 80 columns wide //////////////////////////////////
+#pragma once
 #include "ItemGrid.cuh"
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>

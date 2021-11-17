@@ -14,15 +14,13 @@
 //
 //////////////////////////// 80 columns wide //////////////////////////////////
 #pragma once
-#include "EntitySystem.cuh"
-#include "ItemGrid.cuh"
 #include <SFML/Graphics.hpp>
 #include <thread>
 #include <iostream>
-#include "GridRenderer.hpp"
 
+#include "GridRenderer.hpp"
+#include "EntitySystem.cuh"
 #include "ThreadPoolManager.h"
-#include "Map.cuh"
 #include "MarchingSquares.hpp"
 
 
@@ -98,16 +96,19 @@ int main() {
 	GridRenderer gridRenderer(itemGrid);
 
 	//Map
-	Map map;
-	initMap(map, 80, 80);
+	Map* map = makeMapPointer();
+	createMap(*map, 80, 80);
 	//for (int x = 0; x < map.width; x++) {
 	//	for (int y = 0; y < map.height; y++) {
 	//		std::cout << getMapValueAt(map, x, y) << " = " << map[x][y] << std::endl;
 	//	}
 	//}
+	std::vector<sf::Vector2f>* mapVertices = generateMapVertices(*map);
 
-	sf::VertexArray* mapArray = generateShape(map);
+	map->walls = getBoundariesFromVec2f(getVec2fFromVertices(*mapVertices), mapVertices->size());
+	map->wallCount = mapVertices->size() / 2;
 
+	sf::VertexArray* mapArray = getVArrayFromVertices(*mapVertices);
 	sf::Transform mapTransform;
 	mapTransform.scale(10, 10);
 	/*
@@ -119,10 +120,10 @@ int main() {
 	// THREADS
 	//int threadCount = 10;
 	//std::vector<std::thread> threads;
-	ThreadPoolManager tmanager;
-	task vertexData = { 3, true, [&vertices, &entities] {setVertexData(vertices,entities); } };
-	task simEnts = { 2, true, [&entities, &itemGrid, &deltaTime] {simulateEntitiesOnGPU(entities, itemGrid, deltaTime); } };
-	task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
+	//ThreadPoolManager tmanager;
+	//task vertexData = { 3, true, [&vertices, &entities] {setVertexData(vertices,entities); } };
+	//task simEnts = { 2, true, [&entities, &itemGrid, &deltaTime] {simulateEntitiesOnGPU(entities, itemGrid, deltaTime); } };
+	//task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
 
 	//TESTING BOUNDARY COLLISION
 	sf::VertexArray collisionv(sf::Lines, entities.entityCount*2);
@@ -161,15 +162,15 @@ int main() {
 		//gridRenderer.render(&window);
 
 		//printf("%f -> ", entities.positions[0].x);
-		simulateEntitiesOnGPU(entities, itemGrid, deltaTime);
+		simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime);
 		setVertexData(vertices, entities);
-		setVertexDataCollision(collisionv, entities);
+		//setVertexDataCollision(collisionv, entities);
 
 		//simulateEntitiesOnGPU(entities, deltaTime);
 		//setVertexData(vertices, entities);
-		tmanager.queueJob(simEnts);
+		//tmanager.queueJob(simEnts);
 		//tmanager.join();
-		queueVertexData(tmanager, &vertices, entities);
+		//queueVertexData(tmanager, &vertices, entities);
 		//tmanager.queueJob(vertexData);
 		/*
 		for (int i = 0; i < threadCount; i++) {
@@ -182,15 +183,15 @@ int main() {
 		threads.clear();
 		*/
 		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
-		while (!tmanager.queueEmpty()) {}
+		//while (!tmanager.queueEmpty()) {}
 		window.draw(vertices);
-		window.draw(collisionv);
+		//window.draw(collisionv);
 		window.draw(*mapArray, mapTransform);
 		//window.draw(shape, mapTransform);
 		//tmanager.queueJob(drawFrame);
 		//printf("%f\n", entities.positions[0].x);
 
-		//printf("%d\n", fps);
+		printf("%d\n", fps);
 		// Update the window
 		window.setView(view);
 		window.display();
