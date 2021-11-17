@@ -117,61 +117,56 @@ void smoothMap(Map& map) {
 	}
 };
 void floodFill(Map& map) {
-	Map visitedMap;
-	initBlankMap(visitedMap, map.height, map.height);
-	//memcpy(visitedMap.map, map.map, map.height * map.width * sizeof(int));
-	arrayCopy(map, visitedMap);
+	Map visited;
 
-	for (int i = 0; i < map.height; i++) {
-		for (int j = 0; j < map.width; j++) {
-			if (getMapValueAt(visitedMap,i,j) == 0) {
+	initBlankMap(visited, map.height, map.height);
+	arrayCopy(map, visited);
 
+	for (int i = 0; i < map.width; i++) {
+		for (int j = 0; j < map.height; j++) {
+			if (getMapValueAt(visited, i, j) == 0) {
 				cout << i << "," << j << endl;
-
 				Coord coord = Coord(i, j);
 				std::queue<Coord> coordQueue;
 				std::queue<Coord> visitedQueue;
+
 				coordQueue.push(coord);
 				visitedQueue.push(coord);
-
 				while (coordQueue.size() != 0) {
 					Coord coord = coordQueue.front();
 					coordQueue.pop();
 					int x = coord.x;
 					int y = coord.y;
 
-					setMapValueAt(visitedMap, y, x - 1, 1);
-
-					if ((x - 1 >= 0) && getMapValueAt(visitedMap, y, x - 1) == 0) {
+					if ((x - 1 >= 0) && getMapValueAt(visited, x-1, y) == 0) {
 						//cout << "add left" << endl;
 						coordQueue.push(Coord(x - 1, y));
 						visitedQueue.push(Coord(x - 1, y));
-						setMapValueAt(visitedMap, y, x - 1, 1);
+						setMapValueAt(visited, x-1,y, 1);
 					}
-					if ((x + 1 < map.width) && getMapValueAt(visitedMap, y, x + 1) == 0) {
+					if ((x + 1 < map.width) && getMapValueAt(visited, x + 1, y) == 0) {
 						//cout << "add right" << endl;
 						coordQueue.push(Coord(x + 1, y));
 						visitedQueue.push(Coord(x + 1, y));
-						setMapValueAt(visitedMap, y, x + 1, 1);
+						setMapValueAt(visited, x + 1, y, 1);
 					}
-					if ((y - 1 >= 0) && getMapValueAt(visitedMap, y - 1, x) == 0) {
+					if ((y - 1 >= 0) && getMapValueAt(visited, x, y - 1) == 0) {
 						//cout << "add up" << endl;
 						coordQueue.push(Coord(x, y - 1));
 						visitedQueue.push(Coord(x, y - 1));
-						setMapValueAt(visitedMap,  y - 1, x, 1);
+						setMapValueAt(visited, x, y - 1, 1);
 					}
-					if ((y + 1 < map.height) && getMapValueAt(visitedMap, y + 1, x) == 0) {
+					if ((y + 1 < map.height) && getMapValueAt(visited, x, y + 1) == 0) {
 						//cout << "add down" << endl;
 						coordQueue.push(Coord(x, y + 1));
 						visitedQueue.push(Coord(x, y + 1));
-						setMapValueAt(visitedMap,  y + 1, x, 1);
+						setMapValueAt(visited, x, y + 1, 1);
 					}
 				}
 				cout << visitedQueue.size() << endl;
 				if (visitedQueue.size() <= 80) {//remove all areas smaller than 20
 					while (visitedQueue.size() != 0) {
 						Coord coord = visitedQueue.front();
-						//cout << coord.x << "," << coord.y << endl;
 						visitedQueue.pop();
 						setMapValueAt(map, coord.x, coord.y, 1);
 					}
