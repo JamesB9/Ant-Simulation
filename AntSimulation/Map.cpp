@@ -33,29 +33,43 @@ int getNeighbourWallCount(Map& map, int x, int y, int delta);
 
 //need to define in .h file
 
+//Timing Data
+bool enableTiming = true;
+
 void initMap(Map& map) {
 	map.height = 100;
 	map.width = 100;
 	map.percentFill = 50;
 
-	initArray(map);
-	generateMap(map);
-	printMap(map);
+	initMap(map, map.height, map.width);
 }
 void initMap(Map& map,int height, int width) {
 	map.height = height;
 	map.width = width;
 	map.percentFill = 48;
 
+	std::chrono::steady_clock::time_point t1;
+	std::chrono::steady_clock::time_point t2;
+	float deltaTime;
+	if(enableTiming)
+		cout << "\nMAP GENERATION" << endl;
+
 	initArray(map);
+	if (enableTiming)
+		t1 = std::chrono::high_resolution_clock::now();
 	generateMap(map);
-	printMap(map);
+	if (enableTiming) {
+		t2 = std::chrono::high_resolution_clock::now();
+		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
+		cout << "\n   Time to fully generate Map: " << deltaTime << "\n" << endl;
+	}
+	//printMap(map);
 }
 
 
 void generateMap(Map& map) {
 
-	bool enableTiming = true;
+	
 	std::chrono::steady_clock::time_point t1;
 	std::chrono::steady_clock::time_point t2;
 	float deltaTime;
@@ -81,9 +95,14 @@ void generateMap(Map& map) {
 			cout << "   Smooth Map (" << i << "):           " << deltaTime << endl;
 		}
 	}
+	if(enableTiming)
+		t1 = std::chrono::high_resolution_clock::now();
 	floodFill(map);
-	printMap(map);
-
+	if (enableTiming) {
+		t2 = std::chrono::high_resolution_clock::now();
+		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
+		cout << "   Flood Fill:               " << deltaTime << endl;
+	}
 };
 
 void fillMap(Map& map) {
@@ -125,7 +144,11 @@ void floodFill(Map& map) {
 	for (int i = 0; i < map.width; i++) {
 		for (int j = 0; j < map.height; j++) {
 			if (getMapValueAt(visited, i, j) == 0) {
-				cout << i << "," << j << endl;
+
+
+				//cout << i << "," << j << endl;
+
+
 				Coord coord = Coord(i, j);
 				std::queue<Coord> coordQueue;
 				std::queue<Coord> visitedQueue;
@@ -163,7 +186,11 @@ void floodFill(Map& map) {
 						setMapValueAt(visited, x, y + 1, 1);
 					}
 				}
-				cout << visitedQueue.size() << endl;
+
+
+				//cout << visitedQueue.size() << endl;
+
+
 				if (visitedQueue.size() <= 80) {//remove all areas smaller than 20
 					while (visitedQueue.size() != 0) {
 						Coord coord = visitedQueue.front();
