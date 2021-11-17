@@ -22,27 +22,22 @@
 
 //CUDA Based Utilities
 
-__device__ float cudaRand(unsigned int seed, float start, float end) {
-	//int idx = threadIdx.x + blockDim.x * blockIdx.x;
-	curandState_t state;
-	curand_init(seed,
-		blockIdx.x,
-		0,
-		&state
-	);
-	//Cuda random function
-	float randomf = curand_uniform(&state);
-	randomf *= (end - start + 0.999999);
-	randomf += start;
-
+__device__ float cudaRand(curandState* state) {
+	float randomf = curand_uniform(state);
 	return randomf;
 };
 
-__device__ Vec2f randomInsideUnitCircle(unsigned int seed) {
-	Vec2f out;
-	out.x = cudaRand(seed, -1.0f, 1.0f);
-	out.y = cudaRand(seed, -1.0f, 1.0f);
-	return out;
+__device__ Vec2f randomInsideUnitCircle(curandState* state) {
+	
+	//a = distance from origin (0,0) from -1 to +1
+	//r = angle from 0-360 degrees
+	float a, r;
+	a = (cudaRand(state) * 2.0f) - 1.0f;
+	//r = cudaRand(state) * 360.0f;
+	r = (cudaRand(state) * 360.0f);
+
+	return { 0.0f + (a * cos(r)), 0.0f + (a * sin(r)) };
+	//return { a, r };
 }
 
 __device__ Vec2f clamp(Vec2f v, float max) {

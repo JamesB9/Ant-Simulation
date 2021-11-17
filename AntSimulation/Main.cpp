@@ -49,6 +49,22 @@ void queueVertexData(ThreadPoolManager& tm, sf::VertexArray* vertices, Entities&
 	}
 }
 
+//Dev testing
+void setVertexDataCollision(sf::VertexArray& vertices, Entities& entities) {
+	int vertexCounter = 0;
+	for (int i = 0; i < entities.entityCount; i++) {
+		vertices[vertexCounter].position.x =
+			entities.collisions[i].targetPosition.x;
+		vertices[vertexCounter].position.y =
+			entities.collisions[i].targetPosition.y;
+		vertices[vertexCounter +1].position.x =
+			entities.moves[i].position.x;
+		vertices[vertexCounter +1].position.y =
+			entities.moves[i].position.y;
+		vertexCounter += 2;
+	}
+}
+
 int main() {
 	// Window
 
@@ -92,13 +108,19 @@ int main() {
 	task simEnts = { 2, true, [&entities, &itemGrid, &deltaTime] {simulateEntitiesOnGPU(entities, itemGrid, deltaTime); } };
 	task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
 
+	//TESTING BOUNDARY COLLISION
+	sf::VertexArray collisionv(sf::Lines, entities.entityCount*2);
+	for (int i = 0; i < entities.entityCount*2; i+=2) {
+		collisionv[i].color = sf::Color::Green;
+	}
+
 	while (window.isOpen()) {
 		// FPS
 		deltaTime = deltaClock.restart().asSeconds();
 		int fps = 1 / deltaTime;
 
 		// SCREEN CLEAR
-		window.clear(sf::Color(255, 255, 255));
+		window.clear(sf::Color(50, 50, 50));
 
 		// Process events
 		sf::Event event;
@@ -119,12 +141,13 @@ int main() {
 		//for (int i = 0; i < 100; i++) {
 		//	float f = itemGrid.worldCells[i].foodCount;
 		//}
-		gridRenderer.update(*itemGrid);
-		gridRenderer.render(&window);
+		//gridRenderer.update(*itemGrid);
+		//gridRenderer.render(&window);
 
 		//printf("%f -> ", entities.positions[0].x);
 		simulateEntitiesOnGPU(entities, itemGrid, deltaTime);
 		setVertexData(vertices, entities);
+		setVertexDataCollision(collisionv, entities);
 
 		//simulateEntitiesOnGPU(entities, deltaTime);
 		//setVertexData(vertices, entities);
@@ -145,6 +168,7 @@ int main() {
 		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
 		while (!tmanager.queueEmpty()) {}
 		window.draw(vertices);
+		window.draw(collisionv);
 		//tmanager.queueJob(drawFrame);
 		//printf("%f\n", entities.positions[0].x);
 

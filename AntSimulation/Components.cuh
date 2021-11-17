@@ -19,6 +19,8 @@
 
 #include <math.h>
 #include <iostream>
+#include "curand.h"
+#include "curand_kernel.h"
 
 struct Vec2f {
     float x, y;
@@ -38,15 +40,15 @@ struct Vec2f {
         return { x / a, y / a };
     }
 
-    __host__ __device__ Vec2f operator+(Vec2f& a) {
+    __host__ __device__ Vec2f operator+(Vec2f a) {
         return { x + a.x, y + a.y };
     }
 
-    __host__ __device__ Vec2f operator-(Vec2f& a) {
+    __host__ __device__ Vec2f operator-(Vec2f a) {
         return { x - a.x, y - a.y };
     }
 
-    __host__ __device__ Vec2f operator+=(Vec2f& a) {
+    __host__ __device__ Vec2f operator+=(Vec2f a) {
         this->x += a.x;
         this->y += a.y;
 
@@ -61,16 +63,27 @@ struct Vec2f {
     }
 };
 
+struct Boundary {
+    Vec2f p1, p2;
+    int ID;
+};
+
 struct MoveComponent
 {
     Vec2f position;
     Vec2f velocity, direction;
-    float maxSpeed, turningForce;
+    float angle, maxSpeed, turningForce, roamStrength;
 };
 
 struct SniffComponent
 {
     float sniffMaxDistance;
+};
+
+struct CollisionComponent {
+    bool avoid; //Whether or not to follow targetPosition
+    Vec2f targetPosition; //Position for ant to priorities
+    float rayCastDistance;
 };
 
 struct ActivityComponent
