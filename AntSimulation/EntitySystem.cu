@@ -91,6 +91,20 @@ __device__ void sniff(MoveComponent& move, SniffComponent& sniff, float deltaTim
 	
 }
 
+__device__ void bounceOffWall(MoveComponent& move, Map* map, float deltaTime) {
+	int x = (int)(move.position.x / 10.0f);
+	int y = (int)(move.position.y / 10.0f);
+	int cell = map->map[(y * map->width) + x];//getMapValueAt(*map, move.position.x/10, move.position.y/10);
+	//if (cell) {
+		//move.direction.x -= M_PI;
+		//move.direction.y -= M_PI;
+		//move.position.x -= move.velocity.x * deltaTime;
+		//move.position.y -= move.velocity.y * deltaTime;
+		//move.velocity.x *= -1;
+		//move.velocity.y *= -1;
+	//}
+}
+
 __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, Map* map, float deltaTime) {
 	//Notes for wall detection
 	//Cast ray out from and until you hit a 1 in the map
@@ -114,6 +128,7 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, M
 	Vec2f angle = { cos(move.angle),  sin(move.angle) };
 	float targetDistance = 1000000;
 	//printf("at angle: %.2f, %.2f\n", angle.x, angle.y);
+	
 	for (int i = 0; i < map->wallCount; i++) {
 		Boundary& wall = map->walls[i];
 		const float x1 = wall.p1.x * 10.0f;
@@ -151,11 +166,7 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, M
 }
 
 __global__ void simulateEntities(
-	MoveComponent* moves, 
-	SniffComponent* sniffs,
-	ActivityComponent* activities,
-	CollisionComponent* collisions,
-	int entityCount, 
+	Entities* entities, 
 	float deltaTime,
 	ItemGrid* itemGrid,
 	Map* map) 
@@ -167,24 +178,21 @@ __global__ void simulateEntities(
 
 	int index = blockIdx.x * blockDim.x + threadIdx.x; // Index of the current thread within its block
 	int stride = blockDim.x * gridDim.x; // Number of threads in the block
-	for (int i = index; i < entityCount; i += stride) { // For Each entity for this thread
-		move(moves[i], &state ,deltaTime);
-		releasePheromone(itemGrid, moves[i], activities[i]);
-		detectWall(moves[i], collisions[i], map, deltaTime);
+	for (int i = index; i < entities->entityCount; i += stride) { // For Each entity for this thread
+		move(entities->moves[i], &state ,deltaTime);
+		releasePheromone(itemGrid, entities->moves[i], entities->activities[i]);
+		//detectWall(entities->moves[i], entities->collisions[i], map, deltaTime);
+		bounceOffWall(entities->moves[i], map, deltaTime);
 	}
 }
 
-int simulateEntitiesOnGPU(Entities& entities, ItemGrid* itemGrid, Map* map, float deltaTime) {
+int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, float deltaTime) {
 	// Run kernel on 1M elements on the CPU
 	int blockSize = 256;
-	int numBlocks = (entities.entityCount + blockSize - 1) / blockSize;
+	int numBlocks = (entities->entityCount + blockSize - 1) / blockSize;
 	
 	simulateEntities << <numBlocks, blockSize >> > (
-		entities.moves, 
-		entities.sniffs, 
-		entities.activities,
-		entities.collisions,
-		entities.entityCount, 
+		entities, 
 		deltaTime,
 		itemGrid,
 		map);
@@ -197,29 +205,33 @@ int simulateEntitiesOnGPU(Entities& entities, ItemGrid* itemGrid, Map* map, floa
 	return 0;
 }
 
-int initEntities(Entities& entities) {
-	entities.moves = createMoveComponentArray(entities.entityCount);
-	entities.sniffs = createSniffComponentArray(entities.entityCount);
-	entities.activities = createActivityComponentArray(entities.entityCount);
-	entities.collisions = createCollisionComponentArray(entities.entityCount);
+Entities* initEntities(int entityCount) {
+	Entities* entities;
+	cudaMallocManaged(&entities, sizeof(Entities));
+	entities->entityCount = entityCount;
 
-	for (unsigned int i = 0; i < entities.entityCount; i++) {
-		entities.sniffs[i].sniffMaxDistance = 5;
-		entities.activities[i].currentActivity = LEAVING_HOME;
+	entities->moves = createMoveComponentArray(entities->entityCount);
+	entities->sniffs = createSniffComponentArray(entities->entityCount);
+	entities->activities = createActivityComponentArray(entities->entityCount);
+	entities->collisions = createCollisionComponentArray(entities->entityCount);
 
-		entities.moves[i].position = { 400.0f, 400.0f };
-		entities.moves[i].direction = 0.0f;
-		entities.moves[i].velocity = { 0.0f, 0.0f };
-		entities.moves[i].maxSpeed = 10.0f;
-		entities.moves[i].turningForce = entities.moves[i].maxSpeed * 10.0f;
-		entities.moves[i].roamStrength = 2.5f;//2.5f;
+	for (unsigned int i = 0; i < entities->entityCount; i++) {
+		entities->sniffs[i].sniffMaxDistance = 5;
+		entities->activities[i].currentActivity = LEAVING_HOME;
 
-		entities.collisions[i].rayCastDistance = 10.0f;
-		entities.collisions[i].avoid = false;
-		entities.collisions[i].targetPosition = {0.0f, 0.0f};
+		entities->moves[i].position = { 400.0f, 400.0f };
+		entities->moves[i].direction = 0.0f;
+		entities->moves[i].velocity = { 0.0f, 0.0f };
+		entities->moves[i].maxSpeed = 10.0f;
+		entities->moves[i].turningForce = entities->moves[i].maxSpeed * 10.0f;
+		entities->moves[i].roamStrength = 2.5f;//2.5f;
+
+		entities->collisions[i].rayCastDistance = 10.0f;
+		entities->collisions[i].avoid = false;
+		entities->collisions[i].targetPosition = {0.0f, 0.0f};
 	}
 
-	return 0;
+	return entities;
 }
 /*
 int main() {

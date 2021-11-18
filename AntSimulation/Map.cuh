@@ -52,13 +52,19 @@ struct Coord {
 	}
 };
 
-Map* makeMapPointer() {
+Map* makeMapPointer(int width, int height) {
 	Map* map;
 	cudaMallocManaged(&map, sizeof(Map));
+
+	map->width = width;
+	map->height = height;
+	int* intMap;
+	cudaMallocManaged(&intMap, sizeof(int) * width * height);
+	map->map = intMap;
 	return map;
 };
 
-void createMap(Map& map, int width, int height);
+void createMap(Map* map, int width, int height);
 
 void printMap(Map& map);
 

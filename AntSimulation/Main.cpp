@@ -83,10 +83,9 @@ int main() {
 
 	// SETUP SIMULATION
 	//ents
-	Entities entities;
-	initEntities(entities);
-	sf::VertexArray vertices(sf::Points, entities.entityCount);
-	for (int i = 0; i < entities.entityCount; i++) {
+	Entities* entities = initEntities(100);
+	sf::VertexArray vertices(sf::Points, entities->entityCount);
+	for (int i = 0; i < entities->entityCount; i++) {
 		vertices[i].color = sf::Color::Red;
 	}
 	//itemGrid
@@ -96,8 +95,8 @@ int main() {
 	GridRenderer gridRenderer(itemGrid);
 
 	//Map
-	Map* map = makeMapPointer();
-	createMap(*map, 80, 80);
+	Map* map = makeMapPointer(80, 80);
+	createMap(map, 80, 80);
 	//for (int x = 0; x < map.width; x++) {
 	//	for (int y = 0; y < map.height; y++) {
 	//		std::cout << getMapValueAt(map, x, y) << " = " << map[x][y] << std::endl;
@@ -126,8 +125,8 @@ int main() {
 	//task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
 
 	//TESTING BOUNDARY COLLISION
-	sf::VertexArray collisionv(sf::Lines, entities.entityCount*2);
-	for (int i = 0; i < entities.entityCount*2; i+=2) {
+	sf::VertexArray collisionv(sf::Lines, entities->entityCount*2);
+	for (int i = 0; i < entities->entityCount*2; i+=2) {
 		collisionv[i].color = sf::Color::Green;
 	}
 
@@ -163,7 +162,7 @@ int main() {
 
 		//printf("%f -> ", entities.positions[0].x);
 		simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime);
-		setVertexData(vertices, entities);
+		setVertexData(vertices, *entities);
 		//setVertexDataCollision(collisionv, entities);
 
 		//simulateEntitiesOnGPU(entities, deltaTime);

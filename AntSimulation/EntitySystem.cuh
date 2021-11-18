@@ -29,5 +29,5 @@ MoveComponent* createMoveComponentArray(int n);
 SniffComponent* createSniffComponentArray(int n);
 ActivityComponent* createActivityComponentArray(int n);
 
-int initEntities(Entities& entities);
-int simulateEntitiesOnGPU(Entities& entities, ItemGrid* itemGrid, Map* map, float deltaTime);
+Entities* initEntities(int entityCount);
+int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, float deltaTime);

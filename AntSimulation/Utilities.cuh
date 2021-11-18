@@ -74,8 +74,8 @@ __device__ Vec2f randomInsideUnitCircle(curandState* state) {
 	//r = angle from 0-360 degrees
 	float a, r;
 	a = (cudaRand(state) * 2.0f) - 1.0f;
-	//r = cudaRand(state) * 360.0f;
-	r = (cudaRand(state) * 360.0f);
+	r = cudaRand(state) * 360.0f;
+
 
 	return { 0.0f + (a * (float)cos(r)), 0.0f + (a * (float)sin(r)) };
 	//return { a, r };

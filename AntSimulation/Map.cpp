@@ -16,8 +16,8 @@
 using namespace std;
 #include "Map.cuh"
 
-void initArray(Map& map);
-void initBlankMap(Map& map, int height, int width);
+void initArray(Map* map);
+void initBlankMap(Map* map, int height, int width);
 void generateMap(Map& map);
 void fillMap(Map& map);
 void smoothMap(Map& map);
@@ -31,10 +31,10 @@ int getNeighbourWallCount(Map& map, int x, int y, int delta);
 bool enableTiming = true;
 
 
-void createMap(Map& map, int width, int height) {
-	map.height = height;
-	map.width = width;
-	map.percentFill = 48;
+void createMap(Map* map, int width, int height) {
+	map->height = height;
+	map->width = width;
+	map->percentFill = 48;
 
 	std::chrono::steady_clock::time_point t1;
 	std::chrono::steady_clock::time_point t2;
@@ -45,7 +45,8 @@ void createMap(Map& map, int width, int height) {
 	initArray(map);
 	if (enableTiming)
 		t1 = std::chrono::high_resolution_clock::now();
-	generateMap(map);
+	generateMap(*map);
+	//printf("HELLO");
 	if (enableTiming) {
 		t2 = std::chrono::high_resolution_clock::now();
 		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
@@ -126,7 +127,7 @@ void smoothMap(Map& map) {
 void floodFill(Map& map) {
 	Map visited;
 
-	initBlankMap(visited, map.height, map.height);
+	initBlankMap(&visited, map.height, map.height);
 	arrayCopy(map, visited);
 
 	for (int i = 0; i < map.width; i++) {
@@ -227,19 +228,20 @@ int getNeighbourWallCount(Map& map, int x, int y, int delta) {
 	//cout << wallCount << endl;
 	return wallCount;
 }
-void initArray(Map& map) {
-	map.map = (int*)malloc(map.height * map.width * sizeof(int));
-	if (map.map) {
-		for (int i = 0; i < (map.height * map.width); i++) {
-			map.map[i] = 0;
+void initArray(Map* map) {
+	//map.map = (int*)malloc(map.height * map.width * sizeof(int));
+	if (map->map) {
+		for (int i = 0; i < (map->height * map->width); i++) {
+			//printf("%d\n", i);
+			map->map[i] = 0;
 		}
 		
 	}
 };
-void initBlankMap(Map& map, int height, int width) {
-	map.height = height;
-	map.width = width;
-	map.percentFill = 0;
+void initBlankMap(Map* map, int height, int width) {
+	map->height = height;
+	map->width = width;
+	map->percentFill = 0;
 	initArray(map);
 }
 
