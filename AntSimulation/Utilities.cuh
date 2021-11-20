@@ -19,7 +19,7 @@
 #include "curand.h"
 #include "curand_kernel.h"
 #define _USE_MATH_DEFINES
-#include <math.h>;
+#include <math.h>
 
 
 struct Vec2f {

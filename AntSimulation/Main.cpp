@@ -146,8 +146,8 @@ int main() {
 	//task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
 
 	//TESTING BOUNDARY COLLISION
-	sf::VertexArray collisionv(sf::Lines, entities.entityCount*4);
-	for (int i = 0; i < entities.entityCount*2; i++) {
+	sf::VertexArray collisionv(sf::Lines, entities->entityCount*4);
+	for (int i = 0; i < entities->entityCount*2; i++) {
 		collisionv[i].color = sf::Color::Green;
 	}
 

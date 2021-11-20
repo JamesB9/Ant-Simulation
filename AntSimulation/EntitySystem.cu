@@ -199,8 +199,8 @@ __global__ void simulateEntities(
 	for (int i = index; i < entities->entityCount; i += stride) { // For Each entity for this thread
 		move(entities->moves[i], &state ,deltaTime);
 		releasePheromone(itemGrid, entities->moves[i], entities->activities[i]);
-		//detectWall(entities->moves[i], entities->collisions[i], map, deltaTime);
-		bounceOffWall(entities->moves[i], map, deltaTime);
+		detectWall(entities->moves[i], entities->collisions[i], map, deltaTime);
+		//bounceOffWall(entities->moves[i], map, deltaTime);
 	}
 }
 
@@ -243,10 +243,10 @@ Entities* initEntities(int entityCount) {
 		entities->moves[i].turningForce = entities->moves[i].maxSpeed * 30.0f;
 		entities->moves[i].roamStrength = 2.5f;//2.5f;
 
-		entities.collisions[i].avoid = false;
-		entities.collisions[i].targetPosition = {0.0f, 0.0f};
-		entities.collisions[i].refractionPosition = { 0.0f, 0.0f };
-		entities.collisions[i].collisionDistance = 25.0f;
+		entities->collisions[i].avoid = false;
+		entities->collisions[i].targetPosition = {0.0f, 0.0f};
+		entities->collisions[i].refractionPosition = { 0.0f, 0.0f };
+		entities->collisions[i].collisionDistance = 25.0f;
 	}
 
 	return entities;
