@@ -44,4 +44,7 @@ struct CollisionComponent {
 struct ActivityComponent
 {
     int currentActivity;
+
+    float timeSinceDrop;
+    float timePerDrop;
 };

@@ -95,20 +95,22 @@ int main() {
 
 	// SETUP SIMULATION
 	//ents
-	Entities* entities = initEntities(10000);
+	Entities* entities = initEntities(1000);
 	sf::VertexArray vertices(sf::Points, entities->entityCount);
 	for (int i = 0; i < entities->entityCount; i++) {
 		vertices[i].color = sf::Color::Red;
 	}
 	//itemGrid
-	ItemGrid* itemGrid = initItemGrid(800, 800);
-	//renderers
-	//Grid
-	GridRenderer gridRenderer(itemGrid);
+	ItemGrid* itemGrid = initItemGrid(160, 160);
 
 	//Map
 	Map* map = makeMapPointer(80, 80);
-	createMap(map, 80, 80);
+	createMap(map);
+
+	//renderers
+	//Grid
+	GridRenderer gridRenderer(itemGrid, map);
+
 	//for (int x = 0; x < map.width; x++) {
 	//	for (int y = 0; y < map.height; y++) {
 	//		std::cout << getMapValueAt(map, x, y) << " = " << map[x][y] << std::endl;
@@ -130,7 +132,7 @@ int main() {
 
 	sf::VertexArray* mapArray = getVArrayFromVertices(*mapVertices);
 	sf::Transform mapTransform;
-	mapTransform.scale(10, 10);
+	//mapTransform.scale(10, 10);
 	/*
 	sf::ConvexShape shape = sf::ConvexShape(mapArray->getVertexCount());
 	for (int i = 0; i < mapArray->getVertexCount(); i++) {
@@ -152,14 +154,15 @@ int main() {
 	}
 
 	while (window.isOpen()) {
-		// FPS
+		////////////// FPS & DELTATIME //////////////
 		deltaTime = deltaClock.restart().asSeconds();
 		int fps = 1 / deltaTime;
+		printf("FPS = %d\n", fps);
 
-		// SCREEN CLEAR
+		////////////// CLEAR SCREEN //////////////
 		window.clear(sf::Color(10, 10, 10));
 
-		// Process events
+		////////////// PROCESS EVENTS //////////////
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -174,17 +177,35 @@ int main() {
 				sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
 				view.setSize(sf::Vector2f(event.size.width, event.size.height));
 			}
-		}
-		//for (int i = 0; i < 100; i++) {
-		//	float f = itemGrid.worldCells[i].foodCount;
-		//}
-		//gridRenderer.update(*itemGrid);
-		//gridRenderer.render(&window);
 
-		//printf("%f -> ", entities.positions[0].x);
+		}
+
+		////////////// CONTROLS //////////////
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) deltaTime = 0; // Pause Simulation
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) view.move(sf::Vector2f(-deltaTime * 100.0f, 0.0f));
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) view.move(sf::Vector2f(deltaTime * 100.0f, 0.0f));
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) view.move(sf::Vector2f(0.0f, -deltaTime * 100.0f));
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) view.move(sf::Vector2f(0.0f, deltaTime * 100.0f));
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) view.zoom(1 + (deltaTime * -2.0f));
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::O)) view.zoom(1 + (deltaTime * 2.0f));
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+			sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+			Cell* cell = getCell(itemGrid, mousePos.x, mousePos.y);
+			cell->foodCount += 1.0f;
+		}
+
+		////////////// PHEROMONE & FOOD RENDERING //////////////
+		gridRenderer.update(*itemGrid, deltaTime);
+
+
+		////////////// SIMULATION //////////////
 		simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime);
 		setVertexData(vertices, *entities);
 		//setVertexDataCollision(collisionv, entities);
+
+
+
+
 
 		//simulateEntitiesOnGPU(entities, deltaTime);
 		//setVertexData(vertices, entities);
@@ -204,15 +225,17 @@ int main() {
 		*/
 		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
 		//while (!tmanager.queueEmpty()) {}
+
+
+		////////////// DRAWING //////////////
+		gridRenderer.render(&window);
 		window.draw(vertices);
 		//window.draw(collisionv);
 		window.draw(*mapArray, mapTransform);
 		//window.draw(shape, mapTransform);
 		//tmanager.queueJob(drawFrame);
-		//printf("%f\n", entities.positions[0].x);
 
-		printf("FPS = %d\n", fps);
-		// Update the window
+		////////////// UPDATE WINDOW //////////////
 		window.setView(view);
 		window.display();
 	}

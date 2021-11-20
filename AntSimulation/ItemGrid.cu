@@ -31,9 +31,12 @@ ItemGrid* initItemGrid(int worldX, int worldY) {
 
 	itemGrid->worldCells = createItemGridCellArray(itemGrid->totalCells);
 	for (int i = 0; i < itemGrid->totalCells; i++) {
-		itemGrid->worldCells[i].foodCount = 32;
+		itemGrid->worldCells[i].foodCount = 0.0f;
 		itemGrid->worldCells[i].pheromones[0] = 0.0f;
 		itemGrid->worldCells[i].pheromones[1] = 0.0f;
+
+		itemGrid->worldCells[i].timePerDrop = 3.0f;
+		itemGrid->worldCells[i].timeSinceDrop = 0.0f;
 	}
 	return itemGrid;
 }
@@ -51,4 +54,27 @@ Cell* getCell(ItemGrid& itemGrid, float x, float y) {
 
 int getCellIndex(ItemGrid& itemGrid, float x, float y) {
 	return (floorf(y) * itemGrid.worldX) + floorf(x);
+}
+
+void updateCell(Cell& cell, float deltaTime) {
+	if (cell.pheromones[0] > 0.0f || cell.pheromones[1] > 0.0f) {
+		cell.timeSinceDrop += deltaTime;
+		if (cell.timeSinceDrop > cell.timePerDrop) {
+			cell.pheromones[0] > 0.1f ? cell.pheromones[0] -= 0.1f : cell.pheromones[0] = 0.0f;
+			cell.pheromones[1] > 0.1f ? cell.pheromones[1] -= 0.1f : cell.pheromones[1] = 0.0f;
+
+			cell.timeSinceDrop = 0.0f;
+		}
+	}
+}
+
+
+int getCellIndex(ItemGrid* itemGrid, float mapx, float mapy) {
+	float widthOfCell = 800.0f / itemGrid->worldX;
+	float heightOfCell = 800.0f / itemGrid->worldY;
+	return (floorf(mapy / heightOfCell) * itemGrid->worldX) + floorf(mapx / widthOfCell);
+}
+
+Cell* getCell(ItemGrid* itemGrid, float mapx, float mapy) {
+	return &itemGrid->worldCells[getCellIndex(itemGrid, mapx, mapy)];
 }

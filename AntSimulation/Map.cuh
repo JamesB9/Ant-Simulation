@@ -63,6 +63,6 @@ void smoothMap(Map& map);
 void floodFill(Map& map);
 void arrayCopy(Map& from, Map& to);
 int getNeighbourWallCount(Map& map, int x, int y, int delta);
-void createMap(Map* map, int width, int height);
+void createMap(Map* map);
 void printMap(Map& map);
 void initArray(Map* map);

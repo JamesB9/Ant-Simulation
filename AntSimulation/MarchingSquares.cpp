@@ -53,60 +53,60 @@ std::vector<sf::Vector2f>* generateMapVertices(Map& map) {
 			int br = (x < map.width - 1 && y < map.height - 1) ? map[x + 1][y + 1] : 1; // bottom right
 			*/
 			//printf("%d, %d, %d, %d", tl, tr, bl, br);
-			float vx = x + 0.5f;
-			float vy = y + 0.5f;
-			float inc = 1.0f;
+			float vx = x * 10.0f;
+			float vy = y * 10.0f;
+			float inc = 1.0f * 10.0f;
 
 			switch (getCase(tl, tr, bl, br)) {
 			case 0:
 				break;
 			case 1:
 				// bl triangle
-				addCase1(*vertices, x, y, inc);
+				addCase1(*vertices, vx, vy, inc);
 				break;
 			case 2:
 				// br triangle
-				addCase2(*vertices, x, y, inc);
+				addCase2(*vertices, vx, vy, inc);
 				break;
 			case 3:
 				// bl + br rect
-				addCase3(*vertices, x, y, inc);
+				addCase3(*vertices, vx, vy, inc);
 				break;
 			case 4:
 				// tr triangle
-				addCase4(*vertices, x, y, inc);
+				addCase4(*vertices, vx, vy, inc);
 				break;
 			case 5:
-				addCase8(*vertices, x, y, inc);
-				addCase2(*vertices, x, y, inc);
+				addCase8(*vertices, vx, vy, inc);
+				addCase2(*vertices, vx, vy, inc);
 				break;
 			case 6:
-				addCase6(*vertices, x, y, inc);
+				addCase6(*vertices, vx, vy, inc);
 				break;
 			case 7:
-				addCase8(*vertices, x, y, inc);
+				addCase8(*vertices, vx, vy, inc);
 				break;
 			case 8:
-				addCase8(*vertices, x, y, inc);
+				addCase8(*vertices, vx, vy, inc);
 				break;
 			case 9:
-				addCase6(*vertices, x, y, inc);
+				addCase6(*vertices, vx, vy, inc);
 				break;
 			case 10:
-				addCase1(*vertices, x, y, inc);
-				addCase4(*vertices, x, y, inc);
+				addCase1(*vertices, vx, vy, inc);
+				addCase4(*vertices, vx, vy, inc);
 				break;
 			case 11:
-				addCase4(*vertices, x, y, inc);
+				addCase4(*vertices, vx, vy, inc);
 				break;
 			case 12:
-				addCase3(*vertices, x, y, inc);
+				addCase3(*vertices, vx, vy, inc);
 				break;
 			case 13:
-				addCase2(*vertices, x, y, inc);
+				addCase2(*vertices, vx, vy, inc);
 				break;
 			case 14:
-				addCase1(*vertices, x, y, inc);
+				addCase1(*vertices, vx, vy, inc);
 				break;
 			case 15:
 				break;

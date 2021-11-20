@@ -17,25 +17,27 @@
 
 
 void GridRenderer::init() {
-	float cellSize = 1.0f;
+	float cellSizeX = 800.0f / (float)grid->worldX;
+	float cellSizeY = 800.0f / (float)grid->worldY;
 	sf::Color defaultColour = { 10, 10, 10, 255 };
 	for (int i = 0; i < grid->totalCells; i++) {
-		int y = i / grid->worldX;
-		int x = i - (grid->worldX * y);
+		int y = (i / grid->worldX);
+		int x = (i - (grid->worldX * y));
 		int vertex = i * 4;
+		//vertexArray[i].position = sf::Vector2f((800.0f / grid->worldX)*x + 0.5f, (800.0f / grid->worldY) * y + 0.5f);
+		//vertexArray[i].color = defaultColour;
+		x *= cellSizeX;
+		y *= cellSizeY;
 
-		vertexArray[i].position = sf::Vector2f(x + 0.5f, y + 0.5f);
-		vertexArray[i].color = defaultColour;
-		/*
 		vertexArray[vertex].position = sf::Vector2f(x, y );
-		vertexArray[vertex + 1].position = sf::Vector2f(x + cellSize, y );
-		vertexArray[vertex + 2].position = sf::Vector2f(x + cellSize, y + cellSize );
-		vertexArray[vertex + 3].position = sf::Vector2f(x, y + cellSize );
+		vertexArray[vertex + 1].position = sf::Vector2f(x + cellSizeX, y );
+		vertexArray[vertex + 2].position = sf::Vector2f(x + cellSizeX, y + cellSizeY );
+		vertexArray[vertex + 3].position = sf::Vector2f(x, y + cellSizeY );
 		vertexArray[vertex].color = defaultColour;
 		vertexArray[vertex + 1].color = defaultColour;
 		vertexArray[vertex + 2].color = defaultColour;
 		vertexArray[vertex + 3].color = defaultColour;
-		*/
+		
 	}
 }
 
@@ -48,9 +50,9 @@ float clip(float n, float lower, float upper) {
 	return std::max(lower, std::min(n, upper));
 }
 
-void GridRenderer::update(ItemGrid& grid) {
-	sf::Color cellColour;
+void GridRenderer::update(ItemGrid& grid, float deltaTime) {
 	sf::Vector3f defaultColour = { 10, 10, 10 };
+	sf::Color cellColour;
 	//Cell& cell = grid.worldCells[0];
 	//Cell* cells = grid->worldCells;
 	for (int x = 0; x < grid.worldX; x++) {
@@ -58,32 +60,24 @@ void GridRenderer::update(ItemGrid& grid) {
 
 			int cellIndex = getCellIndex(grid, x, y);
 			Cell& cell = grid.worldCells[cellIndex];
-			//Cell& cell = grid.worldCells[cellIndex];
-			sf::Vector3f cellColourV = (cell.pheromones[0] * PHEROMONE_0_COLOUR) + (cell.pheromones[1] * PHEROMONE_1_COLOUR);
-			//printf("%f", cell.ph)
-			//cellColourV.x = clip(cellColourV.x, defaultColour.x, 255);
-			//cellColourV.y = clip(cellColourV.y, defaultColour.y, 255);
-			//cellColourV.z = clip(cellColourV.z, defaultColour.z, 255);
-			cellColour = sf::Color(cellColourV.x, cellColourV.y, cellColourV.z);
-			vertexArray[cellIndex].color = cellColour;
-			//int cellIndex = getCellIndex(grid, x, y);
-			//int vertex = cellIndex * 4;
-			//std::cout << cellIndex << std::endl;
-			//Cell& cell = grid.worldCells[cellIndex];
-			//float f = grid.worldCells[0].foodCount;
-			//std::cout << grid.worldCells[0].foodCount << std::endl;
-			//float f = cell.pheromones[0];
-			//sf::Vector3f cellColourV = sf::Vector3f(((float)cell.pheromones[0] * PHEROMONE_0_COLOUR));
-			/*
-			sf::Vector3f cellColourV = (cell.pheromones[0] * PHEROMONE_0_COLOUR) + (cell.pheromones[1] * PHEROMONE_1_COLOUR);
-			cellColourV += defaultColour;
+			int vertex = cellIndex * 4;
 
-			cellColour = sf::Color(clip(cellColourV.x, 0, 255), clip(cellColourV.y, 0, 255), clip(cellColourV.z, 0, 255));
-			//cellColour = sf::Color::Green;
+			float intensity;
+			if (cell.foodCount > 0.0f) { // HAS FOOD
+				cellColour = sf::Color::Green;
+			}
+			else {
+				intensity = 255 * clip(cell.pheromones[0] + cell.pheromones[1], 0, 1);
+				sf::Vector3f cellColourV = (cell.pheromones[0] * PHEROMONE_0_COLOUR) + (cell.pheromones[1] * PHEROMONE_1_COLOUR);
+				cellColour = sf::Color(clip(cellColourV.x, 0, 255), clip(cellColourV.y, 0, 255), clip(cellColourV.z, 0, 255), intensity);
+			}
+
 			vertexArray[vertex].color = cellColour;
 			vertexArray[vertex + 1].color = cellColour;
 			vertexArray[vertex + 2].color = cellColour;
-			vertexArray[vertex + 3].color = cellColour;*/
+			vertexArray[vertex + 3].color = cellColour;
+
+			updateCell(cell, deltaTime);
 		}
 	}
 }

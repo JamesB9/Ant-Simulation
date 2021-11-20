@@ -87,7 +87,6 @@
   <ItemGroup>
     <ClCompile Include="GridRenderer.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MapGenerator.cpp" />
     <ClCompile Include="MarchingSquares.cpp" />
     <ClCompile Include="ThreadPoolManager.cpp" />
   </ItemGroup>
@@ -98,7 +97,6 @@
     <ClInclude Include="GridRenderer.hpp" />
     <ClInclude Include="ItemGrid.cuh" />
     <ClInclude Include="Map.cuh" />
-    <ClInclude Include="MapGenerator.hpp" />
     <ClInclude Include="MarchingSquares.hpp" />
     <ClInclude Include="ThreadPoolManager.h" />
     <ClInclude Include="Utilities.cuh" />

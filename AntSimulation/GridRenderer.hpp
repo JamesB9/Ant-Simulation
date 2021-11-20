@@ -15,6 +15,7 @@
 //////////////////////////// 80 columns wide //////////////////////////////////
 #pragma once
 #include "ItemGrid.cuh"
+#include "Map.cuh"
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector3.hpp>
@@ -23,18 +24,19 @@
 class GridRenderer {
 public:
 
-	GridRenderer(ItemGrid* grid) : grid{ grid } {
-		//vertexArray = sf::VertexArray(sf::Quads, grid->totalCells * 4);
-		vertexArray = sf::VertexArray(sf::Points, grid->totalCells);
+	GridRenderer(ItemGrid* grid, Map* map) : grid{ grid }, map{map}{
+		vertexArray = sf::VertexArray(sf::Quads, grid->totalCells * 4);
+		//vertexArray = sf::VertexArray(sf::Points, grid->totalCells);
 		init();
 	}
 
 	void render(sf::RenderWindow* window);
 	sf::VertexArray& getVertexArray() { return vertexArray; }
-	void update(ItemGrid& grid);
+	void update(ItemGrid& grid, float deltaTime);
 private:
 	sf::VertexArray vertexArray;
 	ItemGrid* grid;
+	Map* map;
 
 	sf::Vector3f PHEROMONE_0_COLOUR = {0,0,255};
 	sf::Vector3f PHEROMONE_1_COLOUR = {255,0,0};

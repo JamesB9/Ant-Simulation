@@ -30,9 +30,7 @@ void setMapValueAt(Map& map, int x, int y, int val) {
 bool enableTiming = true;
 
 
-void createMap(Map* map, int width, int height) {
-	map->height = height;
-	map->width = width;
+void createMap(Map* map) {
 	map->percentFill = 48;
 
 	std::chrono::steady_clock::time_point t1;
@@ -94,7 +92,7 @@ void generateMap(Map& map) {
 };
 
 void fillMap(Map& map) {
-	srand(1111);
+	srand(time(NULL));
 
 	for (int i = 0; i < map.width; i++) {
 		for (int j = 0; j < map.height; j++) {
