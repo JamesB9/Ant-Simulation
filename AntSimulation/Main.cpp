@@ -22,6 +22,7 @@
 #include "EntitySystem.cuh"
 #include "ThreadPoolManager.h"
 #include "MarchingSquares.hpp"
+//#include "MapGenerator.hpp"
 
 
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities& entities, int threadCount, int threadIndex) {
@@ -83,7 +84,7 @@ int main() {
 
 	// SETUP SIMULATION
 	//ents
-	Entities* entities = initEntities(100);
+	Entities* entities = initEntities(10000);
 	sf::VertexArray vertices(sf::Points, entities->entityCount);
 	for (int i = 0; i < entities->entityCount; i++) {
 		vertices[i].color = sf::Color::Red;
@@ -190,7 +191,7 @@ int main() {
 		//tmanager.queueJob(drawFrame);
 		//printf("%f\n", entities.positions[0].x);
 
-		printf("%d\n", fps);
+		printf("FPS = %d\n", fps);
 		// Update the window
 		window.setView(view);
 		window.display();

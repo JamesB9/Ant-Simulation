@@ -16,6 +16,9 @@
     <Filter Include="src\Simulation\DS">
       <UniqueIdentifier>{09a85227-16c4-44d9-8812-179363edfafc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Simulation\Map">
+      <UniqueIdentifier>{4683a28b-29f0-43f4-a138-f613137f7386}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="EntitySystem.cu">
@@ -23,6 +26,9 @@
     </CudaCompile>
     <CudaCompile Include="ItemGrid.cu">
       <Filter>src\Simulation\DS</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Map.cu">
+      <Filter>src\Simulation\Map</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
@@ -35,11 +41,11 @@
     <ClCompile Include="ThreadPoolManager.cpp">
       <Filter>src\Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="Map.cpp">
-      <Filter>src\Simulation\DS</Filter>
+    <ClCompile Include="MapGenerator.cpp">
+      <Filter>src\Simulation\Map</Filter>
     </ClCompile>
     <ClCompile Include="MarchingSquares.cpp">
-      <Filter>src\Utilities</Filter>
+      <Filter>src\Simulation\Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,10 +74,13 @@
       <Filter>src\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="Map.cuh">
-      <Filter>src\Simulation\DS</Filter>
+      <Filter>src\Simulation\Map</Filter>
     </ClInclude>
     <ClInclude Include="MarchingSquares.hpp">
-      <Filter>src\Utilities</Filter>
+      <Filter>src\Simulation\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenerator.hpp">
+      <Filter>src\Simulation\Map</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

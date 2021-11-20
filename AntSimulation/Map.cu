@@ -1,31 +1,30 @@
-///////////////////////////////////////////////////////////////////////////////
-// Title:            Ant Simulation
-// Authors:           James Sergeant (100301636), James Burling (100266919), 
-//					  CallumGrimble (100243142) and Oliver Boys (100277126)
-// File: Utilities.cuh
-// Description: The item grid header file for the simulation.
-// 
-// Change Log:
-//	- 15/11/2021:JS - Added in block comments.
-//
-// Online sources:  
-//	- (URL)
-// 
-// 
-//////////////////////////// 80 columns wide //////////////////////////////////
-using namespace std;
 #include "Map.cuh"
 
-void initArray(Map* map);
-void initBlankMap(Map* map, int height, int width);
-void generateMap(Map& map);
-void fillMap(Map& map);
-void smoothMap(Map& map);
-void floodFill(Map& map);
-void arrayCopy(Map& from, Map& to);
-int getNeighbourWallCount(Map& map, int x, int y, int delta);
+void initMap(Map* map) {
+	for (int i = 0; i < (map->height * map->width); i++) {
+		map->map[i] = 0;
+	}
+}
 
-//need to define in .h file
+Map* makeMapPointer(int width, int height) {
+	Map* map;
+	cudaMallocManaged(&map, sizeof(Map));
+
+	map->width = width;
+	map->height = height;
+	int* intMap;
+	cudaMallocManaged(&intMap, sizeof(int) * width * height);
+	map->map = intMap;
+	return map;
+};
+
+
+int getMapValueAt(Map& map, int x, int y) {
+	return map.map[(y * map.width) + x];
+};
+void setMapValueAt(Map& map, int x, int y, int val) {
+	map.map[(y * map.width) + x] = val;
+}
 
 //Timing Data
 bool enableTiming = true;
@@ -40,9 +39,9 @@ void createMap(Map* map, int width, int height) {
 	std::chrono::steady_clock::time_point t2;
 	float deltaTime;
 	if (enableTiming)
-		cout << "\nMAP GENERATION" << endl;
+		std::cout << "\nMAP GENERATION" << std::endl;
 
-	initArray(map);
+	//initArray(map);
 	if (enableTiming)
 		t1 = std::chrono::high_resolution_clock::now();
 	generateMap(*map);
@@ -50,7 +49,7 @@ void createMap(Map* map, int width, int height) {
 	if (enableTiming) {
 		t2 = std::chrono::high_resolution_clock::now();
 		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
-		cout << "\n   Time to fully generate Map: " << deltaTime << "\n" << endl;
+		std::cout << "\n   Time to fully generate Map: " << deltaTime << "\n" << std::endl;
 	}
 	//printMap(map);
 }
@@ -58,45 +57,45 @@ void createMap(Map* map, int width, int height) {
 
 void generateMap(Map& map) {
 
-	
+
 	std::chrono::steady_clock::time_point t1;
 	std::chrono::steady_clock::time_point t2;
 	float deltaTime;
 
-	if(enableTiming)
+	if (enableTiming)
 		t1 = std::chrono::high_resolution_clock::now();
-	
+
 	fillMap(map);
 
 	if (enableTiming) {
 		t2 = std::chrono::high_resolution_clock::now();
 		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
-		cout << "   Fill Map:                 " << deltaTime << endl;
+		std::cout << "   Fill Map:                 " << deltaTime << std::endl;
 	}
 
 	for (int i = 0; i < 8; i++) {
-		if(enableTiming)
+		if (enableTiming)
 			t1 = std::chrono::high_resolution_clock::now();
 		smoothMap(map);
 		if (enableTiming) {
 			t2 = std::chrono::high_resolution_clock::now();
 			deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
-			cout << "   Smooth Map (" << i << "):           " << deltaTime << endl;
+			std::cout << "   Smooth Map (" << i << "):           " << deltaTime << std::endl;
 		}
 	}
-	if(enableTiming)
+	if (enableTiming)
 		t1 = std::chrono::high_resolution_clock::now();
 	floodFill(map);
 	if (enableTiming) {
 		t2 = std::chrono::high_resolution_clock::now();
 		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
-		cout << "   Flood Fill:               " << deltaTime << endl;
+		std::cout << "   Flood Fill:               " << deltaTime << std::endl;
 	}
 };
 
 void fillMap(Map& map) {
 	srand(1111);
-	
+
 	for (int i = 0; i < map.width; i++) {
 		for (int j = 0; j < map.height; j++) {
 			if (i == 0 || i == map.width - 1 || j == 0 || j == map.height - 1 || i == 1 || i == map.width - 2 || j == 1 || j == map.height - 2) {
@@ -109,7 +108,7 @@ void fillMap(Map& map) {
 		}
 	}
 
-	
+
 };
 void smoothMap(Map& map) {
 	for (int i = 0; i < map.width; i++) {
@@ -150,11 +149,11 @@ void floodFill(Map& map) {
 					int x = coord.x;
 					int y = coord.y;
 
-					if ((x - 1 >= 0) && getMapValueAt(visited, x-1, y) == 0) {
+					if ((x - 1 >= 0) && getMapValueAt(visited, x - 1, y) == 0) {
 						//cout << "add left" << endl;
 						coordQueue.push(Coord(x - 1, y));
 						visitedQueue.push(Coord(x - 1, y));
-						setMapValueAt(visited, x-1,y, 1);
+						setMapValueAt(visited, x - 1, y, 1);
 					}
 					if ((x + 1 < map.width) && getMapValueAt(visited, x + 1, y) == 0) {
 						//cout << "add right" << endl;
@@ -203,9 +202,9 @@ void arrayCopy(Map& from, Map& to) {
 void printMap(Map& map) {
 	for (int i = 0; i < map.width; i++) {
 		for (int j = 0; j < map.height; j++) {
-			cout << getMapValueAt(map, i, j) << ",";
+			std::cout << getMapValueAt(map, i, j) << ",";
 		}
-		cout << "\n" << endl;
+		std::cout << "\n" << std::endl;
 	}
 };
 int getNeighbourWallCount(Map& map, int x, int y, int delta) {
@@ -216,7 +215,7 @@ int getNeighbourWallCount(Map& map, int x, int y, int delta) {
 	for (int nX = x - delta; nX <= x + delta; nX++) {
 		for (int nY = y - delta; nY <= y + delta; nY++) {
 			if (nX >= 0 && nX < map.width && nY >= 0 && nY < map.height) {
-				if (getMapValueAt(map,nX,nY) == 1) {
+				if (getMapValueAt(map, nX, nY) == 1) {
 					//cout << "|" << nX << "," << nY;
 					if (!(nX == x && nY == y)) {
 						wallCount++;
@@ -228,14 +227,15 @@ int getNeighbourWallCount(Map& map, int x, int y, int delta) {
 	//cout << wallCount << endl;
 	return wallCount;
 }
+
 void initArray(Map* map) {
-	//map.map = (int*)malloc(map.height * map.width * sizeof(int));
+	map->map = (int*)malloc(map->height * map->width * sizeof(int));
 	if (map->map) {
 		for (int i = 0; i < (map->height * map->width); i++) {
 			//printf("%d\n", i);
 			map->map[i] = 0;
 		}
-		
+
 	}
 };
 void initBlankMap(Map* map, int height, int width) {
@@ -244,4 +244,3 @@ void initBlankMap(Map* map, int height, int width) {
 	map->percentFill = 0;
 	initArray(map);
 }
-

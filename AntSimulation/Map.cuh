@@ -52,25 +52,17 @@ struct Coord {
 	}
 };
 
-Map* makeMapPointer(int width, int height) {
-	Map* map;
-	cudaMallocManaged(&map, sizeof(Map));
+Map* makeMapPointer(int width, int height);
+int getMapValueAt(Map& map, int x, int y);
+void setMapValueAt(Map& map, int x, int y, int val);
 
-	map->width = width;
-	map->height = height;
-	int* intMap;
-	cudaMallocManaged(&intMap, sizeof(int) * width * height);
-	map->map = intMap;
-	return map;
-};
-
+void initBlankMap(Map* map, int height, int width);
+void generateMap(Map& map);
+void fillMap(Map& map);
+void smoothMap(Map& map);
+void floodFill(Map& map);
+void arrayCopy(Map& from, Map& to);
+int getNeighbourWallCount(Map& map, int x, int y, int delta);
 void createMap(Map* map, int width, int height);
-
 void printMap(Map& map);
-
-static int getMapValueAt(Map& map, int x, int y) {
-	return map.map[(y * map.width) + x];
-};
-static void setMapValueAt(Map& map, int x, int y, int val) {
-	map.map[(y * map.width) + x] = val;
-}
+void initArray(Map* map);

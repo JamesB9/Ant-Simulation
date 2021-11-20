@@ -187,7 +187,6 @@ __global__ void simulateEntities(
 }
 
 int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, float deltaTime) {
-	// Run kernel on 1M elements on the CPU
 	int blockSize = 256;
 	int numBlocks = (entities->entityCount + blockSize - 1) / blockSize;
 	
