@@ -1,17 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Title:            Ant Simulation
-// Authors:           James Sergeant (100301636), James Burling (100266919), 
+// Authors:           James Sergeant (100301636), James Burling (100266919),
 //					  CallumGrimble (100243142) and Oliver Boys (100277126)
 // File: EntitySystem.cu
 // Description: The system that miniuplates the entities data.
-// 
+//
 // Change Log:
 //	- 15/11/2021:JS - Added in block comments.
 //
-// Online sources:  
+// Online sources:
 //	- (URL)
-// 
-// 
+//
+//
 //////////////////////////// 80 columns wide //////////////////////////////////
 #include "EntitySystem.cuh"
 
@@ -46,7 +46,7 @@ CollisionComponent* createCollisionComponentArray(int n) {
 __device__ void move(MoveComponent& move, curandState* state, float deltaTime) {
 	//Get random vector where {+1 < x > -1, +1 < y > -1}
 	Vec2f randomDirection = randomInsideUnitCircle(state);
-	
+
 	//Add randomDirection to the current direction
 	move.direction = (move.direction + randomDirection * move.roamStrength);
 
@@ -88,7 +88,7 @@ __device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, Activi
 }
 
 __device__ void sniff(MoveComponent& move, SniffComponent& sniff, float deltaTime) {
-	
+
 }
 
 __device__ void bounceOffWall(MoveComponent& move, Map* map, float deltaTime) {
@@ -112,14 +112,14 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, M
 	//	1. Get the angle between the ant and the wall (1) OR Screen Border
 	//	2. invert that angle based on what side of the wall you are on, find the inverse point (mirrored position) of the ant
 	//	3. push that new location to the move function for turning
-	
+
 	/*Vec2f topLeft = {0.0f, 0.0f},
 		bottomLeft = { 0.0f, 800.0f },
 		topRight = { 800.0f, 0.0f },
 		bottomRight = { 800.0f, 800.0f };
 	Boundary lboundary = { topLeft, bottomLeft, 1 };
-	Boundary rboundary = { topRight, bottomRight, 2 };
-	Boundary tboundary = { topLeft, topRight, 3 };
+	Boundary rboundary = { bottomRight, topRight, 2 };
+	Boundary tboundary = { topRight, topLeft, 3 };
 	Boundary bboundary = { bottomLeft, bottomRight, 4 };
 	Boundary boundaries[4] = { lboundary , rboundary , tboundary , bboundary };
 	*/
@@ -127,8 +127,9 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, M
 	//ray's angle
 	Vec2f angle = { cos(move.angle),  sin(move.angle) };
 	float targetDistance = 1000000;
+	int wallIndex = -1;
 	//printf("at angle: %.2f, %.2f\n", angle.x, angle.y);
-	
+
 	for (int i = 0; i < map->wallCount; i++) {
 		Boundary& wall = map->walls[i];
 		const float x1 = wall.p1.x * 10.0f;
@@ -147,29 +148,46 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, M
 		const float u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
 
 		if (t > 0 && t < 1 && u > 0) {
-			char wall_name;
+			/*char wall_name;
 			if (wall.ID == 1) { wall_name = 'L'; }
 			if (wall.ID == 2) { wall_name = 'R'; }
 			if (wall.ID == 3) { wall_name = 'T'; }
-			if (wall.ID == 4) { wall_name = 'B'; }
-			//printf("%c\n", wall_name);
+			if (wall.ID == 4) { wall_name = 'B'; }*/
 			Vec2f targetPosition = { x1 + t * (x2 - x1) , y1 + t * (y2 - y1) };
-			collision.avoid = true;
-			float distToTarget = pow(move.position.x - targetPosition.x, 2) + pow(move.position.y - targetPosition.y, 2);
-			if (distToTarget < targetDistance) {
+			float distance = sqrtf(powf(targetPosition.x - move.position.x, 2.0f) + powf(targetPosition.y - move.position.y, 2.0f));
+
+			if (distance < targetDistance) {//Calculate inverse angle
+				wallIndex = i;
+				targetDistance = distance;
 				collision.targetPosition = targetPosition;
-				collision.avoid = true;
-				targetDistance = distToTarget;
 			}
 		}
 	}
+	if (wallIndex != -1 && targetDistance < collision.collisionDistance) {
+		//Calculate reflected angle
+		Vec2f n = clamp(normaliseSurface(map->walls[wallIndex].p1, map->walls[wallIndex].p2), 1.0f);
+		Vec2f u = n * (move.velocity.dotProduct(n) / n.dotProduct(n));
+		Vec2f w = move.velocity - u;
+		//Set reflected angle
+		collision.refractionPosition = collision.targetPosition + (clamp(u-w, 1.0f) * targetDistance);
+		//Set direction
+		if (targetDistance < collision.collisionDistance) {
+			move.direction = (u - w);
+		}
+	}
+	else if (wallIndex == -1) {
+		move.position = { 400.0f, 400.0f };
+	}
+	//else {
+	//	collision.refractionPosition = collision.targetPosition;
+	//}
 }
 
 __global__ void simulateEntities(
-	Entities* entities, 
+	Entities* entities,
 	float deltaTime,
 	ItemGrid* itemGrid,
-	Map* map) 
+	Map* map)
 {
 	//--RNG--
 	curandState state;
@@ -189,9 +207,9 @@ __global__ void simulateEntities(
 int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, float deltaTime) {
 	int blockSize = 256;
 	int numBlocks = (entities->entityCount + blockSize - 1) / blockSize;
-	
+
 	simulateEntities << <numBlocks, blockSize >> > (
-		entities, 
+		entities,
 		deltaTime,
 		itemGrid,
 		map);
@@ -221,13 +239,14 @@ Entities* initEntities(int entityCount) {
 		entities->moves[i].position = { 400.0f, 400.0f };
 		entities->moves[i].direction = 0.0f;
 		entities->moves[i].velocity = { 0.0f, 0.0f };
-		entities->moves[i].maxSpeed = 10.0f;
-		entities->moves[i].turningForce = entities->moves[i].maxSpeed * 10.0f;
+		entities->moves[i].maxSpeed = 15.0f;
+		entities->moves[i].turningForce = entities->moves[i].maxSpeed * 30.0f;
 		entities->moves[i].roamStrength = 2.5f;//2.5f;
 
-		entities->collisions[i].rayCastDistance = 10.0f;
-		entities->collisions[i].avoid = false;
-		entities->collisions[i].targetPosition = {0.0f, 0.0f};
+		entities.collisions[i].avoid = false;
+		entities.collisions[i].targetPosition = {0.0f, 0.0f};
+		entities.collisions[i].refractionPosition = { 0.0f, 0.0f };
+		entities.collisions[i].collisionDistance = 25.0f;
 	}
 
 	return entities;

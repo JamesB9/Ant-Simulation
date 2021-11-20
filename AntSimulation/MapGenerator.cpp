@@ -87,7 +87,7 @@ void generateMap(Map& map) {
 };
 
 void fillMap(Map& map) {
-	srand(1111);
+	srand(time(NULL));
 	
 	for (int i = 0; i < map.width; i++) {
 		for (int j = 0; j < map.height; j++) {

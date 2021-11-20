@@ -18,6 +18,8 @@
 #include "device_launch_parameters.h"
 #include "curand.h"
 #include "curand_kernel.h"
+#define _USE_MATH_DEFINES
+#include <math.h>;
 
 
 struct Vec2f {
@@ -32,6 +34,14 @@ struct Vec2f {
 
     __host__ __device__ Vec2f operator*(float a) {
         return { x * a, y * a };
+    }
+
+    __host__ __device__ Vec2f operator*(Vec2f a) {
+        return { x * a.x, y * a.y };
+    }
+
+    __host__ __device__ Vec2f operator/(Vec2f a) {
+        return { x / a.x, y / a.y };
     }
 
     __host__ __device__ Vec2f operator/(float a) {
@@ -58,6 +68,10 @@ struct Vec2f {
         this->y = sin(angle);
 
         return *this;
+    }
+
+    __host__ __device__ float dotProduct(Vec2f b) {
+        return this->x * b.x + this->y * b.y;
     }
 };
 
@@ -92,4 +106,27 @@ __device__ Vec2f clamp(Vec2f v, float max) {
 	}
 
 	return v;
+}
+
+__device__ float getAngle(Vec2f a, Vec2f b) {
+	float dot = a.x * b.x + a.y * b.y;
+	float det = a.x * b.y - a.y * b.x;
+	return atan2f(det, dot);
+}
+
+__device__ bool isLeft(Vec2f a, Vec2f b, Vec2f c) {
+	return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) > 0;
+}
+
+__device__ float normaliseRadian(float a) {
+	a = fmodf(a, M_PI);
+	if (a < 0) { a += M_PI; }
+	return a;
+}
+
+__device__ Vec2f normaliseSurface(Vec2f a, Vec2f b) {
+	float dx = b.x - a.x;
+	float dy = b.y - a.y;
+
+	return { dx, dy };
 }

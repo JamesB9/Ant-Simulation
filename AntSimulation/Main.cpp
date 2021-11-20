@@ -61,9 +61,20 @@ void setVertexDataCollision(sf::VertexArray& vertices, Entities& entities) {
 			entities.moves[i].position.x;
 		vertices[vertexCounter +1].position.y =
 			entities.moves[i].position.y;
-		vertexCounter += 2;
+
+		vertices[vertexCounter+2].position.x =
+			entities.collisions[i].targetPosition.x;
+		vertices[vertexCounter+2].position.y =
+			entities.collisions[i].targetPosition.y;
+
+		vertices[vertexCounter + 3].position.x =
+			entities.collisions[i].refractionPosition.x;
+		vertices[vertexCounter + 3].position.y =
+			entities.collisions[i].refractionPosition.y;
+		vertexCounter += 4;
 	}
 }
+
 
 int main() {
 	// Window
@@ -105,6 +116,15 @@ int main() {
 	//}
 	std::vector<sf::Vector2f>* mapVertices = generateMapVertices(*map);
 
+	/*mapVertices->push_back({0.0f, 0.0f}); //tl
+	mapVertices->push_back({ 0.0f, 80.0f });//bl
+	mapVertices->push_back({ 0.0f, 80.0f });//bl
+	mapVertices->push_back({ 80.0f, 80.0f });//br
+	mapVertices->push_back({ 80.0f, 80.0f });//br
+	mapVertices->push_back({ 80.0f, 0.0f });//tr
+	mapVertices->push_back({ 80.0f, 0.0f });//tr
+	mapVertices->push_back({ 0.0f, 0.0f });//tl*/
+
 	map->walls = getBoundariesFromVec2f(getVec2fFromVertices(*mapVertices), mapVertices->size());
 	map->wallCount = mapVertices->size() / 2;
 
@@ -126,8 +146,8 @@ int main() {
 	//task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
 
 	//TESTING BOUNDARY COLLISION
-	sf::VertexArray collisionv(sf::Lines, entities->entityCount*2);
-	for (int i = 0; i < entities->entityCount*2; i+=2) {
+	sf::VertexArray collisionv(sf::Lines, entities.entityCount*4);
+	for (int i = 0; i < entities.entityCount*2; i++) {
 		collisionv[i].color = sf::Color::Green;
 	}
 
