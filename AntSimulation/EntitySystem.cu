@@ -95,7 +95,6 @@ __device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, Activi
 		activity.timeSinceDrop = 0;
 	}
 	activity.dropStrength -= activity.dropStrengthReduction * deltaTime;
-	//printf("%f\n", activity.dropStrength);
 }
 
 __device__ void sniff(ItemGrid* itemGrid, MoveComponent& move, SniffComponent& sniff, ActivityComponent& activity, float deltaTime) {
