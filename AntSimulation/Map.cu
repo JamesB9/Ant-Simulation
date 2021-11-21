@@ -1,4 +1,7 @@
 #include "Map.cuh"
+#include <string>
+
+#include <SFML/Graphics/Image.hpp>
 
 void initMap(Map* map) {
 	for (int i = 0; i < (map->height * map->width); i++) {
@@ -6,10 +9,45 @@ void initMap(Map* map) {
 	}
 }
 
+Map* makeMapPointer(std::string path) {
+	Map* map;
+
+	cudaMallocManaged(&map, sizeof(Map));
+
+	sf::Image imgMap;
+	if (!imgMap.loadFromFile("Maps\\test_map.png")) {
+		std::cout << "ERROR" << std::endl;
+
+	}
+	else {
+		std::cout << "Succesfully loaded map: " << path << std::endl;
+	}
+
+	map->width = imgMap.getSize().x;
+	map->height = imgMap.getSize().y;
+
+	int* intMap;
+	cudaMallocManaged(&intMap, sizeof(int) * map->width * map->height);
+	map->map = intMap;
+
+	for (int i = 0; i < map->width; i++) {
+		for (int j = 0; j < map->height; j++) {
+			sf::Color color = imgMap.getPixel(i, j);
+			if (color == sf::Color::Black) {
+				setMapValueAt(*map, i, j, 1);
+			}
+			else {
+				setMapValueAt(*map, i, j, 0);
+			}
+		}
+	}
+
+	return map;
+}
+
 Map* makeMapPointer(int width, int height) {
 	Map* map;
 	cudaMallocManaged(&map, sizeof(Map));
-
 	map->width = width;
 	map->height = height;
 	int* intMap;
@@ -92,7 +130,7 @@ void generateMap(Map& map) {
 };
 
 void fillMap(Map& map) {
-	srand(Config::MAP_SEED);
+	srand((Config::MAP_SEED == -1)?time(NULL):Config::MAP_SEED);
 
 	for (int i = 0; i < map.width; i++) {
 		for (int j = 0; j < map.height; j++) {

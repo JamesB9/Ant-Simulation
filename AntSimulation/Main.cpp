@@ -102,8 +102,10 @@ int main() {
 	ItemGrid* itemGrid = initItemGrid(Config::ITEM_GRID_SIZE_X, Config::ITEM_GRID_SIZE_Y);
 
 	// Map
-	Map* map = makeMapPointer(Config::MAP_SIZE_X, Config::MAP_SIZE_Y);
-	createMap(map);
+	//Map* map = makeMapPointer(Config::MAP_SIZE_X, Config::MAP_SIZE_Y); //Set width and height
+	//createMap(map);
+	Map* map = makeMapPointer("test"); // Load from image
+
 
 	// Renderers
 	GridRenderer gridRenderer(itemGrid, map);
@@ -134,9 +136,9 @@ int main() {
 	// THREADS
 	//int threadCount = 10;
 	//std::vector<std::thread> threads;
-	ThreadPoolManager tmanager;
+	//ThreadPoolManager tmanager;
 	//task vertexData = { 3, true, [&vertices, &entities] {setVertexData(vertices,entities); } };
-	task simEnts = { 2, false, [&entities, &itemGrid, &map, deltaTime] { simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime); } };
+	//task simEnts = { 2, false, [&entities, &itemGrid, &map, deltaTime] { simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime); } };
 	//task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
 
 	//TESTING BOUNDARY COLLISION
