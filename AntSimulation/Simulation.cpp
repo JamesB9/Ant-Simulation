@@ -2,6 +2,8 @@
 
 Simulation::Simulation() {}
 
+
+//Main Setups
 void Simulation::loadFromFile(std::string path) {
 
 	//Initialisation
@@ -14,7 +16,16 @@ void Simulation::loadFromFile(std::string path) {
 	
 	genericSetup();
 }
+void Simulation::generateRandom() {
+	//Initialisation
+	entities = initEntities(Config::ANT_COUNT);
+	itemGrid = initItemGrid(Config::ITEM_GRID_SIZE_X, Config::ITEM_GRID_SIZE_Y);
+	map = makeMapPointer(Config::MAP_SIZE_X, Config::MAP_SIZE_Y);
+	createMap(map);
+	genericSetup();
+}
 
+//Loop Methods
 void Simulation::updateCellFood(sf::Vector2f mousePos) {
 	int cellIndex = getCellIndex(itemGrid, mousePos.x, mousePos.y);
 	Cell& cell = itemGrid->worldCells[cellIndex];
@@ -33,15 +44,7 @@ void Simulation::render(sf::RenderWindow* window) {
 	window->draw(*mapArray);
 }
 
-void Simulation::generateRandom() {
-	//Initialisation
-	entities = initEntities(Config::ANT_COUNT);
-	itemGrid = initItemGrid(Config::ITEM_GRID_SIZE_X, Config::ITEM_GRID_SIZE_Y);
-	map = makeMapPointer(Config::MAP_SIZE_X, Config::MAP_SIZE_Y);
-	createMap(map);
-	genericSetup();
-}
-
+//Other Methods
 void Simulation::genericSetup() {
 	gridRenderer = new GridRenderer(itemGrid,map);
 	entityRenderer = new EntityRenderer(entities);

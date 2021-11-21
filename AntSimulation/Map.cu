@@ -36,7 +36,7 @@ Map* makeMapPointer(std::string path) {
 			if (color == sf::Color::Black) {
 				setMapValueAt(*map, i, j, 1);
 			}
-			else {
+			else if(color == sf::Color::White) {
 				setMapValueAt(*map, i, j, 0);
 			}
 		}
