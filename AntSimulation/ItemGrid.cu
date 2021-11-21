@@ -14,6 +14,7 @@
 // 
 //////////////////////////// 80 columns wide //////////////////////////////////
 #include "itemgrid.cuh"
+#include <algorithm>
 
 Cell* createItemGridCellArray(int worldSize) {
 	Cell* nArray;
@@ -38,9 +39,6 @@ ItemGrid* initItemGrid(int sizeX, int sizeY) {
 		itemGrid->worldCells[i].foodCount = 0.0f;
 		itemGrid->worldCells[i].pheromones[0] = 0.0f;
 		itemGrid->worldCells[i].pheromones[1] = 0.0f;
-
-		itemGrid->worldCells[i].timePerDrop = Config::PHEROMONE_DECAY_TIME;
-		itemGrid->worldCells[i].timeSinceDrop = 0.0f;
 	}
 	return itemGrid;
 }
@@ -60,22 +58,21 @@ int getCellIndex(ItemGrid& itemGrid, float x, float y) {
 	return (floorf(y) * itemGrid.sizeX) + floorf(x);
 }
 
-void updateCell(Cell& cell, float deltaTime) {
-	if (cell.pheromones[0] > 0.0f || cell.pheromones[1] > 0.0f) {
-		cell.timeSinceDrop += deltaTime;
-		if (cell.timeSinceDrop > cell.timePerDrop) {
-			cell.pheromones[0] > Config::PHEROMONE_DECAY_STRENGH ? cell.pheromones[0] -= Config::PHEROMONE_DECAY_STRENGH : cell.pheromones[0] = 0.0f;
-			cell.pheromones[1] > Config::PHEROMONE_DECAY_STRENGH ? cell.pheromones[1] -= Config::PHEROMONE_DECAY_STRENGH : cell.pheromones[1] = 0.0f;
+float clip(float n, float lower, float upper) {
+	return std::max(lower, std::min(n, upper));
+}
 
-			cell.timeSinceDrop = 0.0f;
-		}
-	}
+void updateCell(Cell& cell, float deltaTime) {
+	cell.pheromones[0] -= Config::PHEROMONE_DECAY_STRENGH * deltaTime;
+	cell.pheromones[1] -= Config::PHEROMONE_DECAY_STRENGH * deltaTime;
+	cell.pheromones[0] = clip(cell.pheromones[0], 0.0f, 1.0f);
+	cell.pheromones[1] = clip(cell.pheromones[1], 0.0f, 1.0f);
 }
 
 
 int getCellIndex(ItemGrid* itemGrid, float mapx, float mapy) {
-	float widthOfCell = Config::MAP_SIZE_X / itemGrid->sizeX;
-	float heightOfCell = Config::MAP_SIZE_Y / itemGrid->sizeY;
+	float widthOfCell = Config::WORLD_SIZE_X / itemGrid->sizeX;
+	float heightOfCell = Config::WORLD_SIZE_Y / itemGrid->sizeY;
 	return (floorf(mapy / heightOfCell) * itemGrid->sizeX) + floorf(mapx / widthOfCell);
 }
 

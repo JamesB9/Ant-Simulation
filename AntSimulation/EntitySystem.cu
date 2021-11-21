@@ -74,29 +74,55 @@ __device__ void move(MoveComponent& move, curandState* state, float deltaTime) {
 }
 
 
-__device__ int getCellIndexDevice(ItemGrid* itemGrid, Map* map, float x, float y) {
+__device__ int getCellIndexDevice(ItemGrid* itemGrid, float x, float y) {
 	float widthOfCell = itemGrid->worldX / itemGrid->sizeX;
 	float heightOfCell = itemGrid->worldY / itemGrid->sizeY;
 
 	return (floorf(y / heightOfCell) * itemGrid->sizeX) + floorf(x / widthOfCell);
 }
 
-__device__ Cell* getCellDevice(ItemGrid* itemGrid, Map* map, float x, float y) {
-	return &itemGrid->worldCells[getCellIndexDevice(itemGrid, map, x, y)];
+__device__ Cell* getCellDevice(ItemGrid* itemGrid, float x, float y) {
+	return &itemGrid->worldCells[getCellIndexDevice(itemGrid, x, y)];
 }
 
-__device__ void releasePheromone(ItemGrid* itemGrid, Map* map, MoveComponent& move, ActivityComponent& activity, float deltaTime) {
+
+__device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, ActivityComponent& activity, float deltaTime) {
 	activity.timeSinceDrop += deltaTime;
 
-	if (activity.timeSinceDrop > activity.timePerDrop) {
-		
-		Cell* cell = getCellDevice(itemGrid, map, move.position.x, move.position.y);
-		cell->pheromones[activity.currentActivity] += 0.05f;
+	if (activity.timeSinceDrop > activity.timePerDrop && activity.dropStrength > 0.0f) {
+		Cell* cell = getCellDevice(itemGrid, move.position.x, move.position.y);
+		cell->pheromones[activity.currentActivity] += activity.dropStrength;
 		activity.timeSinceDrop = 0;
 	}
+	activity.dropStrength -= activity.dropStrengthReduction * deltaTime;
+	//printf("%f\n", activity.dropStrength);
 }
 
-__device__ void sniff(MoveComponent& move, SniffComponent& sniff, float deltaTime) {
+__device__ void sniff(ItemGrid* itemGrid, MoveComponent& move, SniffComponent& sniff, ActivityComponent& activity, float deltaTime) {
+	Vec2f target = {};
+	float highestIntensity = 0.0f;
+	bool stop = false;
+	for (int dx = -sniff.sniffMaxDistance; dx < sniff.sniffMaxDistance && !stop; dx++) {
+		for (int dy = -sniff.sniffMaxDistance; dy < sniff.sniffMaxDistance && !stop; dy++) {
+			Cell* cell = getCellDevice(itemGrid, move.position.x + dx, move.position.y + dy);
+
+			if (cell->pheromones[sniff.sniffPheromone] > highestIntensity) {
+				highestIntensity = cell->pheromones[sniff.sniffPheromone];
+				target = { (float)dx, (float)dy };
+			}
+
+			if (cell->foodCount > 0 && sniff.sniffPheromone == 1) { // Found Food
+				move.direction = { (float)dx, (float)dy };
+				stop = true;
+				activity.currentActivity = 1;
+				sniff.sniffPheromone = 0;
+				activity.dropStrength = 0.5f;
+			}
+		}
+	}
+	if (highestIntensity > 0.0f) {
+		move.direction = target;
+	}
 }
 
 
@@ -188,8 +214,9 @@ __global__ void simulateEntities(
 	int stride = blockDim.x * gridDim.x; // Number of threads in the block
 	for (int i = index; i < entities->entityCount; i += stride) { // For Each entity for this thread
 		move(entities->moves[i], &state ,deltaTime);
-		releasePheromone(itemGrid, map, entities->moves[i], entities->activities[i], deltaTime);
+		releasePheromone(itemGrid, entities->moves[i],  entities->activities[i],  deltaTime);
 		detectWall(entities->moves[i], entities->collisions[i], map, deltaTime);
+		sniff(itemGrid, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
 	}
 }
 
@@ -226,6 +253,7 @@ Entities* initEntities(int entityCount) {
 
 	for (unsigned int i = 0; i < entities->entityCount; i++) {
 		entities->sniffs[i].sniffMaxDistance = Config::ANT_MAX_SNIFF_DISTANCE;
+		entities->sniffs[i].sniffPheromone = FOUND_FOOD;
 
 		entities->moves[i].position = { 400.0f, 400.0f };
 		entities->moves[i].direction = 0.0f;
@@ -240,6 +268,8 @@ Entities* initEntities(int entityCount) {
 		entities->collisions[i].collisionDistance = Config::ANT_COLLISION_DISTANCE;
 
 		entities->activities[i].currentActivity = LEAVING_HOME;
+		entities->activities[i].dropStrength = Config::INITIAL_DROP_STRENGTH;
+		entities->activities[i].dropStrengthReduction = Config::DROP_STRENGTH_REDUCTION;
 		entities->activities[i].timeSinceDrop = 0.0f;
 		entities->activities[i].timePerDrop = Config::PHEROMONE_DROP_TIME;
 	}

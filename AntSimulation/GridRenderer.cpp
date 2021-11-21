@@ -62,6 +62,7 @@ void GridRenderer::update(ItemGrid& grid, float deltaTime) {
 
 			int cellIndex = getCellIndex(grid, x, y);
 			Cell& cell = grid.worldCells[cellIndex];
+			updateCell(cell, deltaTime);
 			int vertex = cellIndex * 4;
 
 			float intensity;
@@ -78,8 +79,6 @@ void GridRenderer::update(ItemGrid& grid, float deltaTime) {
 			vertexArray[vertex + 1].color = cellColour;
 			vertexArray[vertex + 2].color = cellColour;
 			vertexArray[vertex + 3].color = cellColour;
-
-			updateCell(cell, deltaTime);
 		}
 	}
 }

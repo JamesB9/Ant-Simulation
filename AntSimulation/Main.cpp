@@ -23,6 +23,7 @@
 #include "ThreadPoolManager.h"
 #include "MarchingSquares.hpp"
 #include "Config.hpp"
+#include "EntityRenderer.hpp"
 
 
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities& entities, int threadCount, int threadIndex) {
@@ -108,8 +109,9 @@ int main() {
 	Map* map = makeMapPointer(Config::MAP_SIZE_X, Config::MAP_SIZE_Y);
 	createMap(map);
 
-	// Grid Renderer
+	// Renderers
 	GridRenderer gridRenderer(itemGrid, map);
+	EntityRenderer entityRenderer(entities);
 
 	std::vector<sf::Vector2f>* mapVertices = generateMapVertices(*map);
 
@@ -151,7 +153,7 @@ int main() {
 		////////////// FPS & DELTATIME //////////////
 		deltaTime = deltaClock.restart().asSeconds();
 		int fps = 1 / deltaTime;
-		//printf("FPS = %d\n", fps);
+		printf("FPS = %d\n", fps);
 
 		////////////// CLEAR SCREEN //////////////
 		window.clear(sf::Color(10, 10, 10));
@@ -182,19 +184,20 @@ int main() {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) view.move(sf::Vector2f(0.0f, deltaTime * 100.0f));
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) view.zoom(1 + (deltaTime * -2.0f));
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::O)) view.zoom(1 + (deltaTime * 2.0f));
-		/*
+		
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 			if (mousePos.x < Config::WORLD_SIZE_X && mousePos.y < Config::WORLD_SIZE_Y && mousePos.x > 0 && mousePos.y > 0) {
 				int cellIndex = getCellIndex(itemGrid, mousePos.x, mousePos.y);
 				Cell& cell = itemGrid->worldCells[cellIndex];
 				cell.foodCount += 1.0f;
+				//printf("%f, %f, %f\n", cell.foodCount, cell.pheromones[0], cell.pheromones[1]);
 			}
-		}*/
+		}
 
 		////////////// PHEROMONE & FOOD RENDERING //////////////
 		gridRenderer.update(*itemGrid, deltaTime);
-
+		entityRenderer.update(deltaTime);
 
 		////////////// SIMULATION //////////////
 		simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime);
@@ -227,7 +230,9 @@ int main() {
 
 		////////////// DRAWING //////////////
 		gridRenderer.render(&window);
-		window.draw(vertices);
+
+		//window.draw(vertices);
+		entityRenderer.render(&window);
 		//window.draw(collisionv);
 		window.draw(*mapArray);
 		//window.draw(shape, mapTransform);

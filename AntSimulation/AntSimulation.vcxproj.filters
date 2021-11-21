@@ -44,6 +44,9 @@
     <ClCompile Include="MarchingSquares.cpp">
       <Filter>src\Simulation\Map</Filter>
     </ClCompile>
+    <ClCompile Include="EntityRenderer.cpp">
+      <Filter>src\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.cuh">
@@ -78,6 +81,9 @@
     </ClInclude>
     <ClInclude Include="Config.hpp">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityRenderer.hpp">
+      <Filter>src\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

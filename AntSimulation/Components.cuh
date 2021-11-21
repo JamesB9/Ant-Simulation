@@ -32,6 +32,7 @@ struct MoveComponent
 struct SniffComponent
 {
     float sniffMaxDistance;
+    int sniffPheromone;
 };
 
 struct CollisionComponent {
@@ -44,6 +45,8 @@ struct CollisionComponent {
 struct ActivityComponent
 {
     int currentActivity;
+    float dropStrength;
+    float dropStrengthReduction;
 
     float timeSinceDrop;
     float timePerDrop;

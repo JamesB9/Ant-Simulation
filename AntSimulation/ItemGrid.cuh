@@ -28,9 +28,6 @@
 struct Cell {
 	float pheromones[2];
 	float foodCount;
-
-	float timeSinceDrop;
-	float timePerDrop;
 };
 
 struct ItemGrid {
@@ -50,5 +47,6 @@ int getCellIndex(ItemGrid& itemGrid, float x, float y);
 
 void updateCell(Cell& cell, float deltaTime);
 
-Cell* getCell(ItemGrid* itemGrid, float mapx, float mapy);
-int getCellIndex(ItemGrid* itemGrid, float mapx, float mapy);
+__host__ __device__ Cell* getCell(ItemGrid* itemGrid, float mapx, float mapy);
+__host__ __device__ int getCellIndex(ItemGrid* itemGrid, float mapx, float mapy);
+
