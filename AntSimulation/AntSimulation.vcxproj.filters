@@ -47,6 +47,9 @@
     <ClCompile Include="EntityRenderer.cpp">
       <Filter>src\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation.cpp">
+      <Filter>src\Simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.cuh">
@@ -84,6 +87,9 @@
     </ClInclude>
     <ClInclude Include="EntityRenderer.hpp">
       <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation.hpp">
+      <Filter>src\Simulation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

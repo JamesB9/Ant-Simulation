@@ -24,6 +24,7 @@
 #include "MarchingSquares.hpp"
 #include "Config.hpp"
 #include "EntityRenderer.hpp"
+#include "Simulation.hpp"
 
 
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities& entities, int threadCount, int threadIndex) {
@@ -93,39 +94,9 @@ int main() {
 	float deltaTime;
 
 
-	// SETUP SIMULATION //
-
-	// Entities
-	Entities* entities = initEntities(Config::ANT_COUNT);
-
-	// Item Grid
-	ItemGrid* itemGrid = initItemGrid(Config::ITEM_GRID_SIZE_X, Config::ITEM_GRID_SIZE_Y);
-
-	// Map
-	//Map* map = makeMapPointer(Config::MAP_SIZE_X, Config::MAP_SIZE_Y); //Set width and height
-	//createMap(map);
-	Map* map = makeMapPointer("test"); // Load from image
-
-
-	// Renderers
-	GridRenderer gridRenderer(itemGrid, map);
-	EntityRenderer entityRenderer(entities);
-
-	std::vector<sf::Vector2f>* mapVertices = generateMapVertices(*map);
-
-	/*mapVertices->push_back({0.0f, 0.0f}); //tl
-	mapVertices->push_back({ 0.0f, 80.0f });//bl
-	mapVertices->push_back({ 0.0f, 80.0f });//bl
-	mapVertices->push_back({ 80.0f, 80.0f });//br
-	mapVertices->push_back({ 80.0f, 80.0f });//br
-	mapVertices->push_back({ 80.0f, 0.0f });//tr
-	mapVertices->push_back({ 80.0f, 0.0f });//tr
-	mapVertices->push_back({ 0.0f, 0.0f });//tl*/
-
-	map->walls = getBoundariesFromVec2f(getVec2fFromVertices(*mapVertices), mapVertices->size());
-	map->wallCount = mapVertices->size() / 2;
-
-	sf::VertexArray* mapArray = getVArrayFromVertices(*mapVertices);
+	//SIMULATION 
+	Simulation simulation;
+	simulation.generateRandom();
 
 	/*
 	sf::ConvexShape shape = sf::ConvexShape(mapArray->getVertexCount());
@@ -142,10 +113,10 @@ int main() {
 	//task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
 
 	//TESTING BOUNDARY COLLISION
-	sf::VertexArray collisionv(sf::Lines, entities->entityCount*4);
+	/*sf::VertexArray collisionv(sf::Lines, entities->entityCount*4);
 	for (int i = 0; i < entities->entityCount*2; i++) {
 		collisionv[i].color = sf::Color::Green;
-	}
+	}*/
 
 	while (window.isOpen()) {
 		////////////// FPS & DELTATIME //////////////
@@ -186,25 +157,16 @@ int main() {
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 			if (mousePos.x < Config::WORLD_SIZE_X && mousePos.y < Config::WORLD_SIZE_Y && mousePos.x > 0 && mousePos.y > 0) {
-				int cellIndex = getCellIndex(itemGrid, mousePos.x, mousePos.y);
-				Cell& cell = itemGrid->worldCells[cellIndex];
-				cell.foodCount < 45.0f ? cell.foodCount += 5 : cell.foodCount = 50;
-				//printf("%f, %f, %f\n", cell.foodCount, cell.pheromones[0], cell.pheromones[1]);
+				simulation.updateCellFood(mousePos);
 			}
 		}
 
-		////////////// PHEROMONE & FOOD RENDERING //////////////
-		gridRenderer.update(*itemGrid, deltaTime);
-		entityRenderer.update(deltaTime);
+		////////////// UPDATE //////////////
 
-		////////////// SIMULATION //////////////
-		simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime);
+		simulation.update(deltaTime);
+
 
 		//setVertexDataCollision(collisionv, entities);
-
-
-
-
 
 		//simulateEntitiesOnGPU(entities, deltaTime);
 		//setVertexData(vertices, entities);
@@ -227,14 +189,18 @@ int main() {
 
 
 		////////////// DRAWING //////////////
-		gridRenderer.render(&window);
 
+		simulation.render(&window);
+
+
+		//gridRenderer.render(&window);
 		//window.draw(vertices);
-		entityRenderer.render(&window);
+		//entityRenderer.render(&window);
 		//window.draw(collisionv);
-		window.draw(*mapArray);
+		//window.draw(*mapArray);
 		//window.draw(shape, mapTransform);
 		//tmanager.queueJob(drawFrame);
+
 
 		////////////// UPDATE WINDOW //////////////
 		window.setView(view);
