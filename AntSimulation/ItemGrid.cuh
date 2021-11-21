@@ -20,6 +20,8 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
+#include "Config.hpp"
+
 #define HOME_PHEROMONE 0;
 #define FOOD_PHEROMONE 1;
 
@@ -32,13 +34,17 @@ struct Cell {
 };
 
 struct ItemGrid {
-	int worldX;
-	int worldY;
+	int sizeX;
+	int sizeY;
 	int totalCells;
 	Cell* worldCells;
+
+	// HERE TEMPORARILY DUE TO CUDA NOT HAVING ACCESS TO CONFIG VARIABLES
+	int worldX;
+	int worldY;
 };
 
-ItemGrid* initItemGrid(int worldX, int worldY);
+ItemGrid* initItemGrid(int sizeX, int sizeY);
 Cell* getCell(ItemGrid& itemGrid, float x, float y);
 int getCellIndex(ItemGrid& itemGrid, float x, float y);
 

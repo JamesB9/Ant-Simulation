@@ -17,19 +17,21 @@
 
 
 void GridRenderer::init() {
-	float cellSizeX = 800.0f / (float)grid->worldX;
-	float cellSizeY = 800.0f / (float)grid->worldY;
+	float cellSizeX = Config::WORLD_SIZE_X / (float)grid->sizeX;
+	float cellSizeY = Config::WORLD_SIZE_Y / (float)grid->sizeY;
+
 	sf::Color defaultColour = { 10, 10, 10, 255 };
 	for (int i = 0; i < grid->totalCells; i++) {
-		int y = (i / grid->worldX);
-		int x = (i - (grid->worldX * y));
+		float y = (i / grid->sizeX);
+		float x = (i - (grid->sizeX * y));
+
 		int vertex = i * 4;
 		//vertexArray[i].position = sf::Vector2f((800.0f / grid->worldX)*x + 0.5f, (800.0f / grid->worldY) * y + 0.5f);
 		//vertexArray[i].color = defaultColour;
 		x *= cellSizeX;
 		y *= cellSizeY;
 
-		vertexArray[vertex].position = sf::Vector2f(x, y );
+		vertexArray[vertex].position = sf::Vector2f(x, y);
 		vertexArray[vertex + 1].position = sf::Vector2f(x + cellSizeX, y );
 		vertexArray[vertex + 2].position = sf::Vector2f(x + cellSizeX, y + cellSizeY );
 		vertexArray[vertex + 3].position = sf::Vector2f(x, y + cellSizeY );
@@ -55,8 +57,8 @@ void GridRenderer::update(ItemGrid& grid, float deltaTime) {
 	sf::Color cellColour;
 	//Cell& cell = grid.worldCells[0];
 	//Cell* cells = grid->worldCells;
-	for (int x = 0; x < grid.worldX; x++) {
-		for (int y = 0; y < grid.worldY; y++) {
+	for (int x = 0; x < grid.sizeX; x++) {
+		for (int y = 0; y < grid.sizeY; y++) {
 
 			int cellIndex = getCellIndex(grid, x, y);
 			Cell& cell = grid.worldCells[cellIndex];
@@ -66,7 +68,7 @@ void GridRenderer::update(ItemGrid& grid, float deltaTime) {
 			if (cell.foodCount > 0.0f) { // HAS FOOD
 				cellColour = sf::Color::Green;
 			}
-			else {
+			else { // HASN'T GOT FOOD
 				intensity = 255 * clip(cell.pheromones[0] + cell.pheromones[1], 0, 1);
 				sf::Vector3f cellColourV = (cell.pheromones[0] * PHEROMONE_0_COLOUR) + (cell.pheromones[1] * PHEROMONE_1_COLOUR);
 				cellColour = sf::Color(clip(cellColourV.x, 0, 255), clip(cellColourV.y, 0, 255), clip(cellColourV.z, 0, 255), intensity);

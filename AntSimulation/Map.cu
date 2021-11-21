@@ -92,7 +92,7 @@ void generateMap(Map& map) {
 };
 
 void fillMap(Map& map) {
-	srand(time(NULL));
+	srand(Config::MAP_SEED);
 
 	for (int i = 0; i < map.width; i++) {
 		for (int j = 0; j < map.height; j++) {
@@ -177,7 +177,7 @@ void floodFill(Map& map) {
 				//cout << visitedQueue.size() << endl;
 
 
-				if (visitedQueue.size() <= 80) {//remove all areas smaller than 20
+				if (visitedQueue.size() <= map.width) {//remove all areas smaller than 20
 					while (visitedQueue.size() != 0) {
 						Coord coord = visitedQueue.front();
 						visitedQueue.pop();

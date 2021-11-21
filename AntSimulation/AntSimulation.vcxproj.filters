@@ -76,5 +76,8 @@
     <ClInclude Include="MarchingSquares.hpp">
       <Filter>src\Simulation\Map</Filter>
     </ClInclude>
+    <ClInclude Include="Config.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,6 +4,8 @@
 #include <SFML/Graphics/ConvexShape.hpp>
 #include <vector>
 
+#include "Config.hpp"
+
 std::vector<sf::Vector2f>* generateMapVertices(Map& map);
 
 sf::VertexArray* getVArrayFromVertices(std::vector<sf::Vector2f> vertices);

@@ -91,6 +91,7 @@
     <ClCompile Include="ThreadPoolManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Config.hpp" />
     <ClInclude Include="EntitySystem.cuh" />
     <ClInclude Include="Components.cuh" />
     <ClInclude Include="Entities.cuh" />

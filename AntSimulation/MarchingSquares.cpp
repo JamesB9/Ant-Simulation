@@ -46,16 +46,10 @@ std::vector<sf::Vector2f>* generateMapVertices(Map& map) {
 			int tr = (x < map.width - 1) ? getMapValueAt(map, x + 1, y) : 1; // top right
 			int bl = (y < map.height - 1) ? getMapValueAt(map, x, y + 1) : 1; // bottom left
 			int br = (x < map.width - 1 && y < map.height - 1) ? getMapValueAt(map, x + 1, y + 1) : 1; // bottom right
-			/*
-			int tl = map[x][y]; // top left
-			int tr = (x < map.width - 1) ? map[x + 1][y] : 1; // top right
-			int bl = (y < map.height - 1) ? map[x][y + 1] : 1; // bottom left
-			int br = (x < map.width - 1 && y < map.height - 1) ? map[x + 1][y + 1] : 1; // bottom right
-			*/
-			//printf("%d, %d, %d, %d", tl, tr, bl, br);
-			float vx = x * 10.0f;
-			float vy = y * 10.0f;
-			float inc = 1.0f * 10.0f;
+
+			float vx = x * (Config::WORLD_SIZE_X /map.width);
+			float vy = y * (Config::WORLD_SIZE_Y / map.height);
+			float inc = (Config::WORLD_SIZE_X / map.width);
 
 			switch (getCase(tl, tr, bl, br)) {
 			case 0:

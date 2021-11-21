@@ -75,9 +75,10 @@ __device__ void move(MoveComponent& move, curandState* state, float deltaTime) {
 
 
 __device__ int getCellIndexDevice(ItemGrid* itemGrid, Map* map, float x, float y) {
-	float widthOfCell = 800.0f / itemGrid->worldX;
-	float heightOfCell = 800.0f / itemGrid->worldY;
-	return (floorf(y / heightOfCell) * itemGrid->worldX) + floorf(x / widthOfCell);
+	float widthOfCell = itemGrid->worldX / itemGrid->sizeX;
+	float heightOfCell = itemGrid->worldY / itemGrid->sizeY;
+
+	return (floorf(y / heightOfCell) * itemGrid->sizeX) + floorf(x / widthOfCell);
 }
 
 __device__ Cell* getCellDevice(ItemGrid* itemGrid, Map* map, float x, float y) {
@@ -88,6 +89,7 @@ __device__ void releasePheromone(ItemGrid* itemGrid, Map* map, MoveComponent& mo
 	activity.timeSinceDrop += deltaTime;
 
 	if (activity.timeSinceDrop > activity.timePerDrop) {
+		
 		Cell* cell = getCellDevice(itemGrid, map, move.position.x, move.position.y);
 		cell->pheromones[activity.currentActivity] += 0.05f;
 		activity.timeSinceDrop = 0;
@@ -223,23 +225,23 @@ Entities* initEntities(int entityCount) {
 	entities->collisions = createCollisionComponentArray(entities->entityCount);
 
 	for (unsigned int i = 0; i < entities->entityCount; i++) {
-		entities->sniffs[i].sniffMaxDistance = 5;
+		entities->sniffs[i].sniffMaxDistance = Config::ANT_MAX_SNIFF_DISTANCE;
 
 		entities->moves[i].position = { 400.0f, 400.0f };
 		entities->moves[i].direction = 0.0f;
 		entities->moves[i].velocity = { 0.0f, 0.0f };
-		entities->moves[i].maxSpeed = 15.0f;
-		entities->moves[i].turningForce = entities->moves[i].maxSpeed * 30.0f;
-		entities->moves[i].roamStrength = 2.5f;//2.5f;
+		entities->moves[i].maxSpeed = Config::ANT_MAX_SPEED;
+		entities->moves[i].turningForce = Config::ANT_TURN_FORCE;
+		entities->moves[i].roamStrength = Config::ANT_ROAM_STRENGTH;
 
 		entities->collisions[i].avoid = false;
 		entities->collisions[i].targetPosition = {0.0f, 0.0f};
 		entities->collisions[i].refractionPosition = { 0.0f, 0.0f };
-		entities->collisions[i].collisionDistance = 25.0f;
+		entities->collisions[i].collisionDistance = Config::ANT_COLLISION_DISTANCE;
 
 		entities->activities[i].currentActivity = LEAVING_HOME;
 		entities->activities[i].timeSinceDrop = 0.0f;
-		entities->activities[i].timePerDrop = 0.1f;
+		entities->activities[i].timePerDrop = Config::PHEROMONE_DROP_TIME;
 	}
 
 	return entities;

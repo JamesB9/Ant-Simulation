@@ -25,6 +25,7 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include "Utilities.cuh"
+#include "Config.hpp"
 
 //Pool all render.cpp's here
 

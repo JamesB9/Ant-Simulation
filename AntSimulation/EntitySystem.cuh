@@ -24,6 +24,7 @@
 #include "Entities.cuh"
 #include "ItemGrid.cuh"
 #include "Map.cuh"
+#include "Config.hpp"
 
 MoveComponent* createMoveComponentArray(int n);
 SniffComponent* createSniffComponentArray(int n);
