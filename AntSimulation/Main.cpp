@@ -27,9 +27,9 @@
 
 
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities& entities, int threadCount, int threadIndex) {
-	int entitiesPerThread = entities.entityCount / threadCount;
-	//cout << "Threaded Task #" << threadIndex << "/" << threadCount << " - Job: " << entitiesPerThread << " translations, from " << entitiesPerThread * threadIndex << " to " << (entitiesPerThread * threadIndex) + entitiesPerThread-1 << endl;
-	for (int i = entitiesPerThread * threadIndex; i < (entitiesPerThread * threadIndex) + entitiesPerThread-1; i++) {
+	int entitiesPerThread = (entities.entityCount / threadCount);
+	//cout << "[Thread #" << this_thread::get_id() << "] - Threaded Task #" << threadIndex << "/" << threadCount << " - Job: " << entitiesPerThread << " translations, from " << entitiesPerThread * threadIndex << " to " << (entitiesPerThread * threadIndex) + entitiesPerThread << endl;
+	for (int i = entitiesPerThread * threadIndex; i < (entitiesPerThread * threadIndex) + entitiesPerThread; i++) {
 		(*vertices)[i].position.x = entities.moves[i].position.x;
 		(*vertices)[i].position.y = entities.moves[i].position.y;
 	}
@@ -46,7 +46,7 @@ void setVertexData(sf::VertexArray& vertices, Entities& entities) {
 
 void queueVertexData(ThreadPoolManager& tm, sf::VertexArray* vertices, Entities& entities) {
 	for (int i = 0; i < tm.threadCount; i++) { // For every thread
-		tm.queueJob({ 3, true, [&vertices, &entities, &tm, i] { setVertexDataThreaded(vertices, entities, tm.threadCount, i); } });
+		tm.queueJob({ 3, false, [&vertices, &entities, &tm, i] { setVertexDataThreaded(vertices, entities, tm.threadCount, i); } });
 	}
 }
 
@@ -138,9 +138,9 @@ int main() {
 	// THREADS
 	//int threadCount = 10;
 	//std::vector<std::thread> threads;
-	//ThreadPoolManager tmanager;
+	ThreadPoolManager tmanager;
 	//task vertexData = { 3, true, [&vertices, &entities] {setVertexData(vertices,entities); } };
-	//task simEnts = { 2, true, [&entities, &itemGrid, &deltaTime] {simulateEntitiesOnGPU(entities, itemGrid, deltaTime); } };
+	task simEnts = { 2, false, [&entities, &itemGrid, &map, deltaTime] { simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime); } };
 	//task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
 
 	//TESTING BOUNDARY COLLISION
@@ -184,7 +184,7 @@ int main() {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) view.move(sf::Vector2f(0.0f, deltaTime * 100.0f));
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) view.zoom(1 + (deltaTime * -2.0f));
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::O)) view.zoom(1 + (deltaTime * 2.0f));
-		
+
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 			sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 			if (mousePos.x < Config::WORLD_SIZE_X && mousePos.y < Config::WORLD_SIZE_Y && mousePos.x > 0 && mousePos.y > 0) {
