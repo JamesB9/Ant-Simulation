@@ -24,6 +24,6 @@ namespace Config {
 	static const int ANT_MAX_SNIFF_DISTANCE		= 5;
 
 	static const float INITIAL_DROP_STRENGTH	= 1.0f; // Max Pheromone drop strength
-	static const float DROP_STRENGTH_REDUCTION  = 0.05f; // Reduction in pheromone drop strength per second
+	static const float DROP_STRENGTH_REDUCTION  = 0.00f; // Reduction in pheromone drop strength per second
 	static const float PHEROMONE_DROP_TIME = 0.1f; // Amount of time (seconds) between each pheromone drop by an ant
 }

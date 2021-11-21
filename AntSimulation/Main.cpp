@@ -190,7 +190,7 @@ int main() {
 			if (mousePos.x < Config::WORLD_SIZE_X && mousePos.y < Config::WORLD_SIZE_Y && mousePos.x > 0 && mousePos.y > 0) {
 				int cellIndex = getCellIndex(itemGrid, mousePos.x, mousePos.y);
 				Cell& cell = itemGrid->worldCells[cellIndex];
-				cell.foodCount += 1.0f;
+				cell.foodCount < 45.0f ? cell.foodCount += 5 : cell.foodCount = 50;
 				//printf("%f, %f, %f\n", cell.foodCount, cell.pheromones[0], cell.pheromones[1]);
 			}
 		}

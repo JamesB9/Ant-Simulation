@@ -111,16 +111,17 @@ __device__ void sniff(ItemGrid* itemGrid, MoveComponent& move, SniffComponent& s
 				target = { (float)dx, (float)dy };
 			}
 
-			if (cell->foodCount > 0 && sniff.sniffPheromone == 1) { // Found Food
-				move.direction = { (float)dx, (float)dy };
+			if (cell->foodCount > 0 && sniff.sniffPheromone == 1) { // Found Food & (TEMPORARY EAT IT)
+				target = { (float)dx, (float)dy };
 				stop = true;
+				cell->foodCount -= 1;
 				activity.currentActivity = 1;
 				sniff.sniffPheromone = 0;
-				activity.dropStrength = 0.5f;
+				activity.dropStrength = 1.0f;
 			}
 		}
 	}
-	if (highestIntensity > 0.0f) {
+	if (highestIntensity > 0.0f || stop) {
 		move.direction = target;
 	}
 }
@@ -215,8 +216,8 @@ __global__ void simulateEntities(
 	for (int i = index; i < entities->entityCount; i += stride) { // For Each entity for this thread
 		move(entities->moves[i], &state ,deltaTime);
 		releasePheromone(itemGrid, entities->moves[i],  entities->activities[i],  deltaTime);
-		detectWall(entities->moves[i], entities->collisions[i], map, deltaTime);
 		sniff(itemGrid, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
+		detectWall(entities->moves[i], entities->collisions[i], map, deltaTime);
 	}
 }
 
