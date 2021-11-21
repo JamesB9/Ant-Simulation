@@ -97,10 +97,6 @@ int main() {
 
 	// Entities
 	Entities* entities = initEntities(Config::ANT_COUNT);
-	sf::VertexArray vertices(sf::Points, entities->entityCount);
-	for (int i = 0; i < entities->entityCount; i++) {
-		vertices[i].color = sf::Color::Red;
-	}
 
 	// Item Grid
 	ItemGrid* itemGrid = initItemGrid(Config::ITEM_GRID_SIZE_X, Config::ITEM_GRID_SIZE_Y);
@@ -201,7 +197,7 @@ int main() {
 
 		////////////// SIMULATION //////////////
 		simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime);
-		setVertexData(vertices, *entities);
+
 		//setVertexDataCollision(collisionv, entities);
 
 
