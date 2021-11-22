@@ -12,22 +12,23 @@ bool Simulation::loadFromFile(std::string path) {
 	else {
 		std::cout << "Succesfully loaded map: " << path << std::endl;
 	}
+
+
 	//Initialisation
 
-	int scaleMultiplier = 8;
+	float scaleMultiplier =(imgMap.getSize().x<=80)? (float) 160/ (float) imgMap.getSize().x:2;
+
+	std::cout << "Scale: " << scaleMultiplier << std::endl;
 
 	entities = initEntities(Config::ANT_COUNT);
-	itemGrid = initItemGrid(imgMap.getSize().x*scaleMultiplier, imgMap.getSize().y * scaleMultiplier);
+	itemGrid = initItemGrid((int)imgMap.getSize().x*scaleMultiplier, (int) imgMap.getSize().y * scaleMultiplier);
 
 	for (int i = 0; i < imgMap.getSize().x * scaleMultiplier; i++) {
 		for (int j = 0; j < imgMap.getSize().y * scaleMultiplier; j++) {
 			sf::Color color;
 			color = imgMap.getPixel((int) (i / scaleMultiplier), (int) (j / scaleMultiplier));
 			if (color != sf::Color::Black && color != sf::Color::White) {
-				int cellIndex = getCellIndex(*itemGrid, i, j);
-
-				std::cout << cellIndex << std::endl;
-
+				int cellIndex = getCellIndex(*itemGrid, (int) i, (int) j);
 				Cell& cell = itemGrid->worldCells[cellIndex];
 				cell.foodCount = (color.g/25)*5;
 			}
