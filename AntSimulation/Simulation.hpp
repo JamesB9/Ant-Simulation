@@ -6,12 +6,13 @@
 #include "MarchingSquares.hpp"
 #include "Config.hpp"
 #include "EntityRenderer.hpp"
+#include <math.h>
 
 class Simulation {
 public:
 	Simulation();
 
-	bool loadFromFile(std::string path);
+	bool loadFromFile(std::string path, bool antiAliasing=false);
 	void generateRandom();
 
 	void update(float deltaTime);
