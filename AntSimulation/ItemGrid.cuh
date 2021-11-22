@@ -31,6 +31,8 @@ struct Cell {
 };
 
 struct ItemGrid {
+	float cellWidth;
+	float cellHeight;
 	int sizeX;
 	int sizeY;
 	int totalCells;

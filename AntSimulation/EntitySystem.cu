@@ -73,16 +73,20 @@ __device__ void move(MoveComponent& move, curandState* state, float deltaTime) {
 	//printf("acx %.2f acy %.2f \n", acceleration.x, acceleration.y);
 }
 
+__device__ Vec2f getCellCoordinate(ItemGrid* itemGrid, float x, float y) {
+	return { floorf(x / itemGrid->cellWidth), floorf(y / itemGrid->cellHeight) };
+}
 
 __device__ int getCellIndexDevice(ItemGrid* itemGrid, float x, float y) {
-	float widthOfCell = itemGrid->worldX / itemGrid->sizeX;
-	float heightOfCell = itemGrid->worldY / itemGrid->sizeY;
-
-	return (floorf(y / heightOfCell) * itemGrid->sizeX) + floorf(x / widthOfCell);
+	return (floorf(y / itemGrid->cellHeight) * itemGrid->sizeX) + floorf(x / itemGrid->cellWidth);
 }
 
 __device__ Cell* getCellDevice(ItemGrid* itemGrid, float x, float y) {
 	return &itemGrid->worldCells[getCellIndexDevice(itemGrid, x, y)];
+}
+
+__device__ int getCellIndex(ItemGrid* itemGrid, int x, int y) {
+	return (floorf(y) * itemGrid->sizeX) + floorf(x);
 }
 
 
@@ -97,6 +101,7 @@ __device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, Activi
 	activity.dropStrength -= activity.dropStrengthReduction * deltaTime;
 }
 
+/*
 __device__ void sniff(ItemGrid* itemGrid, MoveComponent& move, SniffComponent& sniff, ActivityComponent& activity, float deltaTime) {
 	Vec2f target = {};
 	float highestIntensity = 0.0f;
@@ -124,7 +129,102 @@ __device__ void sniff(ItemGrid* itemGrid, MoveComponent& move, SniffComponent& s
 		move.direction = target;
 	}
 }
+*/
 
+__device__ float getPheromoneIntensitySample(ItemGrid* itemGrid, float centerX, float centerY, int sampleRadius, int pheromoneType) {
+	Vec2f cellCoordinate = getCellCoordinate(itemGrid, centerX, centerY);
+	float totalIntensity = 0;
+	for (int dx = centerX - sampleRadius; dx < centerX + sampleRadius; dx++) {
+		for (int dy = centerY - sampleRadius; dy < centerY + sampleRadius; dy++) {
+			totalIntensity += itemGrid->worldCells[getCellIndex(itemGrid, dx, dy)].pheromones[pheromoneType];
+		}
+	}
+
+	return totalIntensity;
+}
+
+__device__ void sniff(ItemGrid* itemGrid, MoveComponent& move, SniffComponent& sniff, ActivityComponent& activity, float deltaTime) {
+	float distance = 10;
+	int sampleRadius = 3;
+	// Get CELLS
+	Cell* currentCell = getCellDevice(itemGrid, move.position.x, move.position.y);
+
+	float angle = move.angle - M_PI_2;
+	float leftIntensity = getPheromoneIntensitySample(itemGrid, 
+		move.position.x + distance * sin(angle), 
+		move.position.y + distance * cos(angle), 
+		sampleRadius, sniff.sniffPheromone);
+
+	angle = move.angle + M_PI_2;
+	float rightIntensity = getPheromoneIntensitySample(itemGrid,
+		move.position.x + distance * sin(angle),
+		move.position.y + distance * cos(angle),
+		sampleRadius, sniff.sniffPheromone);
+	
+	angle = move.angle;
+	/*
+	float middleIntensity = getPheromoneIntensitySample(itemGrid,
+		move.position.x + distance * sin(angle),
+		move.position.y + distance * cos(angle),
+		sampleRadius, sniff.sniffPheromone);
+	*/
+
+	if (leftIntensity > rightIntensity) {
+		angle = move.angle - M_PI_2;
+		move.direction = { sin(angle) , cos(angle) };
+	}
+	else if (rightIntensity > leftIntensity) {
+		angle = move.angle + M_PI_2;
+		move.direction = { sin(angle) , cos(angle) };
+	}
+
+	if (currentCell->foodCount > 0.0f) { // FOOD FOUND!!
+		currentCell->foodCount -= 1;
+		activity.currentActivity = 1;
+		sniff.sniffPheromone = 0;
+		activity.dropStrength = 1.0f;
+	}
+	if (move.position.x > 390 && move.position.x < 410 && move.position.y > 390 && move.position.y < 410) { // HOME FOUND!!
+		activity.currentActivity = 0;
+		sniff.sniffPheromone = 1;
+		activity.dropStrength = 1.0f;
+	}
+	/*
+
+	if (activity.currentActivity == 0) { // IF LEAVING HOME
+		if (leftCell->foodCount > 0.0f || leftCell->pheromones[sniff.sniffPheromone] > rightCell->pheromones[sniff.sniffPheromone]) { // GO LEFT
+			angle = move.angle - M_PI_2;
+			move.direction = { sin(angle) , cos(angle) };
+		}
+		else if (rightCell->foodCount > 0.0f || leftCell->pheromones[sniff.sniffPheromone] < rightCell->pheromones[sniff.sniffPheromone]) { // GO RIGHT
+			angle = move.angle + M_PI_2;
+			move.direction = { sin(angle) , cos(angle) };
+		}
+
+		if (currentCell->foodCount > 0.0f) { // FOOD FOUND!!
+			currentCell->foodCount -= 1;
+			activity.currentActivity = 1;
+			sniff.sniffPheromone = 0;
+			activity.dropStrength = 1.0f;
+		}
+	}
+	else { // IF FOOD HAS BEEN FOUND
+		if (leftCell->pheromones[sniff.sniffPheromone] > rightCell->pheromones[sniff.sniffPheromone]) { // GO LEFT
+			angle = move.angle - M_PI_2;
+			move.direction = { sin(angle) , cos(angle) };
+		}
+		else if (leftCell->pheromones[sniff.sniffPheromone] < rightCell->pheromones[sniff.sniffPheromone]) { // GO RIGHT
+			angle = move.angle + M_PI_2;
+			move.direction = { sin(angle) , cos(angle) };
+		}
+	}
+
+	if (move.position.x > 390 && move.position.x < 410 && move.position.y > 390 && move.position.y < 410) { // HOME FOUND!!
+		activity.currentActivity = 0;
+		sniff.sniffPheromone = 1;
+		activity.dropStrength = 1.0f;
+	}*/
+}
 
 __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, Map* map, float deltaTime) {
 	//Notes for wall detection
@@ -215,7 +315,7 @@ __global__ void simulateEntities(
 	for (int i = index; i < entities->entityCount; i += stride) { // For Each entity for this thread
 		move(entities->moves[i], &state ,deltaTime);
 		releasePheromone(itemGrid, entities->moves[i],  entities->activities[i],  deltaTime);
-		sniff(itemGrid, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
+		//sniff(itemGrid, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
 		detectWall(entities->moves[i], entities->collisions[i], map, deltaTime);
 	}
 }
@@ -256,7 +356,7 @@ Entities* initEntities(int entityCount) {
 		entities->sniffs[i].sniffPheromone = FOUND_FOOD;
 
 		entities->moves[i].position = { 400.0f, 400.0f };
-		entities->moves[i].direction = 0.0f;
+		entities->moves[i].direction = { 0.0f, 0.0f };
 		entities->moves[i].velocity = { 0.0f, 0.0f };
 		entities->moves[i].maxSpeed = Config::ANT_MAX_SPEED;
 		entities->moves[i].turningForce = Config::ANT_TURN_FORCE;

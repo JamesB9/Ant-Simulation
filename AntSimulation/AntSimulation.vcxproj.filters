@@ -47,6 +47,9 @@
     <ClCompile Include="EntityRenderer.cpp">
       <Filter>src\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="TextRenderer.cpp">
+      <Filter>src\Rendering</Filter>
+    </ClCompile>
     <ClCompile Include="Simulation.cpp">
       <Filter>src\Simulation</Filter>
     </ClCompile>
@@ -86,6 +89,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="EntityRenderer.hpp">
+      <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="TextRenderer.h">
       <Filter>src\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="Simulation.hpp">

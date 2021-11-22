@@ -34,6 +34,9 @@ ItemGrid* initItemGrid(int sizeX, int sizeY) {
 	itemGrid->worldX = Config::WORLD_SIZE_X;
 	itemGrid->worldY = Config::WORLD_SIZE_Y;
 
+	itemGrid->cellWidth = itemGrid->worldX / itemGrid->sizeX;
+	itemGrid->cellHeight = itemGrid->worldY / itemGrid->sizeY;
+
 	itemGrid->worldCells = createItemGridCellArray(itemGrid->totalCells);
 	for (int i = 0; i < itemGrid->totalCells; i++) {
 		itemGrid->worldCells[i].foodCount = 0.0f;
