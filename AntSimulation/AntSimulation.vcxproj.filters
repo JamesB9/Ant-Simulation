@@ -47,6 +47,9 @@
     <ClCompile Include="EntityRenderer.cpp">
       <Filter>src\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="TextRenderer.cpp">
+      <Filter>src\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.cuh">
@@ -83,6 +86,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="EntityRenderer.hpp">
+      <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="TextRenderer.h">
       <Filter>src\Rendering</Filter>
     </ClInclude>
   </ItemGroup>

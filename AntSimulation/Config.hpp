@@ -16,7 +16,7 @@ namespace Config {
 	static const int MAP_SEED					= 1111; // -1 for random map
 
 	////////////// ANTS //////////////
-	static const int ANT_COUNT					= 100;
+	static const int ANT_COUNT					= 10000;
 	static const float ANT_MAX_SPEED			= 15.0f;
 	static const float ANT_TURN_FORCE			= ANT_MAX_SPEED * 30.0f;
 	static const float ANT_ROAM_STRENGTH		= 2.5f;

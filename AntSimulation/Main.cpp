@@ -24,6 +24,7 @@
 #include "MarchingSquares.hpp"
 #include "Config.hpp"
 #include "EntityRenderer.hpp"
+#include "TextRenderer.h"
 
 
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities& entities, int threadCount, int threadIndex) {
@@ -92,6 +93,9 @@ int main() {
 	sf::Clock deltaClock;
 	float deltaTime;
 
+	//TEXT
+	TextRenderer tr;
+
 
 	// SETUP SIMULATION //
 
@@ -145,11 +149,13 @@ int main() {
 		collisionv[i].color = sf::Color::Green;
 	}
 
+	tr.write("FPS", "FPS: ", 20, sf::Vector2f(0.0f, 0.0f));
 	while (window.isOpen()) {
 		////////////// FPS & DELTATIME //////////////
 		deltaTime = deltaClock.restart().asSeconds();
 		int fps = 1 / deltaTime;
-		printf("FPS = %d\n", fps);
+		//printf("FPS = %d\n", fps);
+		tr.update("FPS", TextRenderer::MODIFY_TYPE::TEXT, "FPS: "+to_string(fps));
 
 		////////////// CLEAR SCREEN //////////////
 		window.clear(sf::Color(10, 10, 10));
@@ -233,6 +239,7 @@ int main() {
 		window.draw(*mapArray);
 		//window.draw(shape, mapTransform);
 		//tmanager.queueJob(drawFrame);
+		tr.render(window);
 
 		////////////// UPDATE WINDOW //////////////
 		window.setView(view);
