@@ -15,7 +15,7 @@ Map* makeMapPointer(std::string path) {
 	cudaMallocManaged(&map, sizeof(Map));
 
 	sf::Image imgMap;
-	if (!imgMap.loadFromFile("Maps\\test_map.png")) {
+	if (!imgMap.loadFromFile(path)) {
 		std::cout << "ERROR" << std::endl;
 
 	}

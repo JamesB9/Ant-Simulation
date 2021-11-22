@@ -11,7 +11,7 @@ class Simulation {
 public:
 	Simulation();
 
-	void loadFromFile(std::string path);
+	bool loadFromFile(std::string path);
 	void generateRandom();
 
 	void update(float deltaTime);
