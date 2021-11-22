@@ -50,6 +50,9 @@
     <ClCompile Include="TextRenderer.cpp">
       <Filter>src\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="Simulation.cpp">
+      <Filter>src\Simulation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.cuh">
@@ -90,6 +93,9 @@
     </ClInclude>
     <ClInclude Include="TextRenderer.h">
       <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation.hpp">
+      <Filter>src\Simulation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

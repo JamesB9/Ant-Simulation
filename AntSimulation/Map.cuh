@@ -54,6 +54,7 @@ struct Coord {
 };
 
 Map* makeMapPointer(int width, int height);
+Map* makeMapPointer(std::string path);
 int getMapValueAt(Map& map, int x, int y);
 void setMapValueAt(Map& map, int x, int y, int val);
 

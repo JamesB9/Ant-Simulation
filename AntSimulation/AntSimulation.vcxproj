@@ -49,7 +49,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(VisualStudioDir)\Libraries\glfw-3.3.4.bin.WIN64\include;$(VisualStudioDir)\Libraries\glm-0.9.9.8\glm;$(SystemDrive)\VulkanSDK\1.2.189.2\Include;$(VisualStudioDir)\Libraries\SFML-2.5.1\include;$(VisualStudioDir)\Libraries\SFML-2.5.1\bin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -92,6 +92,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MarchingSquares.cpp" />
     <ClCompile Include="TextRenderer.cpp" />
+    <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="ThreadPoolManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +106,7 @@
     <ClInclude Include="Map.cuh" />
     <ClInclude Include="MarchingSquares.hpp" />
     <ClInclude Include="TextRenderer.h" />
+    <ClInclude Include="Simulation.hpp" />
     <ClInclude Include="ThreadPoolManager.h" />
     <ClInclude Include="Utilities.cuh" />
     <ClInclude Include="Utilities.h" />
