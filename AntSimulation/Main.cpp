@@ -100,7 +100,7 @@ int main() {
 
 	//SIMULATION
 	Simulation simulation;
-	if (!simulation.loadFromFile("Maps\\test_map_food.png", true)) {
+	if (!simulation.loadFromFile("Maps\\test_map_food_2.png", true)) {
 		exit(EXIT_FAILURE);
 	}
 
