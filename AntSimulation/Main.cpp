@@ -92,7 +92,6 @@ int main() {
 	sf::Clock deltaClock;
 	float deltaTime;
 
-
 	// SETUP SIMULATION //
 
 	// Entities
