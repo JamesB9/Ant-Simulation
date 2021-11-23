@@ -82,6 +82,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CudaCompile Include="Colony.cu" />
     <CudaCompile Include="EntitySystem.cu" />
     <CudaCompile Include="ItemGrid.cu" />
     <CudaCompile Include="Map.cu" />
@@ -102,6 +103,7 @@
     <ClInclude Include="Components.cuh" />
     <ClInclude Include="Entities.cuh" />
     <ClInclude Include="GridRenderer.hpp" />
+    <ClInclude Include="Colony.cuh" />
     <ClInclude Include="ItemGrid.cuh" />
     <ClInclude Include="Map.cuh" />
     <ClInclude Include="MarchingSquares.hpp" />

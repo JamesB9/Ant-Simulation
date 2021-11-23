@@ -1,4 +1,5 @@
 #include "Simulation.hpp";
+#include <SFML/Window/Mouse.hpp>
 
 Simulation::Simulation() {}
 
@@ -70,13 +71,21 @@ void Simulation::updateCellFood(sf::Vector2f mousePos) {
 void Simulation::update(float deltaTime) {
 	gridRenderer->update(*itemGrid, deltaTime);
 	entityRenderer->update(deltaTime);
-	simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime);
+	simulateEntitiesOnGPU(entities, itemGrid, map, colonies, deltaTime);
 }
 
 void Simulation::render(sf::RenderWindow* window) {
 	gridRenderer->render(window);
 	entityRenderer->render(window);
 	window->draw(*mapArray);
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
+		if (mousePos.x < Config::WORLD_SIZE_X && mousePos.y < Config::WORLD_SIZE_Y && mousePos.x > 0 && mousePos.y > 0) {
+			Cell* cell = getCell(itemGrid, mousePos.x, mousePos.y);
+			printf("%f, %f\n", cell->pheromones[0], cell->pheromones[1]);
+		}
+	}
 }
 
 //Other Methods
@@ -89,4 +98,11 @@ void Simulation::genericSetup() {
 	map->wallCount = mapVertices->size() / 2;
 
 	mapArray = getVArrayFromVertices(*mapVertices);
+
+	// COLONIES //
+	colonies = createColoniesArray(Config::COLONY_COUNT);
+	colonies[0].antCount = 0;
+	colonies[0].nestPositionX = 400;
+	colonies[0].nestPositionY = 400;
+	colonies[0].nestRadius = 10;
 }

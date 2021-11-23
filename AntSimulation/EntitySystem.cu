@@ -101,35 +101,6 @@ __device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, Activi
 	activity.dropStrength -= activity.dropStrengthReduction * deltaTime;
 }
 
-/*
-__device__ void sniff(ItemGrid* itemGrid, MoveComponent& move, SniffComponent& sniff, ActivityComponent& activity, float deltaTime) {
-	Vec2f target = {};
-	float highestIntensity = 0.0f;
-	bool stop = false;
-	for (int dx = -sniff.sniffMaxDistance; dx < sniff.sniffMaxDistance && !stop; dx++) {
-		for (int dy = -sniff.sniffMaxDistance; dy < sniff.sniffMaxDistance && !stop; dy++) {
-			Cell* cell = getCellDevice(itemGrid, move.position.x + dx, move.position.y + dy);
-
-			if (cell->pheromones[sniff.sniffPheromone] > highestIntensity) {
-				highestIntensity = cell->pheromones[sniff.sniffPheromone];
-				target = { (float)dx, (float)dy };
-			}
-
-			if (cell->foodCount > 0 && sniff.sniffPheromone == 1) { // Found Food & (TEMPORARY EAT IT)
-				target = { (float)dx, (float)dy };
-				stop = true;
-				cell->foodCount -= 1;
-				activity.currentActivity = 1;
-				sniff.sniffPheromone = 0;
-				activity.dropStrength = 1.0f;
-			}
-		}
-	}
-	if (highestIntensity > 0.0f || stop) {
-		move.direction = target;
-	}
-}
-*/
 
 __device__ float getPheromoneIntensitySample(ItemGrid* itemGrid, float centerX, float centerY, int sampleRadius, int pheromoneType) {
 	Vec2f cellCoordinate = getCellCoordinate(itemGrid, centerX, centerY);
@@ -143,9 +114,9 @@ __device__ float getPheromoneIntensitySample(ItemGrid* itemGrid, float centerX, 
 	return totalIntensity;
 }
 
-__device__ void sniff(ItemGrid* itemGrid, MoveComponent& move, SniffComponent& sniff, ActivityComponent& activity, float deltaTime) {
-	float distance = 10;
-	int sampleRadius = 3;
+__device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move, SniffComponent& sniff, ActivityComponent& activity, float deltaTime) {
+	float distance = 30;
+	int sampleRadius = 5;
 	// Get CELLS
 	Cell* currentCell = getCellDevice(itemGrid, move.position.x, move.position.y);
 
@@ -178,16 +149,23 @@ __device__ void sniff(ItemGrid* itemGrid, MoveComponent& move, SniffComponent& s
 		move.direction = { sin(angle) , cos(angle) };
 	}
 
-	if (currentCell->foodCount > 0.0f) { // FOOD FOUND!!
+	if (activity.currentActivity == 0 && currentCell->foodCount > 0.0f) { // FOOD FOUND!!
 		currentCell->foodCount -= 1;
 		activity.currentActivity = 1;
 		sniff.sniffPheromone = 0;
-		activity.dropStrength = 1.0f;
+		activity.dropStrength = activity.maxDropStrength;
+		move.direction = { -move.direction.x, -move.direction.y };
 	}
-	if (move.position.x > 390 && move.position.x < 410 && move.position.y > 390 && move.position.y < 410) { // HOME FOUND!!
+
+	float nestX = colonies[activity.colonyId].nestPositionX;
+	float nestY = colonies[activity.colonyId].nestPositionY;
+	float nestRadius = colonies[activity.colonyId].nestRadius;
+
+	if (move.position.x > nestX - nestRadius && move.position.x < nestX + nestRadius && 
+		move.position.y > nestY - nestRadius && move.position.y < nestY + nestRadius) { // HOME FOUND!!
 		activity.currentActivity = 0;
 		sniff.sniffPheromone = 1;
-		activity.dropStrength = 1.0f;
+		activity.dropStrength = activity.maxDropStrength;
 	}
 	/*
 
@@ -226,7 +204,7 @@ __device__ void sniff(ItemGrid* itemGrid, MoveComponent& move, SniffComponent& s
 	}*/
 }
 
-__device__ void detectWall(MoveComponent& move, CollisionComponent& collision, Map* map, float deltaTime) {
+__device__ void detectWall(MoveComponent& move, CollisionComponent& collision, ActivityComponent& activity, Map* map, float deltaTime) {
 	//Notes for wall detection
 	//Cast ray out from and until you hit a 1 in the map
 	//if distance from wall to ant is small enough
@@ -289,6 +267,7 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, M
 		//Set direction
 		if (targetDistance < collision.collisionDistance) {
 			move.direction = (u - w);
+			activity.dropStrength *= 0.5f * deltaTime;
 		}
 	}
 	else if (wallIndex == -1) {
@@ -303,7 +282,8 @@ __global__ void simulateEntities(
 	Entities* entities,
 	float deltaTime,
 	ItemGrid* itemGrid,
-	Map* map)
+	Map* map,
+	Colony* colonies)
 {
 	//--RNG--
 	curandState state;
@@ -315,12 +295,12 @@ __global__ void simulateEntities(
 	for (int i = index; i < entities->entityCount; i += stride) { // For Each entity for this thread
 		move(entities->moves[i], &state ,deltaTime);
 		releasePheromone(itemGrid, entities->moves[i],  entities->activities[i],  deltaTime);
-		//sniff(itemGrid, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
-		detectWall(entities->moves[i], entities->collisions[i], map, deltaTime);
+		sniff(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
+		detectWall(entities->moves[i], entities->collisions[i], entities->activities[i], map, deltaTime);
 	}
 }
 
-int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, float deltaTime) {
+int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, Colony* colonies, float deltaTime) {
 	// Time Per Drop
 	//ActivityComponent::timeSinceDrop +=
 
@@ -331,7 +311,8 @@ int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, floa
 		entities,
 		deltaTime,
 		itemGrid,
-		map);
+		map,
+		colonies);
 
 	// Wait for GPU to finish before accessing on host
 	cudaDeviceSynchronize();
@@ -372,6 +353,9 @@ Entities* initEntities(int entityCount) {
 		entities->activities[i].dropStrengthReduction = Config::DROP_STRENGTH_REDUCTION;
 		entities->activities[i].timeSinceDrop = 0.0f;
 		entities->activities[i].timePerDrop = Config::PHEROMONE_DROP_TIME;
+		entities->activities[i].maxDropStrength = Config::INITIAL_DROP_STRENGTH;
+
+		entities->activities[i].colonyId = 0; // CHANGE LATER
 	}
 
 	return entities;

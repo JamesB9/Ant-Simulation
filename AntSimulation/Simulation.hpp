@@ -6,6 +6,7 @@
 #include "MarchingSquares.hpp"
 #include "Config.hpp"
 #include "EntityRenderer.hpp"
+#include "Colony.cuh";
 
 class Simulation {
 public:
@@ -20,7 +21,7 @@ public:
 	void render(sf::RenderWindow* window);
 
 private:
-
+	Colony* colonies;
 	Entities* entities;
 	ItemGrid* itemGrid;
 	Map* map;
