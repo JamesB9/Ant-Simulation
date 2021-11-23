@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5679C1E3-0416-4FD4-96F2-5D20CB116C31}</ProjectGuid>
     <RootNamespace>AntSimulation</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -48,11 +49,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(VisualStudioDir)\Libraries\glfw-3.3.4.bin.WIN64\include;$(VisualStudioDir)\Libraries\glm-0.9.9.8\glm;$(SystemDrive)\VulkanSDK\1.2.189.2\Include;$(VisualStudioDir)\Libraries\SFML-2.5.1\include;$(VisualStudioDir)\Libraries\SFML-2.5.1\bin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;sfml-graphics.lib;sfml-system.lib;sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;sfml-graphics-d.lib;sfml-system-d.lib;sfml-window-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VisualStudioDir)\Libraries\SFML-2.5.1\lib;$(VisualStudioDir)\Libraries\glm;$(VisualStudioDir)\Libraries\glfw-3.3.4.bin.WIN64\lib-vc2019;$(SystemDrive)\VulkanSDK\1.2.189.2\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ForceFileOutput>MultiplyDefinedSymbolOnly</ForceFileOutput>
     </Link>
@@ -80,6 +82,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CudaCompile Include="Colony.cu" />
     <CudaCompile Include="EntitySystem.cu" />
     <CudaCompile Include="ItemGrid.cu" />
     <CudaCompile Include="Map.cu" />
@@ -93,6 +96,8 @@
     </ClCompile>
     <ClCompile Include="MarchingSquares.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
+    <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="ThreadPoolManager.cpp" />
     <ClCompile Include="ThreadTestMain.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -106,10 +111,13 @@
     <ClInclude Include="Components.cuh" />
     <ClInclude Include="Entities.cuh" />
     <ClInclude Include="GridRenderer.hpp" />
+    <ClInclude Include="Colony.cuh" />
     <ClInclude Include="ItemGrid.cuh" />
     <ClInclude Include="Map.cuh" />
     <ClInclude Include="MarchingSquares.hpp" />
     <ClInclude Include="ThreadPool.hpp" />
+    <ClInclude Include="TextRenderer.h" />
+    <ClInclude Include="Simulation.hpp" />
     <ClInclude Include="ThreadPoolManager.h" />
     <ClInclude Include="Utilities.cuh" />
     <ClInclude Include="Utilities.h" />

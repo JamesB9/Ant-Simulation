@@ -25,10 +25,11 @@
 #include "ItemGrid.cuh"
 #include "Map.cuh"
 #include "Config.hpp"
+#include "Colony.cuh"
 
 MoveComponent* createMoveComponentArray(int n);
 SniffComponent* createSniffComponentArray(int n);
 ActivityComponent* createActivityComponentArray(int n);
 
-Entities* initEntities(int entityCount);
-int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, float deltaTime);
+Entities* initEntities(Colony* colonies, int entityCount);
+int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, Colony* colonies, float deltaTime);

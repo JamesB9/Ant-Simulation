@@ -45,9 +45,12 @@ struct CollisionComponent {
 struct ActivityComponent
 {
     int currentActivity;
+    float maxDropStrength;
     float dropStrength;
     float dropStrengthReduction;
 
     float timeSinceDrop;
     float timePerDrop;
+
+    int colonyId;
 };

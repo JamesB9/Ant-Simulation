@@ -19,16 +19,22 @@
     <Filter Include="src\Simulation\Map">
       <UniqueIdentifier>{4683a28b-29f0-43f4-a138-f613137f7386}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Simulation\Entities">
+      <UniqueIdentifier>{cf16b9a4-8c86-4296-877e-12fb42358574}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="EntitySystem.cu">
-      <Filter>src\Simulation</Filter>
-    </CudaCompile>
     <CudaCompile Include="ItemGrid.cu">
       <Filter>src\Simulation\DS</Filter>
     </CudaCompile>
     <CudaCompile Include="Map.cu">
       <Filter>src\Simulation\Map</Filter>
+    </CudaCompile>
+    <CudaCompile Include="EntitySystem.cu">
+      <Filter>src\Simulation\Entities</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Colony.cu">
+      <Filter>src\Simulation\Entities</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
@@ -51,19 +57,16 @@
       <Filter>src\Utilities</Filter>
     </ClCompile>
     <ClCompile Include="ThreadTestMain.cpp">
-      <Filter>src\Utilities</Filter>
+        <Filter>src\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="TextRenderer.cpp">
+      <Filter>src\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation.cpp">
+      <Filter>src\Simulation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Components.cuh">
-      <Filter>src\Simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="Entities.cuh">
-      <Filter>src\Simulation</Filter>
-    </ClInclude>
-    <ClInclude Include="EntitySystem.cuh">
-      <Filter>src\Simulation</Filter>
-    </ClInclude>
     <ClInclude Include="Utilities.cuh">
       <Filter>src\Utilities</Filter>
     </ClInclude>
@@ -93,6 +96,24 @@
     </ClInclude>
     <ClInclude Include="ThreadPool.hpp">
       <Filter>src\Utilities</Filter>
+     </ClInclude>
+    <ClInclude Include="TextRenderer.h">
+      <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation.hpp">
+      <Filter>src\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.cuh">
+      <Filter>src\Simulation\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities.cuh">
+      <Filter>src\Simulation\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="EntitySystem.cuh">
+      <Filter>src\Simulation\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Colony.cuh">
+      <Filter>src\Simulation\Entities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
