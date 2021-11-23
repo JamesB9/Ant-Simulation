@@ -27,7 +27,7 @@
 #include "TextRenderer.h"
 #include "Simulation.hpp"
 
-
+/*
 void setVertexDataThreaded(sf::VertexArray* vertices, Entities& entities, int threadCount, int threadIndex) {
 	int entitiesPerThread = (entities.entityCount / threadCount);
 	//cout << "[Thread #" << this_thread::get_id() << "] - Threaded Task #" << threadIndex << "/" << threadCount << " - Job: " << entitiesPerThread << " translations, from " << entitiesPerThread * threadIndex << " to " << (entitiesPerThread * threadIndex) + entitiesPerThread << endl;
@@ -36,6 +36,14 @@ void setVertexDataThreaded(sf::VertexArray* vertices, Entities& entities, int th
 		(*vertices)[i].position.y = entities.moves[i].position.y;
 	}
 }
+
+void queueVertexData(ThreadPoolManager& tm, sf::VertexArray* vertices, Entities& entities) {
+	for (int i = 0; i < tm.threadCount; i++) { // For every thread
+		tm.queueJob({ 3, false, [&vertices, &entities, &tm, i] { setVertexDataThreaded(vertices, entities, tm.threadCount, i); } });
+	}
+}
+*/
+
 
 void setVertexData(sf::VertexArray& vertices, Entities& entities) {
 	for (int i = 0; i < entities.entityCount; i++) {
@@ -46,11 +54,7 @@ void setVertexData(sf::VertexArray& vertices, Entities& entities) {
 	}
 }
 
-void queueVertexData(ThreadPoolManager& tm, sf::VertexArray* vertices, Entities& entities) {
-	for (int i = 0; i < tm.threadCount; i++) { // For every thread
-		tm.queueJob({ 3, false, [&vertices, &entities, &tm, i] { setVertexDataThreaded(vertices, entities, tm.threadCount, i); } });
-	}
-}
+
 
 //Dev testing
 void setVertexDataCollision(sf::VertexArray& vertices, Entities& entities) {

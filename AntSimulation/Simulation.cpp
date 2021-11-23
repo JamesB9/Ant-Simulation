@@ -1,7 +1,10 @@
 #include "Simulation.hpp";
 #include <SFML/Window/Mouse.hpp>
-
-Simulation::Simulation() {}
+#include "ThreadPool.hpp"
+Simulation::Simulation() {
+	ThreadPool threadPool;
+	threadPool.createThreads(&threadPool);
+}
 
 
 //Main Setups

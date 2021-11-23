@@ -27,6 +27,9 @@ private:
 	ItemGrid* itemGrid;
 	Map* map;
 
+	//ThreadPool
+
+
 
 	GridRenderer* gridRenderer;
 	EntityRenderer* entityRenderer;

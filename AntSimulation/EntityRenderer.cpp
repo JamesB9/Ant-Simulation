@@ -36,13 +36,39 @@ void EntityRenderer::init() {
 
 	}
 }
+//Threading:
+sf::Vector2i EntityRenderer::getEntitiesSet() {
+	mutex.lock();
+	int x = currentSet;
+	int y= 0;
+	currentSet += entitiesPerSet;
+	mutex.unlock();
+	return ;
+}
+
+void EntityRenderer::vertextDataSet(void* deltaTime){
+	int setStart = getEntitiesSet();
+	float deltaTime = *(float*)deltaTime;
+
+	for (int i = setStart; i < setStart + entitiesPerSet; i++) {
+		int vertex = i * 4;
+		//vertexArray[i].position = sf::Vector2f((800.0f / grid->worldX)*x + 0.5f, (800.0f / grid->worldY) * y + 0.5f);
+		//vertexArray[i].color = defaultColour;
+		float x = entities->moves[i].position.x;
+		float y = entities->moves[i].position.y;
+		vertexArray[vertex].position = sf::Vector2f(x, y);
+		vertexArray[vertex + 1].position = sf::Vector2f(x + antSize, y);
+		vertexArray[vertex + 2].position = sf::Vector2f(x + antSize, y + antSize);
+		vertexArray[vertex + 3].position = sf::Vector2f(x, y + antSize);
+	}
+}
 
 void EntityRenderer::render(sf::RenderWindow* window) {
 	//std::cout << vertexArray.getVertexCount() << std::endl;
 	window->draw(vertexArray);
 }
 
-void EntityRenderer::update(float deltaTime) {
+void EntityRenderer::setVertexData(float deltaTime) {
 	for (int i = 0; i < entities->entityCount; i++) {
 		int vertex = i * 4;
 		//vertexArray[i].position = sf::Vector2f((800.0f / grid->worldX)*x + 0.5f, (800.0f / grid->worldY) * y + 0.5f);
@@ -54,4 +80,8 @@ void EntityRenderer::update(float deltaTime) {
 		vertexArray[vertex + 2].position = sf::Vector2f(x + antSize, y + antSize);
 		vertexArray[vertex + 3].position = sf::Vector2f(x, y + antSize);
 	}
+}
+
+void EntityRenderer::update(float deltaTime) {
+	setVertexData(deltaTime);
 }
