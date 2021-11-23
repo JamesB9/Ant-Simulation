@@ -6,22 +6,35 @@
 #include <atomic>
 #include <cassert>
 #include <vector>;
+
+struct Job {
+    Job(std::function<void(void*)> function, void* args) : function{ function }, args{ args }{}
+    std::function<void(void*)> function;
+    void* args;
+};
+
+
 class ThreadPool {
 public:
+    const int NUMBER_OF_THREADS = std::thread::hardware_concurrency();
     ThreadPool();
     ~ThreadPool();
-    void push(std::function<void()> func);
+    void push(Job job);
     void done();
     void infinite_loop_func();
     void createThreads(ThreadPool* tp);
-private:
-    std::queue<std::function<void()>> m_function_queue;
-    std::mutex m_lock;
-    std::condition_variable m_data_condition;
-    std::atomic<bool> m_accept_functions;
+    void join(int i) {
+        threadPool.at(i).join();
+    }
 
+private:
+    std::queue<Job> jobQueue;
+    std::mutex mutexLock;
+    std::condition_variable dataCondition;
+    std::atomic<bool> acceptFunctions;
     std::vector<std::thread> threadPool;
-    const int NUMBER_OF_THREADS = std::thread::hardware_concurrency();
+
+
 
 
 };

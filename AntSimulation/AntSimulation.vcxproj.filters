@@ -47,6 +47,12 @@
     <ClCompile Include="EntityRenderer.cpp">
       <Filter>src\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
+      <Filter>src\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadTestMain.cpp">
+      <Filter>src\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.cuh">
@@ -84,6 +90,9 @@
     </ClInclude>
     <ClInclude Include="EntityRenderer.hpp">
       <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.hpp">
+      <Filter>src\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
