@@ -21,7 +21,7 @@ void ThreadPool::done(){
     //notify all waiting threads.
 }
 
-void ThreadPool::infinite_loop_func(){
+void ThreadPool::infiniteLoopFunc(){
     std::function<void(void*)> function;
     void* args;
     while (true){
@@ -45,6 +45,6 @@ void ThreadPool::infinite_loop_func(){
 
 void ThreadPool::createThreads(ThreadPool* tp) {
     for (int i = 0; i < NUMBER_OF_THREADS; i++) {
-        threadPool.push_back(std::thread(&ThreadPool::infinite_loop_func, tp));
+        threadPool.push_back(std::thread(&ThreadPool::infiniteLoopFunc, tp));
     }
 }

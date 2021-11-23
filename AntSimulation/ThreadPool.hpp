@@ -21,7 +21,7 @@ public:
     ~ThreadPool();
     void push(Job job);
     void done();
-    void infinite_loop_func();
+    void infiniteLoopFunc();
     void createThreads(ThreadPool* tp);
     void join(int i) {
         threadPool.at(i).join();
