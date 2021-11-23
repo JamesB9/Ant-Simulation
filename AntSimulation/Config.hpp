@@ -8,7 +8,7 @@ namespace Config {
 	////////////// PHEROMONES //////////////
 	static const int ITEM_GRID_SIZE_X			= 200;
 	static const int ITEM_GRID_SIZE_Y			= 200;
-	static const float PHEROMONE_DECAY_STRENGH	= 0.005f; // Intensity
+	static const float PHEROMONE_DECAY_STRENGH	= 0.1f; // Intensity
 
 	////////////// MAP //////////////
 	static const int MAP_SIZE_X					= 80;
@@ -23,8 +23,8 @@ namespace Config {
 	static const float ANT_COLLISION_DISTANCE	= 25.0f;
 	static const int ANT_MAX_SNIFF_DISTANCE		= 5;
 
-	static const float INITIAL_DROP_STRENGTH	= 0.02f; // Max Pheromone drop strength
-	static const float DROP_STRENGTH_REDUCTION  = 0.00005f; // Reduction in pheromone drop strength per second
+	static const float INITIAL_DROP_STRENGTH	= 0.1f; // Max Pheromone drop strength
+	static const float DROP_STRENGTH_REDUCTION  = 0.001f; // Reduction in pheromone drop strength per second
 	static const float PHEROMONE_DROP_TIME = 0.1f; // Amount of time (seconds) between each pheromone drop by an ant
 
 	////////////// COLONIES //////////////

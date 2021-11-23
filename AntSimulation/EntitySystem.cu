@@ -95,8 +95,12 @@ __device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, Activi
 
 	if (activity.timeSinceDrop > activity.timePerDrop && activity.dropStrength > 0.0f) {
 		Cell* cell = getCellDevice(itemGrid, move.position.x, move.position.y);
-		cell->pheromones[activity.currentActivity] += activity.dropStrength;
-		activity.timeSinceDrop = 0;
+		if (activity.currentActivity == 0) { // IF LEAVING HOME
+			if (cell->pheromones[0] >= cell->pheromones[1]) { // Dont drop home pheromone onto food path
+				cell->pheromones[activity.currentActivity] += activity.dropStrength;
+				activity.timeSinceDrop = 0;
+			}
+		}
 	}
 	activity.dropStrength -= activity.dropStrengthReduction * deltaTime;
 }
@@ -105,8 +109,8 @@ __device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, Activi
 __device__ float getPheromoneIntensitySample(ItemGrid* itemGrid, float centerX, float centerY, int sampleRadius, int pheromoneType) {
 	Vec2f cellCoordinate = getCellCoordinate(itemGrid, centerX, centerY);
 	float totalIntensity = 0;
-	for (int dx = centerX - sampleRadius; dx < centerX + sampleRadius; dx++) {
-		for (int dy = centerY - sampleRadius; dy < centerY + sampleRadius; dy++) {
+	for (int dx = cellCoordinate.x - sampleRadius; dx < cellCoordinate.x + sampleRadius; dx++) {
+		for (int dy = cellCoordinate.y - sampleRadius; dy < cellCoordinate.y + sampleRadius; dy++) {
 			totalIntensity += itemGrid->worldCells[getCellIndex(itemGrid, dx, dy)].pheromones[pheromoneType];
 		}
 	}
@@ -115,8 +119,8 @@ __device__ float getPheromoneIntensitySample(ItemGrid* itemGrid, float centerX, 
 }
 
 __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move, SniffComponent& sniff, ActivityComponent& activity, float deltaTime) {
-	float distance = 30;
-	int sampleRadius = 5;
+	float distance = 15;
+	int sampleRadius = 3;
 	// Get CELLS
 	Cell* currentCell = getCellDevice(itemGrid, move.position.x, move.position.y);
 
@@ -166,6 +170,7 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 		activity.currentActivity = 0;
 		sniff.sniffPheromone = 1;
 		activity.dropStrength = activity.maxDropStrength;
+		colonies->totalFood += 1;
 	}
 }
 
@@ -232,7 +237,7 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, A
 		//Set direction
 		if (targetDistance < collision.collisionDistance) {
 			move.direction = (u - w);
-			activity.dropStrength *= 0.5f * deltaTime;
+			//activity.dropStrength *= 0.5f * deltaTime;
 		}
 	}
 	else if (wallIndex == -1) {
@@ -260,7 +265,7 @@ __global__ void simulateEntities(
 	for (int i = index; i < entities->entityCount; i += stride) { // For Each entity for this thread
 		move(entities->moves[i], &state ,deltaTime);
 		releasePheromone(itemGrid, entities->moves[i],  entities->activities[i],  deltaTime);
-		//sniff(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
+		sniff(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
 		detectWall(entities->moves[i], entities->collisions[i], entities->activities[i], map, deltaTime);
 	}
 }
