@@ -95,12 +95,8 @@ __device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, Activi
 
 	if (activity.timeSinceDrop > activity.timePerDrop && activity.dropStrength > 0.0f) {
 		Cell* cell = getCellDevice(itemGrid, move.position.x, move.position.y);
-		if (activity.currentActivity == 0) { // IF LEAVING HOME
-			if (cell->pheromones[0] >= cell->pheromones[1]) { // Dont drop home pheromone onto food path
-				cell->pheromones[activity.currentActivity] += activity.dropStrength;
-				activity.timeSinceDrop = 0;
-			}
-		}
+		cell->pheromones[activity.currentActivity] += activity.dropStrength;
+		activity.timeSinceDrop = 0;
 	}
 	activity.dropStrength -= activity.dropStrengthReduction * deltaTime;
 }
@@ -145,11 +141,11 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 	*/
 
 	if (leftIntensity > rightIntensity) {
-		angle = move.angle - M_PI_2;
+		angle = move.angle - (M_PI_2 * deltaTime);
 		move.direction = { cosf(angle) , sinf(angle) };
 	}
 	else if (rightIntensity > leftIntensity) {
-		angle = move.angle + M_PI_2;
+		angle = move.angle + (M_PI_2 * deltaTime);
 		move.direction = { cosf(angle) , sinf(angle) };
 	}
 
