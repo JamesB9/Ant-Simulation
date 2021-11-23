@@ -287,7 +287,7 @@ int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, Colo
 	return 0;
 }
 
-Entities* initEntities(int entityCount) {
+Entities* initEntities(Colony* colonies, int entityCount) {
 	Entities* entities;
 	cudaMallocManaged(&entities, sizeof(Entities));
 	entities->entityCount = entityCount;
@@ -298,10 +298,16 @@ Entities* initEntities(int entityCount) {
 	entities->collisions = createCollisionComponentArray(entities->entityCount);
 
 	for (unsigned int i = 0; i < entities->entityCount; i++) {
+		
+		entities->activities[i].colonyId = 0; // CHANGE LATER
+
 		entities->sniffs[i].sniffMaxDistance = Config::ANT_MAX_SNIFF_DISTANCE;
 		entities->sniffs[i].sniffPheromone = FOUND_FOOD;
 
-		entities->moves[i].position = { 400.0f, 400.0f };
+		entities->moves[i].position = { 
+			colonies[entities->activities[i].colonyId].nestPositionX, 
+			colonies[entities->activities[i].colonyId].nestPositionY 
+		};
 		entities->moves[i].direction = { 0.0f, 0.0f };
 		entities->moves[i].velocity = { 0.0f, 0.0f };
 		entities->moves[i].maxSpeed = Config::ANT_MAX_SPEED;
@@ -319,8 +325,6 @@ Entities* initEntities(int entityCount) {
 		entities->activities[i].timeSinceDrop = 0.0f;
 		entities->activities[i].timePerDrop = Config::PHEROMONE_DROP_TIME;
 		entities->activities[i].maxDropStrength = Config::INITIAL_DROP_STRENGTH;
-
-		entities->activities[i].colonyId = 0; // CHANGE LATER
 	}
 
 	return entities;

@@ -34,6 +34,6 @@ private:
 	std::vector<sf::Vector2f>* mapVertices;
 	sf::VertexArray* mapArray;
 
-
+	void createColonies();
 	void genericSetup();
 };

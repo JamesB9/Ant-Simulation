@@ -21,7 +21,8 @@ bool Simulation::loadFromFile(std::string path, bool antiAliasing) {
 
 	std::cout << "Scale: " << scaleMultiplier << std::endl;
 
-	entities = initEntities(Config::ANT_COUNT);
+	createColonies();
+	entities = initEntities(colonies, Config::ANT_COUNT);
 	itemGrid = initItemGrid((int)imgMap.getSize().x*scaleMultiplier, (int) imgMap.getSize().y * scaleMultiplier);
 	/*
 	for (int i = 0; i < imgMap.getSize().x * scaleMultiplier; i++) {
@@ -153,7 +154,9 @@ bool Simulation::loadFromFile(std::string path, bool antiAliasing) {
 }
 void Simulation::generateRandom() {
 	//Initialisation
-	entities = initEntities(Config::ANT_COUNT);
+
+	createColonies();
+	entities = initEntities(colonies, Config::ANT_COUNT);
 	itemGrid = initItemGrid(Config::ITEM_GRID_SIZE_X, Config::ITEM_GRID_SIZE_Y);
 	map = makeMapPointer(Config::MAP_SIZE_X, Config::MAP_SIZE_Y);
 	createMap(map);
@@ -207,7 +210,9 @@ void Simulation::genericSetup() {
 	map->wallCount = mapVertices->size() / 2;
 
 	mapArray = getVArrayFromVertices(*mapVertices);
+}
 
+void Simulation::createColonies() {
 	// COLONIES //
 	colonies = createColoniesArray(Config::COLONY_COUNT);
 	colonies[0].antCount = 0;
