@@ -100,10 +100,10 @@ int main() {
 
 	//SIMULATION
 	Simulation simulation;
-	simulation.generateRandom();
-	//if (!simulation.loadFromFile("Maps\\test_map_food_2.png")) {
-	//	exit(EXIT_FAILURE);
-	//}
+	//simulation.generateRandom();
+	if (!simulation.loadFromFile("Maps\\test_map_food_2.png", true)) {
+		exit(EXIT_FAILURE);
+	}
 
 	/*
 	sf::ConvexShape shape = sf::ConvexShape(mapArray->getVertexCount());
