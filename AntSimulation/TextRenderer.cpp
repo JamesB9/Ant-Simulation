@@ -9,6 +9,7 @@ void TextRenderer::write(string identifyer, string text, int size, sf::Vector2f 
 	if (!fontsAvailable) { printf("NO FONTS AVAILABLE, stopped text rendering\n"); return; }
 	titles.push_back(identifyer);
 	texts.insert({ identifyer, sf::Text(text, *getFont(font), size) });
+	texts.find(identifyer)->second.setPosition(position);
 }
 
 void TextRenderer::update(string identifyer, TextRenderer::MODIFY_TYPE param, string change) {

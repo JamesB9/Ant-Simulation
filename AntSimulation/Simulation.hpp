@@ -7,6 +7,7 @@
 #include "Config.hpp"
 #include "EntityRenderer.hpp"
 #include "Colony.cuh";
+#include "TextRenderer.h"
 #include <math.h>
 
 class Simulation {
@@ -19,7 +20,7 @@ public:
 	void update(float deltaTime);
 	void updateCellFood(sf::Vector2f mousePos);
 
-	void render(sf::RenderWindow* window);
+	void render(sf::RenderWindow* window, TextRenderer* tr);
 
 private:
 	Colony* colonies;
