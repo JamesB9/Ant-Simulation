@@ -35,6 +35,8 @@ private:
 	std::vector<sf::Vector2f>* mapVertices;
 	sf::VertexArray* mapArray;
 
+	sf::VertexArray collisionv;
+
 	void createColonies();
 	void genericSetup();
 };

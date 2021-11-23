@@ -17,14 +17,15 @@ namespace Config {
 
 	////////////// ANTS //////////////
 	static const int ANT_COUNT					= 1000;
-	static const float ANT_MAX_SPEED			= 15.0f;
-	static const float ANT_TURN_FORCE			= ANT_MAX_SPEED * 30.0f;
-	static const float ANT_ROAM_STRENGTH		= 2.5f;
+	static const float ANT_MAX_SPEED			= 25.0f;
+	static const float ANT_TURN_FORCE			= ANT_MAX_SPEED * 1.0f;
+	static const float ANT_ROAM_STRENGTH		= 0.15f;
 	static const float ANT_COLLISION_DISTANCE	= 25.0f;
 	static const int ANT_MAX_SNIFF_DISTANCE		= 5;
+	static const float ANT_SNIFF_STRENGTH = 5.0f;
 
 	static const float INITIAL_DROP_STRENGTH	= 0.1f; // Max Pheromone drop strength
-	static const float DROP_STRENGTH_REDUCTION  = 0.001f; // Reduction in pheromone drop strength per second
+	static const float DROP_STRENGTH_REDUCTION  = 0.000f; // Reduction in pheromone drop strength per second
 	static const float PHEROMONE_DROP_TIME = 0.1f; // Amount of time (seconds) between each pheromone drop by an ant
 
 	////////////// COLONIES //////////////

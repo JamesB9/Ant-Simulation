@@ -186,7 +186,37 @@ void Simulation::update(float deltaTime) {
 	simulateEntitiesOnGPU(entities, itemGrid, map, colonies, deltaTime);
 }
 
+//Dev testing
+void setVertexDataCollision(sf::VertexArray& vertices, Entities& entities) {
+	int vertexCounter = 0;
+	for (int i = 0; i < entities.entityCount; i++) {
+		vertices[vertexCounter].position.x =
+			entities.collisions[i].targetPosition.x;
+		vertices[vertexCounter].position.y =
+			entities.collisions[i].targetPosition.y;
+		vertices[vertexCounter + 1].position.x =
+			entities.moves[i].position.x;
+		vertices[vertexCounter + 1].position.y =
+			entities.moves[i].position.y;
+
+		vertices[vertexCounter + 2].position.x =
+			entities.collisions[i].targetPosition.x;
+		vertices[vertexCounter + 2].position.y =
+			entities.collisions[i].targetPosition.y;
+
+		vertices[vertexCounter + 3].position.x =
+			entities.collisions[i].refractionPosition.x;
+		vertices[vertexCounter + 3].position.y =
+			entities.collisions[i].refractionPosition.y;
+		vertexCounter += 4;
+	}
+}
+
 void Simulation::render(sf::RenderWindow* window, TextRenderer* tr) {
+
+	//setVertexDataCollision(this->collisionv, *entities);
+	//window->draw(collisionv);
+
 	gridRenderer->render(window);
 	entityRenderer->render(window);
 	window->draw(*mapArray);
@@ -212,6 +242,12 @@ void Simulation::genericSetup() {
 	map->wallCount = mapVertices->size() / 2;
 
 	mapArray = getVArrayFromVertices(*mapVertices);
+
+	//TESTING BOUNDARY COLLISION
+	collisionv = sf::VertexArray(sf::Lines, entities->entityCount * 4);
+	for (int i = 0; i < entities->entityCount * 2; i++) {
+		collisionv[i].color = sf::Color::Green;
+	}
 }
 
 void Simulation::createColonies() {

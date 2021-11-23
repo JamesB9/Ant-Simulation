@@ -52,32 +52,6 @@ void queueVertexData(ThreadPoolManager& tm, sf::VertexArray* vertices, Entities&
 	}
 }
 
-//Dev testing
-void setVertexDataCollision(sf::VertexArray& vertices, Entities& entities) {
-	int vertexCounter = 0;
-	for (int i = 0; i < entities.entityCount; i++) {
-		vertices[vertexCounter].position.x =
-			entities.collisions[i].targetPosition.x;
-		vertices[vertexCounter].position.y =
-			entities.collisions[i].targetPosition.y;
-		vertices[vertexCounter +1].position.x =
-			entities.moves[i].position.x;
-		vertices[vertexCounter +1].position.y =
-			entities.moves[i].position.y;
-
-		vertices[vertexCounter+2].position.x =
-			entities.collisions[i].targetPosition.x;
-		vertices[vertexCounter+2].position.y =
-			entities.collisions[i].targetPosition.y;
-
-		vertices[vertexCounter + 3].position.x =
-			entities.collisions[i].refractionPosition.x;
-		vertices[vertexCounter + 3].position.y =
-			entities.collisions[i].refractionPosition.y;
-		vertexCounter += 4;
-	}
-}
-
 
 int main() {
 	// Window
@@ -119,12 +93,6 @@ int main() {
 	//task vertexData = { 3, true, [&vertices, &entities] {setVertexData(vertices,entities); } };
 	//task simEnts = { 2, false, [&entities, &itemGrid, &map, deltaTime] { simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime); } };
 	//task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
-
-	//TESTING BOUNDARY COLLISION
-	/*sf::VertexArray collisionv(sf::Lines, entities->entityCount*4);
-	for (int i = 0; i < entities->entityCount*2; i++) {
-		collisionv[i].color = sf::Color::Green;
-	}*/
 
 	tr.write("FPS", "FPS: ", 20, sf::Vector2f(0.0f, 0.0f));
 	tr.write("CELLPOS", "Position: []", 15, sf::Vector2f(0.0f, 25.0f));
@@ -176,9 +144,6 @@ int main() {
 		////////////// UPDATE //////////////
 
 		simulation.update(deltaTime);
-
-
-		//setVertexDataCollision(collisionv, entities);
 
 		//simulateEntitiesOnGPU(entities, deltaTime);
 		//setVertexData(vertices, entities);

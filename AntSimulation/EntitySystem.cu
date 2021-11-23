@@ -59,12 +59,12 @@ __device__ void move(MoveComponent& move, curandState* state, float deltaTime) {
 	//Clamp new acceleration by maximum turning force
 	Vec2f acceleration = clamp(targetTurningForce, move.turningForce);
 
-	//Store current angle
-	move.angle = atan2f(move.velocity.y, move.velocity.x);
-
 	//Clamp new velocity to max speed
 	move.velocity = clamp(move.velocity + acceleration * deltaTime, move.maxSpeed);
 	move.position = move.position + (move.velocity * deltaTime);
+
+	//Store current angle
+	move.angle = atan2f(move.velocity.y, move.velocity.x);
 
 	//Debug Output
 	//printf("randx %f, randy %f \n", randomDirection.x, randomDirection.y);
@@ -102,8 +102,8 @@ __device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, Activi
 }
 
 
-__device__ float getPheromoneIntensitySample(ItemGrid* itemGrid, float centerX, float centerY, int sampleRadius, int pheromoneType) {
-	Vec2f cellCoordinate = getCellCoordinate(itemGrid, centerX, centerY);
+__device__ float getPheromoneIntensitySample(ItemGrid* itemGrid, Vec2f position, int sampleRadius, int pheromoneType) {
+	Vec2f cellCoordinate = getCellCoordinate(itemGrid, position.x, position.y);
 	float totalIntensity = 0;
 	for (int dx = cellCoordinate.x - sampleRadius; dx < cellCoordinate.x + sampleRadius; dx++) {
 		for (int dy = cellCoordinate.y - sampleRadius; dy < cellCoordinate.y + sampleRadius; dy++) {
@@ -115,39 +115,53 @@ __device__ float getPheromoneIntensitySample(ItemGrid* itemGrid, float centerX, 
 }
 
 __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move, SniffComponent& sniff, ActivityComponent& activity, float deltaTime) {
-	float distance = 15;
-	int sampleRadius = 3;
+	float distance = 15.0f;
+	int sampleRadius = 4;
 	// Get CELLS
 	Cell* currentCell = getCellDevice(itemGrid, move.position.x, move.position.y);
-
-	float angle = move.angle - M_PI_2;
+	float baseAngle = (move.angle + (-90.0f * M_PI / 180));
+	float angle = baseAngle - M_PI_2;
+	Vec2f leftVector;
+	leftVector.x = (-distance * sin(angle));
+	leftVector.y = (distance * cos(angle));
+	leftVector = leftVector + move.position;
 	float leftIntensity = getPheromoneIntensitySample(itemGrid, 
-		move.position.x + distance * cosf(angle), 
-		move.position.y + distance * sinf(angle), 
+		leftVector,
 		sampleRadius, sniff.sniffPheromone);
 
-	angle = move.angle + M_PI_2;
+	angle = baseAngle + M_PI_2;
+	Vec2f rightVector;
+	rightVector.x = (-distance * sin(angle));
+	rightVector.y = (distance * cos(angle));
+	rightVector = rightVector + move.position;
 	float rightIntensity = getPheromoneIntensitySample(itemGrid,
-		move.position.x + distance * cosf(angle),
-		move.position.y + distance * sinf(angle),
+		rightVector,
 		sampleRadius, sniff.sniffPheromone);
-	//printf("%f, %f\n", leftIntensity, rightIntensity);
-	angle = move.angle;
-	/*
-	float middleIntensity = getPheromoneIntensitySample(itemGrid,
-		move.position.x + distance * sin(angle),
-		move.position.y + distance * cos(angle),
-		sampleRadius, sniff.sniffPheromone);
-	*/
 
-	if (leftIntensity > rightIntensity) {
-		angle = move.angle - (M_PI_2 * deltaTime);
-		move.direction = { cosf(angle) , sinf(angle) };
+	angle = baseAngle;
+	Vec2f straightVector;
+	straightVector.x = -distance * sin(angle);
+	straightVector.y = distance * cos(angle);
+	straightVector = straightVector + move.position;
+	float straightIntensity = getPheromoneIntensitySample(itemGrid,
+		straightVector,
+		sampleRadius,
+		sniff.sniffPheromone);
+	
+	if (straightIntensity > leftIntensity && straightIntensity > rightIntensity) {
+		move.direction = straightVector - move.position;
+		//printf("Going straight!\n");
+	}
+	else if (leftIntensity > rightIntensity) {
+		move.direction = leftVector - move.position;
+		//printf("Turning left!\n");
 	}
 	else if (rightIntensity > leftIntensity) {
-		angle = move.angle + (M_PI_2 * deltaTime);
-		move.direction = { cosf(angle) , sinf(angle) };
+		move.direction = rightVector - move.position;
+		//printf("Turning right!\n");
 	}
+
+	//printf("IL, IR: %.2f, %.2f\n", leftIntensity, rightIntensity);
 
 	if (activity.currentActivity == 0 && currentCell->foodCount > 0.0f) { // FOOD FOUND!!
 		currentCell->foodCount -= 1;
