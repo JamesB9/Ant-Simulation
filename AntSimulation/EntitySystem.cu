@@ -122,16 +122,16 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 
 	float angle = move.angle - M_PI_2;
 	float leftIntensity = getPheromoneIntensitySample(itemGrid, 
-		move.position.x + distance * sin(angle), 
-		move.position.y + distance * cos(angle), 
+		move.position.x + distance * cosf(angle), 
+		move.position.y + distance * sinf(angle), 
 		sampleRadius, sniff.sniffPheromone);
 
 	angle = move.angle + M_PI_2;
 	float rightIntensity = getPheromoneIntensitySample(itemGrid,
-		move.position.x + distance * sin(angle),
-		move.position.y + distance * cos(angle),
+		move.position.x + distance * cosf(angle),
+		move.position.y + distance * sinf(angle),
 		sampleRadius, sniff.sniffPheromone);
-	
+	//printf("%f, %f\n", leftIntensity, rightIntensity);
 	angle = move.angle;
 	/*
 	float middleIntensity = getPheromoneIntensitySample(itemGrid,
@@ -142,11 +142,11 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 
 	if (leftIntensity > rightIntensity) {
 		angle = move.angle - M_PI_2;
-		move.direction = { sin(angle) , cos(angle) };
+		move.direction = { cosf(angle) , sinf(angle) };
 	}
 	else if (rightIntensity > leftIntensity) {
 		angle = move.angle + M_PI_2;
-		move.direction = { sin(angle) , cos(angle) };
+		move.direction = { cosf(angle) , sinf(angle) };
 	}
 
 	if (activity.currentActivity == 0 && currentCell->foodCount > 0.0f) { // FOOD FOUND!!
@@ -167,41 +167,6 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 		sniff.sniffPheromone = 1;
 		activity.dropStrength = activity.maxDropStrength;
 	}
-	/*
-
-	if (activity.currentActivity == 0) { // IF LEAVING HOME
-		if (leftCell->foodCount > 0.0f || leftCell->pheromones[sniff.sniffPheromone] > rightCell->pheromones[sniff.sniffPheromone]) { // GO LEFT
-			angle = move.angle - M_PI_2;
-			move.direction = { sin(angle) , cos(angle) };
-		}
-		else if (rightCell->foodCount > 0.0f || leftCell->pheromones[sniff.sniffPheromone] < rightCell->pheromones[sniff.sniffPheromone]) { // GO RIGHT
-			angle = move.angle + M_PI_2;
-			move.direction = { sin(angle) , cos(angle) };
-		}
-
-		if (currentCell->foodCount > 0.0f) { // FOOD FOUND!!
-			currentCell->foodCount -= 1;
-			activity.currentActivity = 1;
-			sniff.sniffPheromone = 0;
-			activity.dropStrength = 1.0f;
-		}
-	}
-	else { // IF FOOD HAS BEEN FOUND
-		if (leftCell->pheromones[sniff.sniffPheromone] > rightCell->pheromones[sniff.sniffPheromone]) { // GO LEFT
-			angle = move.angle - M_PI_2;
-			move.direction = { sin(angle) , cos(angle) };
-		}
-		else if (leftCell->pheromones[sniff.sniffPheromone] < rightCell->pheromones[sniff.sniffPheromone]) { // GO RIGHT
-			angle = move.angle + M_PI_2;
-			move.direction = { sin(angle) , cos(angle) };
-		}
-	}
-
-	if (move.position.x > 390 && move.position.x < 410 && move.position.y > 390 && move.position.y < 410) { // HOME FOUND!!
-		activity.currentActivity = 0;
-		sniff.sniffPheromone = 1;
-		activity.dropStrength = 1.0f;
-	}*/
 }
 
 __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, ActivityComponent& activity, Map* map, float deltaTime) {
@@ -295,7 +260,7 @@ __global__ void simulateEntities(
 	for (int i = index; i < entities->entityCount; i += stride) { // For Each entity for this thread
 		move(entities->moves[i], &state ,deltaTime);
 		releasePheromone(itemGrid, entities->moves[i],  entities->activities[i],  deltaTime);
-		sniff(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
+		//sniff(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
 		detectWall(entities->moves[i], entities->collisions[i], entities->activities[i], map, deltaTime);
 	}
 }
