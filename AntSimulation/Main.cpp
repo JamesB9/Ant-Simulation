@@ -127,6 +127,8 @@ int main() {
 	}*/
 
 	tr.write("FPS", "FPS: ", 20, sf::Vector2f(0.0f, 0.0f));
+	tr.write("CELLPOS", "Position: []", 15, sf::Vector2f(0.0f, 25.0f));
+	tr.write("CELLINT", "Intensity: []", 15, sf::Vector2f(0.0f, 50.0f));
 	while (window.isOpen()) {
 		////////////// FPS & DELTATIME //////////////
 		deltaTime = deltaClock.restart().asSeconds();
@@ -200,7 +202,7 @@ int main() {
 
 		////////////// DRAWING //////////////
 
-		simulation.render(&window);
+		simulation.render(&window, &tr);
 
 
 		//gridRenderer.render(&window);
