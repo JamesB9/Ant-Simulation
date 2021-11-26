@@ -140,6 +140,12 @@ int main() {
 				simulation.updateCellFood(mousePos);
 			}
 		}
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+			sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+			if (mousePos.x < Config::WORLD_SIZE_X && mousePos.y < Config::WORLD_SIZE_Y && mousePos.x > 0 && mousePos.y > 0) {
+				simulation.updateCellPheromone(mousePos, 1);
+			}
+		}
 
 		////////////// UPDATE //////////////
 

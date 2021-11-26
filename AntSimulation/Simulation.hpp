@@ -19,6 +19,7 @@ public:
 
 	void update(float deltaTime);
 	void updateCellFood(sf::Vector2f mousePos);
+	void updateCellPheromone(sf::Vector2f mousePos, int pheromone);
 
 	void render(sf::RenderWindow* window, TextRenderer* tr);
 

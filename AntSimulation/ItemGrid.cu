@@ -68,8 +68,8 @@ float clip(float n, float lower, float upper) {
 void updateCell(Cell& cell, float deltaTime) {
 	cell.pheromones[0] -= Config::PHEROMONE_DECAY_STRENGH * deltaTime;
 	cell.pheromones[1] -= Config::PHEROMONE_DECAY_STRENGH * deltaTime;
-	cell.pheromones[0] = clip(cell.pheromones[0], 0.0f, 25.0f);
-	cell.pheromones[1] = clip(cell.pheromones[1], 0.0f, 50.0f);
+	cell.pheromones[0] = clip(cell.pheromones[0], 0.0f, Config::MAX_PHEROMONE_STORED_HOME);
+	cell.pheromones[1] = clip(cell.pheromones[1], 0.0f, Config::MAX_PHEROMONE_STORED_FOOD);
 }
 
 

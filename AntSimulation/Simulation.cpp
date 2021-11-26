@@ -180,6 +180,22 @@ void Simulation::updateCellFood(sf::Vector2f mousePos) {
 	//food:50, 0 255 0
 }
 
+void Simulation::updateCellPheromone(sf::Vector2f mousePos, int pheromone) {
+	int cellIndex = getCellIndex(itemGrid, mousePos.x, mousePos.y);
+	Cell& cell = itemGrid->worldCells[cellIndex];
+	cell.pheromones[pheromone] += 1.0f;
+	//food:5 , 0 25 0
+	//food:10, 0 51 0
+	//food:15, 0 76 0
+	//food:20, 0 102 0
+	//food:25, 0 127 0
+	//food:30, 0 153 0
+	//food:35, 0 178 0
+	//food:40, 0 204 0
+	//food:45, 0 229 0
+	//food:50, 0 255 0
+}
+
 void Simulation::update(float deltaTime) {
 	gridRenderer->update(*itemGrid, deltaTime);
 	entityRenderer->update(deltaTime);

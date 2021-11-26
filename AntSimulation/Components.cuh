@@ -52,5 +52,7 @@ struct ActivityComponent
     float timeSinceDrop;
     float timePerDrop;
 
+    Vec2f lastFoodPickup;
+
     int colonyId;
 };
