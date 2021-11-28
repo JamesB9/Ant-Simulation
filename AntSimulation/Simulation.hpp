@@ -1,5 +1,8 @@
 #pragma once
 
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #include "GridRenderer.hpp"
 #include "EntitySystem.cuh"
 #include "ThreadPoolManager.h"
@@ -10,6 +13,7 @@
 #include "TextRenderer.h"
 #include <math.h>
 #include "SFML/Graphics/CircleShape.hpp"
+
 
 class Simulation {
 public:

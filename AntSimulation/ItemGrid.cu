@@ -47,13 +47,6 @@ ItemGrid* initItemGrid(int sizeX, int sizeY) {
 }
 
 Cell* getCell(ItemGrid& itemGrid, float x, float y) {
-	//Take X and Y, convert to 2D reference
-	//int posx = floorf(x);
-	//int posy = floorf(y);
-	//int index = posy * itemGrid.worldX;
-	//index += posx;
-
-
 	return &itemGrid.worldCells[getCellIndex(itemGrid, x, y)];
 }
 

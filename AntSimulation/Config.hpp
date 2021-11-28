@@ -8,9 +8,9 @@ namespace Config {
 	////////////// PHEROMONES //////////////
 	static const int ITEM_GRID_SIZE_X			= 200;
 	static const int ITEM_GRID_SIZE_Y			= 200;
-	static const float PHEROMONE_DECAY_STRENGH	= 1000 / 3000000.0f; // Intensity
-	static const float MAX_PHEROMONE_STORED_FOOD	= 50.0f;
-	static const float MAX_PHEROMONE_STORED_HOME	= 50.0f;
+	static const float PHEROMONE_DECAY_STRENGH	= 1000 / 3000000.0f; // Pheromone removed from each cell per second
+	static const float MAX_PHEROMONE_STORED_FOOD	= 50.0f; // Max amount of food per cell
+	static const float MAX_PHEROMONE_STORED_HOME	= 50.0f; // Max home pheromone intensity per cell
 
 	////////////// MAP //////////////
 	static const int MAP_SIZE_X					= 80;
