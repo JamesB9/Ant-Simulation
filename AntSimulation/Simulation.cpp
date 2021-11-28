@@ -247,6 +247,16 @@ void Simulation::render(sf::RenderWindow* window, TextRenderer* tr) {
 			tr->update("CELLINT", TextRenderer::MODIFY_TYPE::TEXT, "Intensity: [" + to_string(cell->pheromones[0]) +","+ to_string(cell->pheromones[1]) + "] \nFood Count: " + to_string(cell->foodCount));
 		}
 	}
+
+	sf::CircleShape circle = sf::CircleShape(5);
+
+	circle.setFillColor(sf::Color::Magenta);
+	for (int i = 0; i < Config::COLONY_COUNT; i++) {
+		circle.setRadius(colonies[i].nestRadius);
+		circle.setOrigin({ colonies[i].nestRadius/2.0f, colonies[i].nestRadius / 2.0f });
+		circle.setPosition({ colonies[i].nestPositionX, colonies[i].nestPositionY });
+		window->draw(circle);
+	}
 }
 
 //Other Methods

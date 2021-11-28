@@ -9,6 +9,7 @@
 #include "Colony.cuh";
 #include "TextRenderer.h"
 #include <math.h>
+#include "SFML/Graphics/CircleShape.hpp"
 
 class Simulation {
 public:
