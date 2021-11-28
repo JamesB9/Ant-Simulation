@@ -338,8 +338,6 @@ int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, Colo
 	// Wait for GPU to finish before accessing on host
 	cudaDeviceSynchronize();
 
-	//std::cout << entities.moves[0].position.x << ", " << entities.moves[0].position.y << std::endl;
-
 	return 0;
 }
 
