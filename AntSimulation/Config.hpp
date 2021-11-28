@@ -8,7 +8,7 @@ namespace Config {
 	////////////// PHEROMONES //////////////
 	static const int ITEM_GRID_SIZE_X			= 200;
 	static const int ITEM_GRID_SIZE_Y			= 200;
-	static const float PHEROMONE_DECAY_STRENGH	= 1000 / 3000000.0f; // Intensity
+	static const float PHEROMONE_DECAY_STRENGH	= 10000 / 3000000.0f; // Intensity
 	static const float MAX_PHEROMONE_STORED_FOOD	= 50.0f;
 	static const float MAX_PHEROMONE_STORED_HOME	= 50.0f;
 
@@ -18,10 +18,10 @@ namespace Config {
 	static const int MAP_SEED					= -1; // -1 for random map
 
 	////////////// ANTS //////////////
-	static const int ANT_COUNT					= 1000;
+	static const int ANT_COUNT					= 10000;
 	static const float ANT_MAX_SPEED			= 25.0f;
-	static const float ANT_TURN_FORCE			= ANT_MAX_SPEED * 1.5f;
-	static const float ANT_ROAM_STRENGTH		= 0.75f;
+	static const float ANT_TURN_FORCE			= ANT_MAX_SPEED * 1.25f;
+	static const float ANT_ROAM_STRENGTH		= 0.25f;
 	static const float ANT_COLLISION_DISTANCE	= 25.0f;
 	static const int ANT_MAX_SNIFF_DISTANCE		= 5;
 	static const float ANT_SNIFF_STRENGTH = 5.0f;
