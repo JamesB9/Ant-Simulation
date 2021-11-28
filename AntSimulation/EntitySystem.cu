@@ -197,6 +197,8 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 		sniff.sniffPheromone = 0;
 		activity.dropStrength = activity.maxDropStrength;
 		move.direction = { -move.direction.x * 100.0f, -move.direction.y * 100.0f };
+		move.velocity = { 0,0 };
+		//move.direction = { -move.direction.x, -move.direction.y };
 		activity.lastFoodPickup = { move.position.x, move.position.y };
 	}
 	else if (activity.currentActivity == 1 && currentCell->foodCount > 0.0f) {
@@ -210,11 +212,16 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 
 	if (move.position.x > nestX - nestRadius && move.position.x < nestX + nestRadius && 
 		move.position.y > nestY - nestRadius && move.position.y < nestY + nestRadius) { // HOME FOUND!!
+		if (activity.currentActivity == 1) {
+			move.direction = { -move.direction.x * 100.0f, -move.direction.y * 100.0f };
+			move.velocity = { 0,0 };
+		}
 		activity.currentActivity = 0;
 		sniff.sniffPheromone = 1;
 		activity.dropStrength = activity.maxDropStrength;
 		colonies->totalFood += 1;
 	}
+
 }
 
 __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, ActivityComponent& activity, Map* map, float deltaTime) {
