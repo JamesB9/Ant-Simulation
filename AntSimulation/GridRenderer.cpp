@@ -67,7 +67,7 @@ void GridRenderer::update(ItemGrid& grid, float deltaTime) {
 
 			float intensity;
 			if (cell.foodCount > 0.0f) { // HAS FOOD
-				cellColour = sf::Color(0,255 * (cell.foodCount / 50.0f),0);
+				cellColour = sf::Color(255, 204, 0, (cell.foodCount / 50.0f)*255);
 			}
 			else { // HASN'T GOT FOOD1
 				intensity = 255 * clip(cell.pheromones[0] + cell.pheromones[1], 0, 0.5);

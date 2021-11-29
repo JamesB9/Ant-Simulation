@@ -39,7 +39,7 @@ private:
 	Map* map;
 
 	sf::Vector3f PHEROMONE_0_COLOUR = {0,0,255};
-	sf::Vector3f PHEROMONE_1_COLOUR = {255,0,0};
+	sf::Vector3f PHEROMONE_1_COLOUR = { 0, 255, 0 };
 
 	void init();
 };
