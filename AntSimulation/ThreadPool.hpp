@@ -16,7 +16,7 @@ struct Job {
 
 class ThreadPool {
 public:
-    const int NUMBER_OF_THREADS = std::thread::hardware_concurrency();
+    static int NUMBER_OF_THREADS;
     ThreadPool();
     ~ThreadPool();
     void push(Job job);
@@ -38,3 +38,4 @@ private:
 
 
 };
+int ThreadPool::NUMBER_OF_THREADS = std::thread::hardware_concurrency();

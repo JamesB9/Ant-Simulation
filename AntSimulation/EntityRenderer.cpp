@@ -35,25 +35,31 @@ void EntityRenderer::init() {
 		vertexArray[vertex + 3].color = defaultColour;
 
 	}
+
+	//Threads:
+	entitiesRemaining = entities->entityCount;
+	entitiesPerSet = ceil((float)entities->entityCount / ThreadPool::NUMBER_OF_THREADS);
 }
 //Threading:
 sf::Vector2i EntityRenderer::getEntitiesSet() {
-	mutex.lock();
+	//mutex.lock();
 	int x = currentSet;
 	if (entitiesRemaining < entitiesPerSet) {
 		return sf::Vector2i{ x, entitiesRemaining };
 	}
 	currentSet += entitiesPerSet;
 	entitiesRemaining -= entitiesPerSet;
-	mutex.unlock();
-	return sf::Vector2i{ x, entitiesPerSet };;
+	//std::cout << "Current Set " << x << " entitiesPerSet: " << entitiesPerSet << std::endl;
+	//printf("Current set %i entitiesPerSet %i \n", x, entitiesPerSet);
+	//mutex.unlock();
+	return sf::Vector2i{ x, entitiesPerSet };
 }
 
-void EntityRenderer::vertextDataSet(void* deltaTime){
+
+void EntityRenderer::vertextDataSet(void* null){
 	sf::Vector2i temp = getEntitiesSet();
 	int start = temp.x;
 	int end = start + temp.y;
-	float deltaTime = *(float*)deltaTime;
 
 	for (int i = start; i < end; i++) {
 		int vertex = i * 4;
@@ -73,7 +79,7 @@ void EntityRenderer::render(sf::RenderWindow* window) {
 	window->draw(vertexArray);
 }
 
-void EntityRenderer::setVertexData(float deltaTime) {
+void EntityRenderer::setVertexData() {
 	for (int i = 0; i < entities->entityCount; i++) {
 		int vertex = i * 4;
 		//vertexArray[i].position = sf::Vector2f((800.0f / grid->worldX)*x + 0.5f, (800.0f / grid->worldY) * y + 0.5f);
@@ -88,5 +94,12 @@ void EntityRenderer::setVertexData(float deltaTime) {
 }
 
 void EntityRenderer::update(float deltaTime) {
-	setVertexData(deltaTime);
+	setVertexData();
+	//Threads:
+	/*
+	for (int i = 0; i < ThreadPool::NUMBER_OF_THREADS; i++) {
+		//std::cout << "Creating Thread: " << i << std::endl;
+		//printf("Creating Thread %i \n", i);
+		vertextDataSet(nullptr);
+	}*/
 }

@@ -31,7 +31,7 @@ public:
 		//vertexArray = sf::VertexArray(sf::Points, grid->totalCells);
 		init();
 	}
-	void setVertexData(float deltaTime);
+	void setVertexData();
 	void render(sf::RenderWindow* window);
 	sf::VertexArray& getVertexArray() { return vertexArray; }
 	void update(float deltaTime);
@@ -44,8 +44,8 @@ public:
 private:
 	//Threads:
 	volatile int currentSet = 0;
-	volatile int entitiesRemaining = entities->entityCount;
-	int entitiesPerSet = ceil((float)entities->entityCount/threadPool->NUMBER_OF_THREADS);
+	volatile int entitiesRemaining;
+	int entitiesPerSet;
 	std::mutex mutex;
 	sf::VertexArray vertexArray;
 	Entities* entities;

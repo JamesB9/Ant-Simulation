@@ -35,6 +35,7 @@ private:
 	Map* map;
 
 	//ThreadPool
+	ThreadPool threadPool;
 	void threadUpdateSim(float deltaTime);
 
 

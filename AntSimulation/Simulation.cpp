@@ -2,8 +2,7 @@
 #include <SFML/Window/Mouse.hpp>
 #include "ThreadPool.hpp"
 Simulation::Simulation() {
-	ThreadPool threadPool;
-	threadPool.createThreads(&threadPool);
+	//threadPool.createThreads(&threadPool);
 }
 
 
@@ -270,7 +269,7 @@ void Simulation::render(sf::RenderWindow* window, TextRenderer* tr) {
 //Other Methods
 void Simulation::genericSetup() {
 	gridRenderer = new GridRenderer(itemGrid,map);
-	entityRenderer = new EntityRenderer(entities);
+	entityRenderer = new EntityRenderer(entities, &threadPool);
 
 	mapVertices = generateMapVertices(*map);
 	map->walls = getBoundariesFromVec2f(getVec2fFromVertices(*mapVertices), mapVertices->size());
