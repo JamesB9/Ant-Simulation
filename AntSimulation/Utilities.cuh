@@ -13,6 +13,10 @@
 // 
 // 
 //////////////////////////// 80 columns wide //////////////////////////////////
+
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #pragma once
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
@@ -53,6 +57,10 @@ struct Vec2f {
     }
 
     __host__ __device__ Vec2f operator-(Vec2f a) {
+        return { x - a.x, y - a.y };
+    }
+
+    __host__ __device__ const Vec2f operator-(Vec2f a) const {
         return { x - a.x, y - a.y };
     }
 
@@ -112,6 +120,10 @@ __device__ float getAngle(Vec2f a, Vec2f b) {
 	float dot = a.x * b.x + a.y * b.y;
 	float det = a.x * b.y - a.y * b.x;
 	return atan2f(det, dot);
+}
+
+__device__ float getDistance(Vec2f a, Vec2f b) {
+    return sqrtf(powf(b.x - a.x, 2.0f) + powf(b.y - a.y, 2.0f));
 }
 
 __device__ bool isLeft(Vec2f a, Vec2f b, Vec2f c) {

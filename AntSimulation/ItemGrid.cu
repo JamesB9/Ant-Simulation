@@ -47,13 +47,6 @@ ItemGrid* initItemGrid(int sizeX, int sizeY) {
 }
 
 Cell* getCell(ItemGrid& itemGrid, float x, float y) {
-	//Take X and Y, convert to 2D reference
-	//int posx = floorf(x);
-	//int posy = floorf(y);
-	//int index = posy * itemGrid.worldX;
-	//index += posx;
-
-
 	return &itemGrid.worldCells[getCellIndex(itemGrid, x, y)];
 }
 
@@ -68,8 +61,8 @@ float clip(float n, float lower, float upper) {
 void updateCell(Cell& cell, float deltaTime) {
 	cell.pheromones[0] -= Config::PHEROMONE_DECAY_STRENGH * deltaTime;
 	cell.pheromones[1] -= Config::PHEROMONE_DECAY_STRENGH * deltaTime;
-	cell.pheromones[0] = clip(cell.pheromones[0], 0.0f, 1.0f);
-	cell.pheromones[1] = clip(cell.pheromones[1], 0.0f, 1.0f);
+	cell.pheromones[0] = clip(cell.pheromones[0], 0.0f, Config::MAX_PHEROMONE_STORED_HOME);
+	cell.pheromones[1] = clip(cell.pheromones[1], 0.0f, Config::MAX_PHEROMONE_STORED_FOOD);
 }
 
 

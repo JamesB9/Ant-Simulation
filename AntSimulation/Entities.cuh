@@ -13,15 +13,25 @@
 //
 //
 //////////////////////////// 80 columns wide //////////////////////////////////
-#pragma once
 
+////////////////////////////////////////////////////////////
+/// Headers
+////////////////////////////////////////////////////////////
+#pragma once
 #include "Components.cuh"
 
-typedef unsigned int EntityID;
 
+////////////////////////////////////////////////////////////
+/// \brief Entity Component System struct to hold arrays of component structs
+///
+/// \param entityCount Total number of entities and the size of all component arrays
+/// \param moves Array of move components stored in GPU managed memory
+/// \param sniffs Array of sniff components stored in GPU managed memory
+/// \param activities Array of activity components stored in GPU managed memory
+/// \param collisions Array of collision components stored in GPU managed memory
+///
+////////////////////////////////////////////////////////////
 struct Entities {
-
-    // Arrays of data for each ant, sizes are all equal
     unsigned int entityCount;
     MoveComponent* moves;
     SniffComponent* sniffs;

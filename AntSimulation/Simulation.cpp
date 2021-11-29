@@ -170,7 +170,24 @@ void Simulation::generateRandom() {
 void Simulation::updateCellFood(sf::Vector2f mousePos) {
 	int cellIndex = getCellIndex(itemGrid, mousePos.x, mousePos.y);
 	Cell& cell = itemGrid->worldCells[cellIndex];
-	cell.foodCount < 45.0f ? cell.foodCount += 5 : cell.foodCount = 50;
+	//cell.foodCount < 45.0f ? cell.foodCount += 5 : cell.foodCount = 50;
+	cell.foodCount = 50;
+	//food:5 , 0 25 0
+	//food:10, 0 51 0
+	//food:15, 0 76 0
+	//food:20, 0 102 0
+	//food:25, 0 127 0
+	//food:30, 0 153 0
+	//food:35, 0 178 0
+	//food:40, 0 204 0
+	//food:45, 0 229 0
+	//food:50, 0 255 0
+}
+
+void Simulation::updateCellPheromone(sf::Vector2f mousePos, int pheromone) {
+	int cellIndex = getCellIndex(itemGrid, mousePos.x, mousePos.y);
+	Cell& cell = itemGrid->worldCells[cellIndex];
+	cell.pheromones[pheromone] += 1.0f;
 	//food:5 , 0 25 0
 	//food:10, 0 51 0
 	//food:15, 0 76 0
@@ -194,17 +211,59 @@ void Simulation::update(float deltaTime) {
 	simulateEntitiesOnGPU(entities, itemGrid, map, colonies, deltaTime);
 }
 
-void Simulation::render(sf::RenderWindow* window) {
+//Dev testing
+void setVertexDataCollision(sf::VertexArray& vertices, Entities& entities) {
+	int vertexCounter = 0;
+	for (int i = 0; i < entities.entityCount; i++) {
+		vertices[vertexCounter].position.x =
+			entities.collisions[i].targetPosition.x;
+		vertices[vertexCounter].position.y =
+			entities.collisions[i].targetPosition.y;
+		vertices[vertexCounter + 1].position.x =
+			entities.moves[i].position.x;
+		vertices[vertexCounter + 1].position.y =
+			entities.moves[i].position.y;
+
+		vertices[vertexCounter + 2].position.x =
+			entities.collisions[i].targetPosition.x;
+		vertices[vertexCounter + 2].position.y =
+			entities.collisions[i].targetPosition.y;
+
+		vertices[vertexCounter + 3].position.x =
+			entities.collisions[i].refractionPosition.x;
+		vertices[vertexCounter + 3].position.y =
+			entities.collisions[i].refractionPosition.y;
+		vertexCounter += 4;
+	}
+}
+
+void Simulation::render(sf::RenderWindow* window, TextRenderer* tr) {
+
+	//setVertexDataCollision(this->collisionv, *entities);
+	//window->draw(collisionv);
+
 	gridRenderer->render(window);
 	entityRenderer->render(window);
 	window->draw(*mapArray);
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
 		sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
 		if (mousePos.x < Config::WORLD_SIZE_X && mousePos.y < Config::WORLD_SIZE_Y && mousePos.x > 0 && mousePos.y > 0) {
 			Cell* cell = getCell(itemGrid, mousePos.x, mousePos.y);
-			printf("%f, %f\n", cell->pheromones[0], cell->pheromones[1]);
+			//printf("%f, %f\n", cell->pheromones[0], cell->pheromones[1]);
+			tr->update("CELLPOS", TextRenderer::MODIFY_TYPE::TEXT, "Something");
+			tr->update("CELLINT", TextRenderer::MODIFY_TYPE::TEXT, "Intensity: [" + to_string(cell->pheromones[0]) +","+ to_string(cell->pheromones[1]) + "] \nFood Count: " + to_string(cell->foodCount));
 		}
+	}
+
+	sf::CircleShape circle = sf::CircleShape(5);
+
+	circle.setFillColor(sf::Color::Magenta);
+	for (int i = 0; i < Config::COLONY_COUNT; i++) {
+		circle.setRadius(colonies[i].nestRadius);
+		circle.setOrigin({ colonies[i].nestRadius/2.0f, colonies[i].nestRadius / 2.0f });
+		circle.setPosition({ colonies[i].nestPositionX, colonies[i].nestPositionY });
+		window->draw(circle);
 	}
 }
 
@@ -218,6 +277,12 @@ void Simulation::genericSetup() {
 	map->wallCount = mapVertices->size() / 2;
 
 	mapArray = getVArrayFromVertices(*mapVertices);
+
+	//TESTING BOUNDARY COLLISION
+	collisionv = sf::VertexArray(sf::Lines, entities->entityCount * 4);
+	for (int i = 0; i < entities->entityCount * 2; i++) {
+		collisionv[i].color = sf::Color::Green;
+	}
 }
 
 void Simulation::createColonies() {

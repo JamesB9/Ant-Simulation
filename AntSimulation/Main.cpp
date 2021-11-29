@@ -13,11 +13,14 @@
 //
 //
 //////////////////////////// 80 columns wide //////////////////////////////////
+
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <thread>
 #include <iostream>
-
 #include "GridRenderer.hpp"
 #include "EntitySystem.cuh"
 #include "ThreadPoolManager.h"
@@ -100,45 +103,30 @@ int main() {
 
 	//TEXT
 	TextRenderer tr;
-
+	tr.write("FPS", "FPS: ", 20, sf::Vector2f(0.0f, 0.0f));
+	tr.write("CELLPOS", "Position: []", 15, sf::Vector2f(0.0f, 25.0f));
+	tr.write("CELLINT", "Intensity: []", 15, sf::Vector2f(0.0f, 50.0f));
 
 	//SIMULATION
 	Simulation simulation;
-	//simulation.generateRandom();
-	if (!simulation.loadFromFile("Maps\\test_map_food_2.png", true)) {
+	simulation.generateRandom();
+	/*if (!simulation.loadFromFile("Maps\\test_map_food_2.png", true)) {
 		exit(EXIT_FAILURE);
-	}
-
-	/*
-	sf::ConvexShape shape = sf::ConvexShape(mapArray->getVertexCount());
-	for (int i = 0; i < mapArray->getVertexCount(); i++) {
-		shape.setPoint(i, (*mapArray)[i].position);
 	}*/
 
-	// THREADS
-	//int threadCount = 10;
-	//std::vector<std::thread> threads;
-	//ThreadPoolManager tmanager;
-	//task vertexData = { 3, true, [&vertices, &entities] {setVertexData(vertices,entities); } };
-	//task simEnts = { 2, false, [&entities, &itemGrid, &map, deltaTime] { simulateEntitiesOnGPU(entities, itemGrid, map, deltaTime); } };
-	//task drawFrame = { 1, true, [&vertices, &window] {window.draw(vertices); } };
-
-	//TESTING BOUNDARY COLLISION
-	/*sf::VertexArray collisionv(sf::Lines, entities->entityCount*4);
-	for (int i = 0; i < entities->entityCount*2; i++) {
-		collisionv[i].color = sf::Color::Green;
-	}*/
-
-	tr.write("FPS", "FPS: ", 20, sf::Vector2f(0.0f, 0.0f));
+	////////////// MAIN SIMULATION LOOP //////////////
 	while (window.isOpen()) {
+
 		////////////// FPS & DELTATIME //////////////
 		deltaTime = deltaClock.restart().asSeconds();
 		int fps = 1 / deltaTime;
 		//printf("FPS = %d\n", fps);
 		tr.update("FPS", TextRenderer::MODIFY_TYPE::TEXT, "FPS: "+to_string(fps));
 
+
 		////////////// CLEAR SCREEN //////////////
 		window.clear(sf::Color(10, 10, 10));
+
 
 		////////////// PROCESS EVENTS //////////////
 		sf::Event event;
@@ -158,6 +146,7 @@ int main() {
 
 		}
 
+
 		////////////// CONTROLS //////////////
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) deltaTime = 0; // Pause Simulation
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) view.move(sf::Vector2f(-deltaTime * 100.0f, 0.0f));
@@ -167,52 +156,26 @@ int main() {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) view.zoom(1 + (deltaTime * -2.0f));
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::O)) view.zoom(1 + (deltaTime * 2.0f));
 
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) { // LEFT MOUSE BUTTON
 			sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 			if (mousePos.x < Config::WORLD_SIZE_X && mousePos.y < Config::WORLD_SIZE_Y && mousePos.x > 0 && mousePos.y > 0) {
 				simulation.updateCellFood(mousePos);
 			}
 		}
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) { // RIGHT MOUSE BUTTON
+			sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+			if (mousePos.x < Config::WORLD_SIZE_X && mousePos.y < Config::WORLD_SIZE_Y && mousePos.x > 0 && mousePos.y > 0) {
+				simulation.updateCellPheromone(mousePos, 1);
+			}
+		}
+
 
 		////////////// UPDATE //////////////
-
 		simulation.update(deltaTime);
 
 
-		//setVertexDataCollision(collisionv, entities);
-
-		//simulateEntitiesOnGPU(entities, deltaTime);
-		//setVertexData(vertices, entities);
-		//tmanager.queueJob(simEnts);
-		//tmanager.join();
-		//queueVertexData(tmanager, &vertices, entities);
-		//tmanager.queueJob(vertexData);
-		/*
-		for (int i = 0; i < threadCount; i++) {
-			threads.push_back(std::thread(setVertexDataThreaded, &vertices, &entities, threadCount, i));
-		}
-
-		for (auto& th : threads) {
-			th.join();
-		}
-		threads.clear();
-		*/
-		//printf("%f, %f\n", vertices[0].position.x, vertices[0].position.y);
-		//while (!tmanager.queueEmpty()) {}
-
-
-		////////////// DRAWING //////////////
-
-		simulation.render(&window);
-
-
-		//gridRenderer.render(&window);
-		//window.draw(vertices);
-		//entityRenderer.render(&window);
-		//window.draw(collisionv);
-		//window.draw(*mapArray);
-		//window.draw(shape, mapTransform);
-		//tmanager.queueJob(drawFrame);
+		////////////// RENDERING //////////////
+		simulation.render(&window, &tr);
 		tr.render(window);
 
 

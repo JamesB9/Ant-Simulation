@@ -1,5 +1,8 @@
 #pragma once
 
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
 #include "GridRenderer.hpp"
 #include "EntitySystem.cuh"
 #include "ThreadPoolManager.h"
@@ -7,7 +10,10 @@
 #include "Config.hpp"
 #include "EntityRenderer.hpp"
 #include "Colony.cuh";
+#include "TextRenderer.h"
 #include <math.h>
+#include "SFML/Graphics/CircleShape.hpp"
+
 
 class Simulation {
 public:
@@ -18,8 +24,9 @@ public:
 
 	void update(float deltaTime);
 	void updateCellFood(sf::Vector2f mousePos);
+	void updateCellPheromone(sf::Vector2f mousePos, int pheromone);
 
-	void render(sf::RenderWindow* window);
+	void render(sf::RenderWindow* window, TextRenderer* tr);
 
 private:
 	Colony* colonies;
@@ -36,6 +43,8 @@ private:
 
 	std::vector<sf::Vector2f>* mapVertices;
 	sf::VertexArray* mapArray;
+
+	sf::VertexArray collisionv;
 
 	void createColonies();
 	void genericSetup();
