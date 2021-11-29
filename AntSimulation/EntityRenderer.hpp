@@ -37,6 +37,10 @@ public:
 	void update(float deltaTime);
 	sf::Vector2i getEntitiesSet();
 	void vertextDataSet(void*);
+	void resetThreads() {
+		this->currentSet = 0;
+		this->entitiesRemaining = entities->entityCount;
+	}
 private:
 	//Threads:
 	volatile int currentSet = 0;

@@ -28,7 +28,7 @@ private:
 	Map* map;
 
 	//ThreadPool
-
+	void threadUpdateSim(float deltaTime);
 
 
 	GridRenderer* gridRenderer;

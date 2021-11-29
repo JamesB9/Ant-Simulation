@@ -40,17 +40,22 @@ void EntityRenderer::init() {
 sf::Vector2i EntityRenderer::getEntitiesSet() {
 	mutex.lock();
 	int x = currentSet;
-	int y= 0;
+	if (entitiesRemaining < entitiesPerSet) {
+		return sf::Vector2i{ x, entitiesRemaining };
+	}
 	currentSet += entitiesPerSet;
+	entitiesRemaining -= entitiesPerSet;
 	mutex.unlock();
-	return ;
+	return sf::Vector2i{ x, entitiesPerSet };;
 }
 
 void EntityRenderer::vertextDataSet(void* deltaTime){
-	int setStart = getEntitiesSet();
+	sf::Vector2i temp = getEntitiesSet();
+	int start = temp.x;
+	int end = start + temp.y;
 	float deltaTime = *(float*)deltaTime;
 
-	for (int i = setStart; i < setStart + entitiesPerSet; i++) {
+	for (int i = start; i < end; i++) {
 		int vertex = i * 4;
 		//vertexArray[i].position = sf::Vector2f((800.0f / grid->worldX)*x + 0.5f, (800.0f / grid->worldY) * y + 0.5f);
 		//vertexArray[i].color = defaultColour;

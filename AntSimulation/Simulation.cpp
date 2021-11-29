@@ -183,6 +183,11 @@ void Simulation::updateCellFood(sf::Vector2f mousePos) {
 	//food:50, 0 255 0
 }
 
+void Simulation::threadUpdateSim(float deltaTime) {
+	entityRenderer->resetThreads();
+
+}
+
 void Simulation::update(float deltaTime) {
 	gridRenderer->update(*itemGrid, deltaTime);
 	entityRenderer->update(deltaTime);
