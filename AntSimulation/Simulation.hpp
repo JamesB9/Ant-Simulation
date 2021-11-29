@@ -14,7 +14,7 @@ public:
 	Simulation();
 
 	bool loadFromFile(std::string path, bool antiAliasing=false);
-	void generateRandom();
+	void generateRandom(bool generateFood = false);
 
 	void update(float deltaTime);
 	void updateCellFood(sf::Vector2f mousePos);
@@ -36,4 +36,5 @@ private:
 
 	void createColonies();
 	void genericSetup();
+	void updateColony(int id, int posX, int posY);
 };

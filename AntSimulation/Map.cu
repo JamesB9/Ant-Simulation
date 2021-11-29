@@ -1,5 +1,6 @@
 #include "Map.cuh"
 #include <string>
+#include <algorithm>
 
 #include <SFML/Graphics/Image.hpp>
 
@@ -50,6 +51,7 @@ Map* makeMapPointer(int width, int height) {
 	cudaMallocManaged(&map, sizeof(Map));
 	map->width = width;
 	map->height = height;
+	map->seed = (Config::MAP_SEED == -1) ? time(NULL) : Config::MAP_SEED;
 	int* intMap;
 	cudaMallocManaged(&intMap, sizeof(int) * width * height);
 	map->map = intMap;
@@ -130,7 +132,7 @@ void generateMap(Map& map) {
 };
 
 void fillMap(Map& map) {
-	srand((Config::MAP_SEED == -1)?time(NULL):Config::MAP_SEED);
+	srand(map.seed);
 
 	for (int i = 0; i < map.width; i++) {
 		for (int j = 0; j < map.height; j++) {
@@ -279,4 +281,135 @@ void initBlankMap(Map* map, int height, int width) {
 	map->width = width;
 	map->percentFill = 0;
 	initArray(map);
+}
+sf::Vector2i* foodLocation(Map& map) {
+	srand(map.seed);
+	int randa = (rand() % 4);
+	srand(time(NULL));
+	randa = (randa + ((rand() % 3) + 1)) % 4;//Randomly pick between 3 other quadrants colony is not in
+
+	std::chrono::steady_clock::time_point t1;
+	std::chrono::steady_clock::time_point t2;
+	float deltaTime;
+
+	std::cout << "Food Quadrant: " << randa << std::endl;
+
+	if (enableTiming)
+		t1 = std::chrono::high_resolution_clock::now();
+	std::cout << "-----FOOD-----" << std::endl;
+
+	sf::Vector2i* foodPos = getValidArea(map, randa); //randa: 0 = TL, 1 = TR, 2 = BR, 3 = BL
+
+	if (enableTiming) {
+		t2 = std::chrono::high_resolution_clock::now();
+		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
+		std::cout << "      Valid Food Pos Time: " << deltaTime << std::endl;
+	}
+	return foodPos;
+}
+sf::Vector2i* colonyLocation(Map& map) {
+	//std::cout << map.seed << std::endl;
+	srand(map.seed);
+	int randa = rand() % 4;
+
+	std::cout << "Colony Quadrant: " << randa << std::endl;
+
+	std::chrono::steady_clock::time_point t1;
+	std::chrono::steady_clock::time_point t2;
+	float deltaTime;
+	if(enableTiming)
+		t1 = std::chrono::high_resolution_clock::now();
+	std::cout << "-----COLONY-----" << std::endl;
+	sf::Vector2i* colonyPos =  getValidArea(map, randa);
+
+	if (enableTiming) {
+		t2 = std::chrono::high_resolution_clock::now();
+		deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(t2 - t1).count();
+		std::cout << "   Valid Colony Pos Time: " << deltaTime << std::endl;
+	}
+
+	return colonyPos;
+	
+}
+
+sf::Vector2i* getValidArea(Map& map, int quadrant) {
+	int search = std::min((int)(map.height / 2), (int)(map.width / 2));
+	if (quadrant == 0) {
+
+		//TL
+
+		/*Search - All follow similar
+		  0 1 2 3 4
+		0 X X X X
+		1 X X X
+		2 X X
+		3 X
+		4
+		*/
+
+		for (int dy = 0; dy < search; dy++) {
+			int dy2 = dy;
+			for (int dx = 0; dx <= dy; dx++) {
+				std::cout << dx << "," << dy2 << std::endl;
+				if (isValidForColonyAndFood(map, dx, dy2)) {
+					//std::cout << "Valid Loc: " << dx << "," << dy2 << std::endl;
+					return new sf::Vector2i(dx, dy2);
+				}
+				dy2--;
+			}
+		}
+	}
+	else if (quadrant == 1) {
+		//TR
+		for (int dy = 0; dy < search; dy++) {
+			int dy2 = dy;
+			for (int dx = map.width - 1; dx >= map.width - dy; dx--) {
+				std::cout << dx << "," << dy2 << std::endl;
+				if (isValidForColonyAndFood(map, dx, dy2)) {
+					//std::cout << "Valid Loc: " << dx << "," << dy2 << std::endl;
+					return new sf::Vector2i(dx, dy2);
+				}
+				dy2--;
+			}
+		}
+	}
+	else if (quadrant == 2) {
+		//BR
+		int s = map.height - 1;
+		for (int dy = map.height - 1; dy >= search; dy--) {
+			int dy2 = dy + 1;
+			for (int dx = map.width - 1; dx >= map.width - (s - dy); dx--) {
+				std::cout << dx << "," << dy2 << std::endl;
+				if (isValidForColonyAndFood(map, dx, dy2)) {
+					//std::cout << "Valid Loc: " << dx << "," << dy2 << std::endl;
+					return new sf::Vector2i(dx, dy2);
+				}
+				dy2++;
+			}
+		}
+	}
+	else {
+		//BL
+		int s = map.height - 1;
+		for (int dy = map.height - 1; dy >= search; dy--) {
+			int dy2 = dy;
+			for (int dx = 0; dx <= s - dy; dx++) {
+				std::cout << dx << "," << dy2 << std::endl;
+				if (isValidForColonyAndFood(map, dx, dy2)) {
+					//std::cout << "Valid Loc: " << dx << "," << dy2 << std::endl;
+					return new sf::Vector2i(dx, dy2);
+				}
+				dy2++;
+			}
+		}
+	}
+}
+
+bool isValidForColonyAndFood(Map& map, int x, int y) {
+	if (getMapValueAt(map, x, y) == 0) {
+		if (getNeighbourWallCount(map, x, y, 2) == 0) {
+			return true;
+		}
+	}
+	return false;
 }
