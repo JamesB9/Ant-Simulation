@@ -169,7 +169,7 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 	}
 }
 
-__device__ void detectWall(MoveComponent& move, CollisionComponent& collision, ActivityComponent& activity, Map* map, float deltaTime) {
+__device__ void detectWall(MoveComponent& move, CollisionComponent& collision, ActivityComponent& activity, Map* map, float deltaTime, Colony* colonies) {
 	//Notes for wall detection
 	//Cast ray out from and until you hit a 1 in the map
 	//if distance from wall to ant is small enough
@@ -236,7 +236,7 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, A
 		}
 	}
 	else if (wallIndex == -1) {
-		move.position = { 400.0f, 400.0f };
+		move.position = { colonies[activity.colonyId].nestPositionX, colonies[activity.colonyId].nestPositionY };
 	}
 	//else {
 	//	collision.refractionPosition = collision.targetPosition;
@@ -261,7 +261,7 @@ __global__ void simulateEntities(
 		move(entities->moves[i], &state ,deltaTime);
 		releasePheromone(itemGrid, entities->moves[i],  entities->activities[i],  deltaTime);
 		//sniff(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
-		detectWall(entities->moves[i], entities->collisions[i], entities->activities[i], map, deltaTime);
+		detectWall(entities->moves[i], entities->collisions[i], entities->activities[i], map, deltaTime, colonies);
 	}
 }
 
