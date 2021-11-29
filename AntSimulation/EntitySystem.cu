@@ -108,6 +108,9 @@ __device__ float getPheromoneIntensitySample(ItemGrid* itemGrid, Vec2f position,
 	for (int dx = cellCoordinate.x - sampleRadius; dx < cellCoordinate.x + sampleRadius; dx++) {
 		for (int dy = cellCoordinate.y - sampleRadius; dy < cellCoordinate.y + sampleRadius; dy++) {
 			totalIntensity += itemGrid->worldCells[getCellIndex(itemGrid, dx, dy)].pheromones[pheromoneType];
+			if (pheromoneType == 1) {
+				totalIntensity += itemGrid->worldCells[getCellIndex(itemGrid, dx, dy)].pheromones[2];//Food
+			}
 		}
 	}
 
@@ -126,8 +129,8 @@ __device__ void senseHome(ItemGrid* itemGrid, Colony* colonies, MoveComponent& m
 	vectorToRememberedFood = activity.lastFoodPickup - move.position;
 	vectorToRememberedFood = clamp(vectorToRememberedFood, 1.0f);
 
-	if (activity.currentActivity == 1) { move.direction = move.direction + (vectorToHome / (distanceFromHome/400)); };
-	if (activity.currentActivity == 0 && activity.lastFoodPickup.x != 0.0f && activity.lastFoodPickup.y != 0.0f) { move.direction = move.direction + (vectorToRememberedFood / (distanceFromRememberedFood / 400)); };
+	if (activity.currentActivity == 1) { move.direction = move.direction + (vectorToHome / (distanceFromHome/400.0f)); };
+	if (activity.currentActivity == 0 && activity.lastFoodPickup.x != 0.0f && activity.lastFoodPickup.y != 0.0f) { move.direction = move.direction + (vectorToRememberedFood / (distanceFromRememberedFood / 400.0f)); };
 }
 
 __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move, SniffComponent& sniff, ActivityComponent& activity, float deltaTime) {
@@ -196,7 +199,7 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 		activity.currentActivity = 1;
 		sniff.sniffPheromone = 0;
 		activity.dropStrength = activity.maxDropStrength;
-		move.direction = { -move.direction.x * 100.0f, -move.direction.y * 100.0f };
+		move.direction = { -move.direction.x, -move.direction.y };
 		move.velocity = { 0,0 };
 		//move.direction = { -move.direction.x, -move.direction.y };
 		activity.lastFoodPickup = { move.position.x, move.position.y };
@@ -213,7 +216,7 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 	if (move.position.x > nestX - nestRadius && move.position.x < nestX + nestRadius && 
 		move.position.y > nestY - nestRadius && move.position.y < nestY + nestRadius) { // HOME FOUND!!
 		if (activity.currentActivity == 1) {
-			move.direction = { -move.direction.x * 100.0f, -move.direction.y * 100.0f };
+			move.direction = { -move.direction.x, -move.direction.y };
 			move.velocity = { 0,0 };
 		}
 		activity.currentActivity = 0;
