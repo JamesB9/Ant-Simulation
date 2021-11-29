@@ -96,7 +96,11 @@ struct Vec2f {
 
 
 ////////////////////////////////////////////////////////////
-/// \brief 
+/// \brief Generates a random number using CUDA
+/// 
+/// \param state CurandState*
+/// 
+/// \return random float between 0 and 1
 ///
 ////////////////////////////////////////////////////////////
 __device__ float cudaRand(curandState* state) {
@@ -104,6 +108,15 @@ __device__ float cudaRand(curandState* state) {
 	return randomf;
 };
 
+
+////////////////////////////////////////////////////////////
+/// \brief Return a random coordinate inside a unit circle using CUDA
+/// 
+/// \param state CurandState*
+/// 
+/// \return Random 2D vector inside a unit circle
+///
+////////////////////////////////////////////////////////////
 __device__ Vec2f randomInsideUnitCircle(curandState* state) {
 	
 	//a = distance from origin (0,0) from -1 to +1
@@ -117,6 +130,16 @@ __device__ Vec2f randomInsideUnitCircle(curandState* state) {
 	//return { a, r };
 }
 
+
+////////////////////////////////////////////////////////////
+/// \brief
+/// 
+/// \param v
+/// \param max
+/// 
+/// \return
+///
+////////////////////////////////////////////////////////////
 __device__ Vec2f clamp(Vec2f v, float max) {
 	if (fabs(v.x) > max || fabs(v.y) > max) { // x or y larger than desired max
 		if (fabs(v.x) > fabs(v.y)) { //x bigger than y?
@@ -130,26 +153,76 @@ __device__ Vec2f clamp(Vec2f v, float max) {
 	return v;
 }
 
+
+////////////////////////////////////////////////////////////
+/// \brief Calcualte the angle between two vectors
+/// 
+/// \param a 1st Vector to calculate angle from
+/// \param b 2nd Vector to calculate angle from
+/// 
+/// \return the angle between two vectors
+///
+////////////////////////////////////////////////////////////
 __device__ float getAngle(Vec2f a, Vec2f b) {
 	float dot = a.x * b.x + a.y * b.y;
 	float det = a.x * b.y - a.y * b.x;
 	return atan2f(det, dot);
 }
 
+
+////////////////////////////////////////////////////////////
+/// \brief Uses pythagoreom theorem to calculate the distance between two vectors
+/// 
+/// \param a 1st Vector to calculate distance from
+/// \param b 2nd Vector to calculate distance from
+/// 
+/// \return distance between the two vectors
+///
+////////////////////////////////////////////////////////////
 __device__ float getDistance(Vec2f a, Vec2f b) {
     return sqrtf(powf(b.x - a.x, 2.0f) + powf(b.y - a.y, 2.0f));
 }
 
+
+////////////////////////////////////////////////////////////
+/// \brief
+/// 
+/// \param a
+/// \param b
+/// \param c
+/// 
+/// \return
+///
+////////////////////////////////////////////////////////////
 __device__ bool isLeft(Vec2f a, Vec2f b, Vec2f c) {
 	return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) > 0;
 }
 
+
+////////////////////////////////////////////////////////////
+/// \brief
+/// 
+/// \param a
+/// 
+/// \return
+///
+////////////////////////////////////////////////////////////
 __device__ float normaliseRadian(float a) {
 	a = fmodf(a, M_PI);
 	if (a < 0) { a += M_PI; }
 	return a;
 }
 
+
+////////////////////////////////////////////////////////////
+/// \brief
+/// 
+/// \param a
+/// \param b
+/// 
+/// \return
+///
+////////////////////////////////////////////////////////////
 __device__ Vec2f normaliseSurface(Vec2f a, Vec2f b) {
 	float dx = b.x - a.x;
 	float dy = b.y - a.y;
