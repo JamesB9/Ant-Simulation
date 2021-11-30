@@ -43,6 +43,8 @@ struct MoveComponent
     Vec2f position;
     Vec2f velocity, direction;
     float angle, maxSpeed, turningForce, roamStrength;
+
+    curandState state;
 };
 
 
