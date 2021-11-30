@@ -89,3 +89,4 @@ Entities* initEntities(Colony* colonies, int entityCount);
 /// 
 ////////////////////////////////////////////////////////////
 int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, Colony* colonies, float deltaTime);
+void setupStatesOnGPU(Entities* entities);

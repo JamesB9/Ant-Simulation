@@ -43,9 +43,9 @@ CollisionComponent* createCollisionComponentArray(int n) {
 	return nArray;
 }
 
-__device__ void move(MoveComponent& move, curandState* state, float deltaTime) {
+__device__ void move(MoveComponent& move, float deltaTime) {
 	//Get random vector where {+1 < x > -1, +1 < y > -1}
-	Vec2f randomDirection = randomInsideUnitCircle(state);
+	Vec2f randomDirection = randomInsideUnitCircle(&move.state);
 
 	//Add randomDirection to the current direction
 	move.direction = (move.direction + randomDirection * move.roamStrength);
@@ -305,15 +305,11 @@ __global__ void simulateEntities(
 	Map* map,
 	Colony* colonies)
 {
-	//--RNG--
-	curandState state;
-	int id = threadIdx.x + blockIdx.x * blockDim.x;
-	curand_init(clock(), id, 0, &state);
 
 	int index = blockIdx.x * blockDim.x + threadIdx.x; // Index of the current thread within its block
 	int stride = blockDim.x * gridDim.x; // Number of threads in the block
 	for (int i = index; i < entities->entityCount; i += stride) { // For Each entity for this thread
-		move(entities->moves[i], &state ,deltaTime);
+		move(entities->moves[i], deltaTime);
 		releasePheromone(itemGrid, entities->moves[i],  entities->activities[i],  deltaTime);
 		sniff(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
 		senseHome(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
@@ -339,6 +335,27 @@ int simulateEntitiesOnGPU(Entities* entities, ItemGrid* itemGrid, Map* map, Colo
 	cudaDeviceSynchronize();
 
 	return 0;
+}
+
+
+__global__ void setupStates(Entities* entities) {
+	int index = blockIdx.x * blockDim.x + threadIdx.x; // Index of the current thread within its block
+	int stride = blockDim.x * gridDim.x; // Number of threads in the block
+	for (int i = index; i < entities->entityCount; i += stride) { // For Each entity for this thread
+		//--RNG--
+		curand_init(clock(), index, 0, &entities->moves[i].state);
+	}
+}
+
+void setupStatesOnGPU(Entities* entities) {
+
+	int blockSize = 256;
+	int numBlocks = (entities->entityCount + blockSize - 1) / blockSize;
+
+	setupStates << <numBlocks, blockSize >> > (entities);
+
+	// Wait for GPU to finish before accessing on host
+	cudaDeviceSynchronize();
 }
 
 Entities* initEntities(Colony* colonies, int entityCount) {
