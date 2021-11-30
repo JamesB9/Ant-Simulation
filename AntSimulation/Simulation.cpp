@@ -243,7 +243,7 @@ void Simulation::render(sf::RenderWindow* window, TextRenderer* tr) {
 		if (mousePos.x < Config::WORLD_SIZE_X && mousePos.y < Config::WORLD_SIZE_Y && mousePos.x > 0 && mousePos.y > 0) {
 			Cell* cell = getCell(itemGrid, mousePos.x, mousePos.y);
 			//printf("%f, %f\n", cell->pheromones[0], cell->pheromones[1]);
-			tr->update("CELLPOS", TextRenderer::MODIFY_TYPE::TEXT, "Something");
+			//tr->update("CELLPOS", TextRenderer::MODIFY_TYPE::TEXT, "Something");
 			tr->update("CELLINT", TextRenderer::MODIFY_TYPE::TEXT, "Intensity: [" + to_string(cell->pheromones[0]) +","+ to_string(cell->pheromones[1]) + "] \nFood Count: " + to_string(cell->foodCount));
 		}
 	}

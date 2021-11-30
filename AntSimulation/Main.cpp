@@ -112,7 +112,7 @@ int main() {
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) { // RIGHT MOUSE BUTTON
 			sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 			if (mousePos.x < Config::WORLD_SIZE_X && mousePos.y < Config::WORLD_SIZE_Y && mousePos.x > 0 && mousePos.y > 0) {
-				simulation.updateCellPheromone(mousePos, 1);
+				tr.update("CELLPOS", TextRenderer::MODIFY_TYPE::TEXT, "Position: [" + to_string(mousePos.x) + ", " + to_string(mousePos.y) + "]");
 			}
 		}
 

@@ -132,12 +132,12 @@ __device__ Vec2f randomInsideUnitCircle(curandState* state) {
 
 
 ////////////////////////////////////////////////////////////
-/// \brief
+/// \brief Clamp/Scale a Vector by its largest x or y
 /// 
-/// \param v
-/// \param max
+/// \param v: Vector to be clamped
+/// \param max: Maximum value to clamp too
 /// 
-/// \return
+/// \return Vector reduced to a maximum of max
 ///
 ////////////////////////////////////////////////////////////
 __device__ Vec2f clamp(Vec2f v, float max) {
@@ -185,7 +185,7 @@ __device__ float getDistance(Vec2f a, Vec2f b) {
 
 
 ////////////////////////////////////////////////////////////
-/// \brief
+/// \brief [Outmoded Function] Find whether vector C is on the left side of the line between a and b
 /// 
 /// \param a
 /// \param b
@@ -200,11 +200,11 @@ __device__ bool isLeft(Vec2f a, Vec2f b, Vec2f c) {
 
 
 ////////////////////////////////////////////////////////////
-/// \brief
+/// \brief Normalise a radian to positive
 /// 
-/// \param a
+/// \param a degree in radians
 /// 
-/// \return
+/// \return Positive version of angle a
 ///
 ////////////////////////////////////////////////////////////
 __device__ float normaliseRadian(float a) {
@@ -215,12 +215,12 @@ __device__ float normaliseRadian(float a) {
 
 
 ////////////////////////////////////////////////////////////
-/// \brief
+/// \brief Normalize surface between a and b
 /// 
-/// \param a
-/// \param b
+/// \param a wall point start
+/// \param b wall point end
 /// 
-/// \return
+/// \return Normalized wall vector
 ///
 ////////////////////////////////////////////////////////////
 __device__ Vec2f normaliseSurface(Vec2f a, Vec2f b) {

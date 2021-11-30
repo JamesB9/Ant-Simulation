@@ -88,6 +88,7 @@
     <CudaCompile Include="Map.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ContextMenu.cpp" />
     <ClCompile Include="EntityRenderer.cpp" />
     <ClCompile Include="GridRenderer.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -98,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.hpp" />
+    <ClInclude Include="ContextMenu.hpp" />
     <ClInclude Include="EntityRenderer.hpp" />
     <ClInclude Include="EntitySystem.cuh" />
     <ClInclude Include="Components.cuh" />
