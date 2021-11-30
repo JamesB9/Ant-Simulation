@@ -13,6 +13,8 @@
 #include "TextRenderer.h"
 #include <math.h>
 #include "SFML/Graphics/CircleShape.hpp"
+#include "EntitySystem.cuh"
+#include <SFML/Window/Mouse.hpp>
 
 
 ////////////////////////////////////////////////////////////

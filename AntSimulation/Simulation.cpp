@@ -1,5 +1,4 @@
 #include "Simulation.hpp";
-#include <SFML/Window/Mouse.hpp>
 
 Simulation::Simulation() {}
 
@@ -157,6 +156,7 @@ void Simulation::generateRandom() {
 
 	createColonies();
 	entities = initEntities(colonies, Config::ANT_COUNT);
+	setupStatesOnGPU(entities);
 	itemGrid = initItemGrid(Config::ITEM_GRID_SIZE_X, Config::ITEM_GRID_SIZE_Y);
 	map = makeMapPointer(Config::MAP_SIZE_X, Config::MAP_SIZE_Y);
 	createMap(map);
