@@ -311,9 +311,9 @@ __global__ void simulateEntities(
 	for (int i = index; i < entities->entityCount; i += stride) { // For Each entity for this thread
 		move(entities->moves[i], deltaTime);
 		releasePheromone(itemGrid, entities->moves[i],  entities->activities[i],  deltaTime);
-		sniff(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
+		sniff(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime); // Try to Optimise
 		senseHome(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
-		detectWall(entities->moves[i], entities->collisions[i], entities->activities[i], map, deltaTime);
+		detectWall(entities->moves[i], entities->collisions[i], entities->activities[i], map, deltaTime); // Try to Optimise
 	}
 }
 

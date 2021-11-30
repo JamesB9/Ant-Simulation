@@ -140,7 +140,7 @@ __device__ Vec2f randomInsideUnitCircle(curandState* state) {
 /// \return
 ///
 ////////////////////////////////////////////////////////////
-__device__ Vec2f clamp(Vec2f v, float max) {
+__device__ Vec2f clamp(Vec2f& v, float max) {
 	if (fabs(v.x) > max || fabs(v.y) > max) { // x or y larger than desired max
 		if (fabs(v.x) > fabs(v.y)) { //x bigger than y?
 			v = v * (max / fabs(v.x)); // scale whole vector by factor of max/x
@@ -163,7 +163,7 @@ __device__ Vec2f clamp(Vec2f v, float max) {
 /// \return the angle between two vectors
 ///
 ////////////////////////////////////////////////////////////
-__device__ float getAngle(Vec2f a, Vec2f b) {
+__device__ float getAngle(Vec2f& a, Vec2f& b) {
 	float dot = a.x * b.x + a.y * b.y;
 	float det = a.x * b.y - a.y * b.x;
 	return atan2f(det, dot);
@@ -179,7 +179,7 @@ __device__ float getAngle(Vec2f a, Vec2f b) {
 /// \return distance between the two vectors
 ///
 ////////////////////////////////////////////////////////////
-__device__ float getDistance(Vec2f a, Vec2f b) {
+__device__ float getDistance(Vec2f& a, Vec2f& b) {
     return sqrtf(powf(b.x - a.x, 2.0f) + powf(b.y - a.y, 2.0f));
 }
 
@@ -194,7 +194,7 @@ __device__ float getDistance(Vec2f a, Vec2f b) {
 /// \return
 ///
 ////////////////////////////////////////////////////////////
-__device__ bool isLeft(Vec2f a, Vec2f b, Vec2f c) {
+__device__ bool isLeft(Vec2f& a, Vec2f& b, Vec2f& c) {
 	return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) > 0;
 }
 
@@ -223,7 +223,7 @@ __device__ float normaliseRadian(float a) {
 /// \return
 ///
 ////////////////////////////////////////////////////////////
-__device__ Vec2f normaliseSurface(Vec2f a, Vec2f b) {
+__device__ Vec2f normaliseSurface(Vec2f& a, Vec2f& b) {
 	float dx = b.x - a.x;
 	float dy = b.y - a.y;
 

@@ -81,9 +81,11 @@ void GridRenderer::update(ItemGrid& grid, float deltaTime) {
 }
 
 void GridRenderer::findCellsInMap(ItemGrid* grid, Map* map) {
+	int xRatio = grid->sizeX / map->width;
+	int yRatio = grid->sizeY / map->height;
 	for (int x = 0; x < grid->sizeX; x++) { 
 		for (int y = 0; y < grid->sizeY; y++) {
-			int mapValue = getMapValueAt(*map, (int)(x / 2), (int)(y / 2)); // Hard coded itemgrid size double map size
+			int mapValue = getMapValueAt(*map, (int)(x / xRatio), (int)(y / yRatio)); // Hard coded itemgrid size double map size
 			if (mapValue == 0) { // If air
 				cellsInMap.push_back(Vec2f(x, y));
 			}
