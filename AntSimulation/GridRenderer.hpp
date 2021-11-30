@@ -28,13 +28,16 @@ public:
 		vertexArray = sf::VertexArray(sf::Quads, grid->totalCells * 4);
 		//vertexArray = sf::VertexArray(sf::Points, grid->totalCells);
 		init();
+		findCellsInMap(grid, map);
 	}
 
 	void render(sf::RenderWindow* window);
 	sf::VertexArray& getVertexArray() { return vertexArray; }
 	void update(ItemGrid& grid, float deltaTime);
+	void updateOld(ItemGrid& grid, float deltaTime);
 private:
 	sf::VertexArray vertexArray;
+	std::vector<Vec2f> cellsInMap;
 	ItemGrid* grid;
 	Map* map;
 
@@ -42,4 +45,5 @@ private:
 	sf::Vector3f PHEROMONE_1_COLOUR = { 0, 255, 0 };
 
 	void init();
+	void findCellsInMap(ItemGrid* grid, Map* map);
 };
