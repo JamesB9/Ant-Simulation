@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -15,6 +15,6 @@ std::string resultToString(TEST_RESULT result) {
 
 void runTest(std::string name, function_pointer function) {
 	TEST_RESULT result = function();
-
-	std::cout << "Unit Test: " << std::setw(30) << name  << " | Result: " << resultToString(result) << std::endl;
+	name.append(20 - name.length(), ' '); // Pad Name
+	std::cout << "    " << name << " | Result: " << resultToString(result) << std::endl;
 }

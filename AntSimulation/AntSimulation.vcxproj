@@ -112,6 +112,7 @@
     <ClInclude Include="ItemGrid.cuh" />
     <ClInclude Include="ItemGridUnitTests.hpp" />
     <ClInclude Include="Map.cuh" />
+    <ClInclude Include="MapUnitTests.hpp" />
     <ClInclude Include="MarchingSquares.hpp" />
     <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="Simulation.hpp" />

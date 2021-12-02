@@ -22,13 +22,37 @@
 #include "UnitTests.hpp"
 #include "ItemGridUnitTests.hpp"
 #include "UtilitiesUnitTests.hpp"
+#include "MapUnitTests.hpp"
 
 ////////////////////////////////////////////////////////////
 // Main Function
 ////////////////////////////////////////////////////////////
 int main() {
-	
-	runTest("Item Grid Initialised", ItemGridUnitTests::test1);
-	runTest("Utitilies getDistance()", UtilitiesUnitTests::test1);
+	// Draw Header
+	std::cout << "------------------" << std::endl;
+	std::cout << "   UNIT TESTING" << std::endl;
+	std::cout << "------------------" << std::endl;
+	// Item Grid
+	std::cout << "\nItem Grid Unit Tests:" << std::endl;
+	runTest("initItemGrid()", ItemGridUnitTests::test1);
+	runTest("getCell()", ItemGridUnitTests::test2);
+	runTest("getCellIndex()", ItemGridUnitTests::test3);
+	runTest("updateCell()", ItemGridUnitTests::test4);
+
+	// Utilities
+	std::cout << "\nUtilities Unit Tests:" << std::endl;
+	runTest("getDistance()", UtilitiesUnitTests::test1);
+	runTest("clamp()", UtilitiesUnitTests::test2);
+	runTest("getAngle()", UtilitiesUnitTests::test3);
+	runTest("isLeft()", UtilitiesUnitTests::test4);
+	runTest("normaliseRadian()", UtilitiesUnitTests::test5);
+	runTest("normaliseSurface()", UtilitiesUnitTests::test6);
+
+	// Map
+	std::cout << "\nMap Unit Tests:" << std::endl;
+	runTest("makeMapPointer()", MapUnitTests::test1);
+	runTest("getMapValueAt()", MapUnitTests::test2);
+	runTest("setMapValueAt()", MapUnitTests::test3);
+	runTest("initBlankMap()", MapUnitTests::test4);
 	return 0;
 }

@@ -20,7 +20,7 @@ Map* makeMapPointer(std::string path) {
 
 	}
 	else {
-		std::cout << "Succesfully loaded map: " << path << std::endl;
+		//std::cout << "Succesfully loaded map: " << path << std::endl;
 	}
 
 	map->width = imgMap.getSize().x;

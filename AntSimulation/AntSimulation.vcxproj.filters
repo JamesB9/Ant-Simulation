@@ -130,5 +130,8 @@
     <ClInclude Include="UtilitiesUnitTests.hpp">
       <Filter>testing\UnitTests</Filter>
     </ClInclude>
+    <ClInclude Include="MapUnitTests.hpp">
+      <Filter>testing\UnitTests</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
