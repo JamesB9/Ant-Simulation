@@ -179,7 +179,7 @@ __device__ float getAngle(Vec2f& a, Vec2f& b) {
 /// \return distance between the two vectors
 ///
 ////////////////////////////////////////////////////////////
-__device__ float getDistance(Vec2f& a, Vec2f& b) {
+__host__ __device__ float getDistance(Vec2f& a, Vec2f& b) {
     return sqrtf(powf(b.x - a.x, 2.0f) + powf(b.y - a.y, 2.0f));
 }
 
