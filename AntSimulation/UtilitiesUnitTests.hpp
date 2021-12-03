@@ -30,44 +30,30 @@ namespace UtilitiesUnitTests {
 	// TEST 3: getAngle()
 	TEST_RESULT test3() {
 		// Setup
-		Vec2f v1 = { 1.0f, 3.0f };
-		Vec2f v2 = { 1.0f, 2.0f };
+		Vec2f v1 = { 1.0f, 1.0f };
+		Vec2f v2 = { 1.0f, 10000.0f };
 		float angle = getAngle(v1, v2);
 
-		// Test
-		if (angle == M_PI_4) return TEST_PASS;
+		// Test (within an 1000th)
+		if (angle <= M_PI_4+(M_PI_4/1000.0f) && angle >= M_PI_4 - (M_PI_4 / 1000.0f)) return TEST_PASS;
 		else return TEST_FAIL;
 	}
 
-	// TEST 4: isLeft
+	// TEST 4: normaliseRadian
 	TEST_RESULT test4() {
-		// Setup
-		Vec2f v1 = { 5, 0 };
-		Vec2f v2 = { 5, 10 };
-
-		Vec2f v3 = { 3, 2 };
-		bool left = isLeft(v1, v2, v3);
-		Vec2f v4 = { 7, 2 };
-		bool right = !isLeft(v1, v2, v3);
-
-		// Test
-		if (left && right) return TEST_PASS;
-		else return TEST_FAIL;
-	}
-
-	// TEST 5: normaliseRadian
-	TEST_RESULT test5() {
 		// Setup
 		float angle = -M_PI_2; // -90 degrees
 		float normalisedAngle = normaliseRadian(angle);
 
-		// Test
-		if (normalisedAngle == M_PI_2) return TEST_PASS;
+		
+
+		// Test (within 1000th)
+		if (normalisedAngle <= M_PI_2 + (M_PI_2 / 1000.0f) && normalisedAngle >= M_PI_2 - (M_PI_2 / 1000.0f)) return TEST_PASS;
 		else return TEST_FAIL;
 	}
 
-	// TEST 6: normaliseSurface
-	TEST_RESULT test6() {
+	// TEST 5: normaliseSurface
+	TEST_RESULT test5() {
 		// Setup
 		Vec2f v1 = { 500, 200 };
 		Vec2f v2 = { 350, 100 };

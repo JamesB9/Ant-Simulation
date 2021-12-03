@@ -44,9 +44,8 @@ int main() {
 	runTest("getDistance()", UtilitiesUnitTests::test1);
 	runTest("clamp()", UtilitiesUnitTests::test2);
 	runTest("getAngle()", UtilitiesUnitTests::test3);
-	runTest("isLeft()", UtilitiesUnitTests::test4);
-	runTest("normaliseRadian()", UtilitiesUnitTests::test5);
-	runTest("normaliseSurface()", UtilitiesUnitTests::test6);
+	runTest("normaliseRadian()", UtilitiesUnitTests::test4);
+	runTest("normaliseSurface()", UtilitiesUnitTests::test5);
 
 	// Map
 	std::cout << "\nMap Unit Tests:" << std::endl;
