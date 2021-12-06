@@ -185,6 +185,13 @@ void Simulation::generateRandom(bool generateFood) {
 	float worldScaleFromMap = (float)Config::WORLD_SIZE_X / map->width;
 	float itemGridScaleFromMap = (float)Config::ITEM_GRID_SIZE_X / map->width;
 
+	//Set Colony
+	sf::Vector2i* colonyPos = colonyLocation(*map);
+	std::cout << "Colony Pos: " << colonyPos->x << ", "  << colonyPos->y << std::endl;
+
+	updateColony(0, (int) (worldScaleFromMap * colonyPos->x), (int) (worldScaleFromMap * colonyPos->y));
+	//updateColony(0, 400, 400);
+
 	//Set Food
 	sf::Vector2i* foodPos = foodLocation(*map);
 	std::cout << "Food pos: " << foodPos->x << "," << foodPos->y << std::endl;
@@ -195,15 +202,7 @@ void Simulation::generateRandom(bool generateFood) {
 			cell.foodCount = 50;
 		}
 	}
-	
-	//Set Colony
-	sf::Vector2i* colonyPos = colonyLocation(*map);
-	std::cout << "Colony Pos: " << colonyPos->x << ", "  << colonyPos->y << std::endl;
 
-	updateColony(0, (int) (worldScaleFromMap * colonyPos->x), (int) (worldScaleFromMap * colonyPos->y));
-	//updateColony(0, 400, 400); 
-
-	
 
 	entities = initEntities(colonies, Config::ANT_COUNT);
 	genericSetup();

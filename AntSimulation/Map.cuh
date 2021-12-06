@@ -40,7 +40,8 @@ struct Map {
 	int width;
 	int percentFill;
 
-	int seed = 0;
+	int seed = 1111;
+	int colonyQuadrant;
 
 	int *map;
 	Boundary* walls;
@@ -71,6 +72,7 @@ int getNeighbourWallCount(Map& map, int x, int y, int delta);
 void createMap(Map* map);
 void printMap(Map& map);
 void initArray(Map* map);
+int getNumAreas(Map& map);
 sf::Vector2i* getValidArea(Map& map, int quadrant);
 sf::Vector2i* foodLocation(Map& map);
 sf::Vector2i* colonyLocation(Map& map);
