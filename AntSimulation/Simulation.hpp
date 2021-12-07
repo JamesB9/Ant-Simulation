@@ -85,6 +85,8 @@ public:
 	////////////////////////////////////////////////////////////
 	void render(sf::RenderWindow* window, TextRenderer* tr);
 
+	int getFoodCount(int colonyID);
+
 private:
 	Colony* colonies;
 	Entities* entities;

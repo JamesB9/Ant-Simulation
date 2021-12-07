@@ -53,6 +53,7 @@ int main() {
 	tr.write("FPS", "FPS: ", 20, sf::Vector2f(0.0f, 0.0f));
 	tr.write("CELLPOS", "Position: []", 15, sf::Vector2f(0.0f, 25.0f));
 	tr.write("CELLINT", "Intensity: []", 15, sf::Vector2f(0.0f, 50.0f));
+	tr.write("COLONYFOODCOUNT", "Food In Colony: 0", 15, sf::Vector2f(0.0f, 75.0f));
 
 	//SIMULATION
 	Simulation simulation;
@@ -69,6 +70,7 @@ int main() {
 		int fps = 1 / deltaTime;
 		//printf("FPS = %d\n", fps);
 		tr.update("FPS", TextRenderer::MODIFY_TYPE::TEXT, "FPS: "+to_string(fps));
+		tr.update("COLONYFOODCOUNT", TextRenderer::MODIFY_TYPE::TEXT, "Food In Colony: " + to_string(simulation.getFoodCount(0)));
 
 
 		////////////// CLEAR SCREEN //////////////

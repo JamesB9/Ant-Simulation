@@ -229,6 +229,11 @@ void setVertexDataCollision(sf::VertexArray& vertices, Entities& entities) {
 	}
 }
 
+
+int Simulation::getFoodCount(int colonyID) {
+	return colonies[colonyID].totalFood;
+}
+
 void Simulation::render(sf::RenderWindow* window, TextRenderer* tr) {
 
 	//setVertexDataCollision(this->collisionv, *entities);
