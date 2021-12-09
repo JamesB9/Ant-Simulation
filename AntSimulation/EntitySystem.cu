@@ -174,7 +174,7 @@ __device__ float getPheromoneIntensitySample(ItemGrid* itemGrid, Vec2f position,
 
 ////////////////////////////////////////////////////////////
 /// \brief Alter an ant's direction more towards home the closer they are
-/// 
+///
 /// Ants have an inbuilt extra sensory perspective whereby they know the general direction to their colony
 /// this function mimics that same sensory advantage, the closer the ant is to home, the easier they move towards it.
 ///
@@ -204,7 +204,7 @@ __device__ void senseHome(ItemGrid* itemGrid, Colony* colonies, MoveComponent& m
 
 ////////////////////////////////////////////////////////////
 /// \brief Sniff function to help ants navigate around the map
-/// 
+///
 /// Using 3 points infront of the ant; left, middle and right
 /// the pheromone for these 3 areas is taken then divided by the total
 /// from said 3 areas to provide a stregth. Each direction is multiplied by the strength,
@@ -219,13 +219,13 @@ __device__ void senseHome(ItemGrid* itemGrid, Colony* colonies, MoveComponent& m
 ///
 ////////////////////////////////////////////////////////////
 __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move, SniffComponent& sniff, ActivityComponent& activity, float deltaTime) {
-	
+
 	//Sample distance from ant
 	float distance = 15.0f;
 	//Sample radius from the 3 points
 	int sampleRadius = 5;
-	
-	
+
+
 	// Get the Ant's current cell
 	Cell* currentCell = getCellDevice(itemGrid, move.position.x, move.position.y);
 
@@ -236,29 +236,29 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 	Vec2f leftVector;
 	leftVector.x = (-distance * sin(baseAngle - M_PI_4));
 	leftVector.y = (distance * cos(baseAngle - M_PI_4));
-	
+
 	//The total count of the target pheromone found within the calculated position
-	float leftIntensity = getPheromoneIntensitySample(itemGrid, 
+	float leftIntensity = getPheromoneIntensitySample(itemGrid,
 		leftVector + move.position,
-		sampleRadius, 
+		sampleRadius,
 		sniff.sniffPheromone);
 
 	//Right vector calculated using the distance and base angle + 45 degrees
 	Vec2f rightVector;
 	rightVector.x = (-distance * sin(baseAngle + M_PI_4));
 	rightVector.y = (distance * cos(baseAngle + M_PI_4));
-	
+
 	//The total count of the target pheromone found within the calculated position
 	float rightIntensity = getPheromoneIntensitySample(itemGrid,
 		rightVector + move.position,
-		sampleRadius, 
+		sampleRadius,
 		sniff.sniffPheromone);
 
 	//Right vector calculated using the distance and base angle
 	Vec2f straightVector;
 	straightVector.x = -distance * sin(baseAngle);
 	straightVector.y = distance * cos(baseAngle);
-	
+
 	//The total count of the target pheromone found within the calculated position
 	float straightIntensity = getPheromoneIntensitySample(itemGrid,
 		straightVector + move.position,
@@ -272,7 +272,7 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 	straightVector = straightVector * (straightIntensity / total_intensity);
 	rightVector = rightVector * (rightIntensity / total_intensity);
 	leftVector = leftVector * (leftIntensity / total_intensity);
-	
+
 	if (total_intensity > 0.0f) {
 		//printf("%.2f - %.2f - %.2f\n", (leftIntensity / total_intensity), (straightIntensity / total_intensity), (rightIntensity / total_intensity));
 		Vec2f finalVector = rightVector + leftVector + straightVector;
@@ -311,7 +311,7 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 	float nestRadius = colonies[activity.colonyId].nestRadius;
 
 	//If the ant is within the radius of the nest/colony
-	if (move.position.x > nestX - nestRadius && move.position.x < nestX + nestRadius && 
+	if (move.position.x > nestX - nestRadius && move.position.x < nestX + nestRadius &&
 		move.position.y > nestY - nestRadius && move.position.y < nestY + nestRadius) {
 		//If current activity == 1 (Looking for colony)
 		if (activity.currentActivity == 1) {
@@ -334,13 +334,13 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 
 ////////////////////////////////////////////////////////////
 /// \brief Detect walls using a ray cast from the ant
-/// 
+///
 /// Boundaries/Walls are defined as a line made from two points,
 /// because we use vertex arrays for the storage of our world map
 /// it makes sense to take advantage of ray casting.
 /// When ray casting we can also find the inverse position and angle
 /// based around the point of incidence.
-/// 
+///
 /// \param move: Move Component for an ant
 /// \param collision: Collision Component for an ant
 /// \param activity: Activity Component for an ant
@@ -348,9 +348,9 @@ __device__ void sniff(ItemGrid* itemGrid, Colony* colonies, MoveComponent& move,
 /// \param deltaTime: Time taken in ms between frame rendering
 ///
 ////////////////////////////////////////////////////////////
-__device__ void detectWall(MoveComponent& move, CollisionComponent& collision, ActivityComponent& activity, Map* map, float deltaTime) {
-	
-	
+__device__ void detectWall(MoveComponent& move, CollisionComponent& collision, ActivityComponent& activity, Map* map, float deltaTime, Colony* colonies) {
+
+
 	//Angle of the ray == ant's current direction
 	Vec2f angle = { cos(move.angle),  sin(move.angle) };
 	//Initial target distance <-- unachieveable distance (to be whittled down)
@@ -363,7 +363,7 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, A
 
 		/*
 			Line-Line intersection between (Ray from ant to essentially infinity) and (Two points defining a boundary)
-			https://www.wikiwand.com/en/Line–line_intersection
+			https://www.wikiwand.com/en/Lineï¿½line_intersection
 		*/
 
 		Boundary& wall = map->walls[i];
@@ -397,7 +397,7 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, A
 			}
 		}
 	}
-	//If the wall we have stored in memory is valid and its distance is less than 
+	//If the wall we have stored in memory is valid and its distance is less than
 	//or equal too the currently set collision distance for ants
 	if (wallIndex != -1 && targetDistance <= collision.collisionDistance) {
 
@@ -416,7 +416,7 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, A
 		//Vector parallel to the wall
 		Vec2f w = move.velocity - u;
 
-		//Refraction position = Line-Line point of intersection + u-w multiplied 
+		//Refraction position = Line-Line point of intersection + u-w multiplied
 		//by the distance from the ant to the point of the Line-Line intersection
 		collision.refractionPosition = collision.targetPosition + (clamp(u-w, 1.0f) * targetDistance);
 
@@ -426,10 +426,7 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, A
 	//If the wall index == -1 then the ant is looking at nothing (which is (technically) impossible)
 	//however, ants sometimes find themselves outside the bounds of the map
 	else if (wallIndex == -1) {
-		//Secretly set their position back their colonies location
-		//Side note, we could also mark them as "dead" and remove them from the simulation
-		//but it wouldn't affect the simulation either way
-		move.position = {400.0f, 400.0f};
+		move.position = { colonies[activity.colonyId].nestPositionX, colonies[activity.colonyId].nestPositionY };
 	}
 }
 
@@ -448,7 +445,7 @@ __global__ void simulateEntities(
 		releasePheromone(itemGrid, entities->moves[i],  entities->activities[i],  deltaTime);
 		sniff(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime); // Try to Optimise
 		senseHome(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
-		detectWall(entities->moves[i], entities->collisions[i], entities->activities[i], map, deltaTime); // Try to Optimise
+		detectWall(entities->moves[i], entities->collisions[i], entities->activities[i], map, deltaTime, colonies); // Try to Optimise
 	}
 }
 
@@ -504,15 +501,15 @@ Entities* initEntities(Colony* colonies, int entityCount) {
 	entities->collisions = createCollisionComponentArray(entities->entityCount);
 
 	for (unsigned int i = 0; i < entities->entityCount; i++) {
-		
+
 		entities->activities[i].colonyId = 0; // CHANGE LATER
 
 		entities->sniffs[i].sniffMaxDistance = Config::ANT_MAX_SNIFF_DISTANCE;
 		entities->sniffs[i].sniffPheromone = FOUND_FOOD;
 
-		entities->moves[i].position = { 
-			colonies[entities->activities[i].colonyId].nestPositionX, 
-			colonies[entities->activities[i].colonyId].nestPositionY 
+		entities->moves[i].position = {
+			colonies[entities->activities[i].colonyId].nestPositionX,
+			colonies[entities->activities[i].colonyId].nestPositionY
 		};
 		entities->moves[i].direction = { 0.0f, 0.0f };
 		entities->moves[i].velocity = { 0.0f, 0.0f };

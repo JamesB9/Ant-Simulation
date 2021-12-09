@@ -28,6 +28,7 @@
 #include "device_launch_parameters.h"
 #include "Utilities.cuh"
 #include "Config.hpp"
+#include <SFML/System/Vector2.hpp>
 
 
 ////////////////////////////////////////////////////////////
@@ -59,6 +60,9 @@ struct Map {
 	int height;
 	int width;
 	int percentFill;
+
+	int seed = 1111;
+	int colonyQuadrant;
 
 	int *map;
 	Boundary* walls;
@@ -128,7 +132,7 @@ int getMapValueAt(Map& map, int x, int y);
 /// 
 ////////////////////////////////////////////////////////////
 void setMapValueAt(Map& map, int x, int y, int val);
-
+bool isValidForColonyAndFood(Map& map, int x, int y);
 void initBlankMap(Map* map, int height, int width);
 void generateMap(Map& map);
 void fillMap(Map& map);
@@ -139,3 +143,7 @@ int getNeighbourWallCount(Map& map, int x, int y, int delta);
 void createMap(Map* map);
 void printMap(Map& map);
 void initArray(Map* map);
+int getNumAreas(Map& map);
+sf::Vector2i* getValidArea(Map& map, int quadrant);
+sf::Vector2i* foodLocation(Map& map);
+sf::Vector2i* colonyLocation(Map& map);
