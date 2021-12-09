@@ -76,6 +76,7 @@ struct CollisionComponent {
     Vec2f targetPosition;
     float collisionDistance;
     Vec2f refractionPosition;
+    bool stopPheromone;
 };
 
 
