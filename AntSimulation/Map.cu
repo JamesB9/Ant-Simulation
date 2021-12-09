@@ -225,7 +225,7 @@ void floodFill(Map& map) {
 				//cout << visitedQueue.size() << endl;
 
 
-				if (visitedQueue.size() <= map.width) {//remove all areas smaller than 20
+				if (visitedQueue.size() <= 100) {
 					while (visitedQueue.size() != 0) {
 						Coord coord = visitedQueue.front();
 						visitedQueue.pop();
