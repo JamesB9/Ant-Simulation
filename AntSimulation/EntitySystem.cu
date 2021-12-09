@@ -198,8 +198,8 @@ __device__ void senseHome(ItemGrid* itemGrid, Colony* colonies, MoveComponent& m
 	vectorToRememberedFood = activity.lastFoodPickup - move.position;
 	vectorToRememberedFood = clamp(vectorToRememberedFood, 1.0f);
 
-	if (activity.currentActivity == 1) { move.direction = move.direction + (vectorToHome / ((400.0f-distanceFromHome)/400.0f)); };
-	if (activity.currentActivity == 0 && activity.lastFoodPickup.x != 0.0f && activity.lastFoodPickup.y != 0.0f) { move.direction = move.direction + (vectorToRememberedFood / ((400.0f-distanceFromRememberedFood) / 400.0f)); };
+	if (activity.currentActivity == 1) { move.direction = move.direction + (vectorToHome * distanceFromRememberedFood/distanceFromHome); };
+	//if (activity.currentActivity == 0 && activity.lastFoodPickup.x != 0.0f && activity.lastFoodPickup.y != 0.0f) { move.direction = move.direction + (vectorToRememberedFood * distanceFromRememberedFood/distanceFromHome); };
 }
 
 ////////////////////////////////////////////////////////////

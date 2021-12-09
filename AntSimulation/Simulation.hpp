@@ -79,7 +79,7 @@ public:
 	////////////////////////////////////////////////////////////
 	/// \brief Render the simulation to the window
 	///
-	/// \param window Window to render the simulation frame to 
+	/// \param window Window to render the simulation frame to
 	/// \param tr TextRenderer to use to update onscreen GUI text
 	///
 	////////////////////////////////////////////////////////////
@@ -97,6 +97,7 @@ public:
 
 		return image;
 	}
+	int getFoodCount(int colonyID);
 
 private:
 	Colony* colonies;
