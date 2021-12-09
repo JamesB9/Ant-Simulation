@@ -88,6 +88,7 @@ void GridRenderer::findCellsInMap(ItemGrid* grid, Map* map) {
 			int mapValue = getMapValueAt(*map, (int)(x / xRatio), (int)(y / yRatio)); // Hard coded itemgrid size double map size
 			if (mapValue == 0) { // If air
 				cellsInMap.push_back(Vec2f(x, y));
+
 			}
 		} 
 	}
