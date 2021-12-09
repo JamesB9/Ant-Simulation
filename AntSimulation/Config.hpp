@@ -15,7 +15,9 @@ namespace Config {
 	////////////// MAP //////////////
 	static const int MAP_SIZE_X					= 80;
 	static const int MAP_SIZE_Y					= 80;
-	static const int MAP_SEED					= -1; // -1 for random map
+	static const int MAP_SEED					= 111111111111; // -1 for random map
+
+	//DEMO SEED: -1616234067
 
 	////////////// ANTS //////////////
 	static const int ANT_COUNT					= 10000;
