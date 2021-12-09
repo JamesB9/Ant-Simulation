@@ -59,6 +59,9 @@
     <ClCompile Include="Simulation.cpp">
       <Filter>src\Simulation</Filter>
     </ClCompile>
+    <ClCompile Include="ContextMenu.cpp">
+      <Filter>src\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utilities.cuh">
@@ -105,6 +108,9 @@
     </ClInclude>
     <ClInclude Include="Colony.cuh">
       <Filter>src\Simulation\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="ContextMenu.hpp">
+      <Filter>src\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

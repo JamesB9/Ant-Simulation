@@ -4,6 +4,7 @@
 //					  CallumGrimble (100243142) and Oliver Boys (100277126)
 // File: ThreadPoolManager.cpp
 // Description: Source file for thread pools and their management.
+// Note: MADE REDUNDANT BY JAMES S. VERSION OF THREADING
 // 
 // Change Log:
 //	-

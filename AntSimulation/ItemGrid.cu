@@ -14,7 +14,6 @@
 // 
 //////////////////////////// 80 columns wide //////////////////////////////////
 #include "itemgrid.cuh"
-#include <algorithm>
 
 Cell* createItemGridCellArray(int worldSize) {
 	Cell* nArray;
@@ -34,8 +33,8 @@ ItemGrid* initItemGrid(int sizeX, int sizeY) {
 	itemGrid->worldX = Config::WORLD_SIZE_X;
 	itemGrid->worldY = Config::WORLD_SIZE_Y;
 
-	itemGrid->cellWidth = itemGrid->worldX / itemGrid->sizeX;
-	itemGrid->cellHeight = itemGrid->worldY / itemGrid->sizeY;
+	itemGrid->cellWidth = (float)itemGrid->worldX / (float)itemGrid->sizeX;
+	itemGrid->cellHeight = (float)itemGrid->worldY / (float)itemGrid->sizeY;
 
 	itemGrid->worldCells = createItemGridCellArray(itemGrid->totalCells);
 	for (int i = 0; i < itemGrid->totalCells; i++) {
@@ -47,18 +46,11 @@ ItemGrid* initItemGrid(int sizeX, int sizeY) {
 }
 
 Cell* getCell(ItemGrid& itemGrid, float x, float y) {
-	//Take X and Y, convert to 2D reference
-	//int posx = floorf(x);
-	//int posy = floorf(y);
-	//int index = posy * itemGrid.worldX;
-	//index += posx;
-
-
 	return &itemGrid.worldCells[getCellIndex(itemGrid, x, y)];
 }
 
 int getCellIndex(ItemGrid& itemGrid, float x, float y) {
-	return (floorf(y) * itemGrid.sizeX) + floorf(x);
+	return (int)((floorf(y) * itemGrid.sizeX) + floorf(x));
 }
 
 float clip(float n, float lower, float upper) {
@@ -68,15 +60,13 @@ float clip(float n, float lower, float upper) {
 void updateCell(Cell& cell, float deltaTime) {
 	cell.pheromones[0] -= Config::PHEROMONE_DECAY_STRENGH * deltaTime;
 	cell.pheromones[1] -= Config::PHEROMONE_DECAY_STRENGH * deltaTime;
-	cell.pheromones[0] = clip(cell.pheromones[0], 0.0f, 1.0f);
-	cell.pheromones[1] = clip(cell.pheromones[1], 0.0f, 1.0f);
+	cell.pheromones[0] = clip(cell.pheromones[0], 0.0f, Config::MAX_PHEROMONE_STORED_HOME);
+	cell.pheromones[1] = clip(cell.pheromones[1], 0.0f, Config::MAX_PHEROMONE_STORED_FOOD);
 }
 
 
 int getCellIndex(ItemGrid* itemGrid, float mapx, float mapy) {
-	float widthOfCell = Config::WORLD_SIZE_X / itemGrid->sizeX;
-	float heightOfCell = Config::WORLD_SIZE_Y / itemGrid->sizeY;
-	return (floorf(mapy / heightOfCell) * itemGrid->sizeX) + floorf(mapx / widthOfCell);
+	return (int)((floorf(mapy / itemGrid->cellHeight) * itemGrid->sizeX) + floorf(mapx / itemGrid->cellWidth));
 }
 
 Cell* getCell(ItemGrid* itemGrid, float mapx, float mapy) {

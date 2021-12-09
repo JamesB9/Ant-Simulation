@@ -4,6 +4,7 @@
 //					  CallumGrimble (100243142) and Oliver Boys (100277126)
 // File: ThreadPoolManager.h
 // Description: Header file for thread pools.
+// Note: MADE REDUNDANT BY JAMES S. VERSION OF THREADING
 // 
 // Change Log:
 //	-

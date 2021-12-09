@@ -57,28 +57,38 @@ void GridRenderer::update(ItemGrid& grid, float deltaTime) {
 	sf::Color cellColour;
 	//Cell& cell = grid.worldCells[0];
 	//Cell* cells = grid->worldCells;
-	for (int x = 0; x < grid.sizeX; x++) {
-		for (int y = 0; y < grid.sizeY; y++) {
+	for (Vec2f& v : cellsInMap) {
+		int cellIndex = getCellIndex(grid, v.x, v.y);
+		Cell& cell = grid.worldCells[cellIndex];
+		updateCell(cell, deltaTime);
+		int vertex = cellIndex * 4;
 
-			int cellIndex = getCellIndex(grid, x, y);
-			Cell& cell = grid.worldCells[cellIndex];
-			updateCell(cell, deltaTime);
-			int vertex = cellIndex * 4;
-
-			float intensity;
-			if (cell.foodCount > 0.0f) { // HAS FOOD
-				cellColour = sf::Color(0,255 * (cell.foodCount / 50.0f),0);
-			}
-			else { // HASN'T GOT FOOD
-				intensity = 255 * clip(cell.pheromones[0] + cell.pheromones[1], 0, 1);
-				sf::Vector3f cellColourV = (cell.pheromones[0] * PHEROMONE_0_COLOUR) + (cell.pheromones[1] * PHEROMONE_1_COLOUR);
-				cellColour = sf::Color(clip(cellColourV.x, 0, 255), clip(cellColourV.y, 0, 255), clip(cellColourV.z, 0, 255), intensity);
-			}
-
-			vertexArray[vertex].color = cellColour;
-			vertexArray[vertex + 1].color = cellColour;
-			vertexArray[vertex + 2].color = cellColour;
-			vertexArray[vertex + 3].color = cellColour;
+		float intensity;
+		if (cell.foodCount > 0.0f) { // HAS FOOD
+			cellColour = sf::Color(0, 255 * (cell.foodCount / 50.0f), 0);
 		}
+		else { // HASN'T GOT FOOD1
+			intensity = 255 * clip(cell.pheromones[0] + cell.pheromones[1], 0, 0.5);
+			sf::Vector3f cellColourV = (cell.pheromones[0] * PHEROMONE_0_COLOUR) + (cell.pheromones[1] * PHEROMONE_1_COLOUR);
+			cellColour = sf::Color(clip(cellColourV.x, 0, 255), clip(cellColourV.y, 0, 255), clip(cellColourV.z, 0, 255), intensity);
+		}
+
+		vertexArray[vertex].color = cellColour;
+		vertexArray[vertex + 1].color = cellColour;
+		vertexArray[vertex + 2].color = cellColour;
+		vertexArray[vertex + 3].color = cellColour;
+	}
+}
+
+void GridRenderer::findCellsInMap(ItemGrid* grid, Map* map) {
+	int xRatio = grid->sizeX / map->width;
+	int yRatio = grid->sizeY / map->height;
+	for (int x = 0; x < grid->sizeX; x++) { 
+		for (int y = 0; y < grid->sizeY; y++) {
+			int mapValue = getMapValueAt(*map, (int)(x / xRatio), (int)(y / yRatio)); // Hard coded itemgrid size double map size
+			if (mapValue == 0) { // If air
+				cellsInMap.push_back(Vec2f(x, y));
+			}
+		} 
 	}
 }
