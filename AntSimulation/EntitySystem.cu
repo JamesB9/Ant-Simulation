@@ -136,7 +136,8 @@ __device__ int getCellIndex(ItemGrid* itemGrid, int x, int y) {
 ///
 ///
 ////////////////////////////////////////////////////////////
-__device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, ActivityComponent& activity, float deltaTime) {
+__device__ void releasePheromone(ItemGrid* itemGrid, MoveComponent& move, ActivityComponent& activity, CollisionComponent& collision, float deltaTime) {
+	if (collision.stopPheromone) { return; }
 	activity.timeSinceDrop += deltaTime;
 
 	if (activity.timeSinceDrop > activity.timePerDrop && activity.dropStrength > 0.0f) {
@@ -394,6 +395,10 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, A
 				wallIndex = i;
 				targetDistance = distance;
 				collision.targetPosition = targetPosition;
+				collision.stopPheromone = true;
+			}
+			else {
+				collision.stopPheromone = false;
 			}
 		}
 	}
@@ -442,7 +447,7 @@ __global__ void simulateEntities(
 	int stride = blockDim.x * gridDim.x; // Number of threads in the block
 	for (int i = index; i < entities->entityCount; i += stride) { // For Each entity for this thread
 		move(entities->moves[i], deltaTime);
-		releasePheromone(itemGrid, entities->moves[i],  entities->activities[i],  deltaTime);
+		releasePheromone(itemGrid, entities->moves[i], entities->activities[i], entities->collisions[i], deltaTime);
 		sniff(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime); // Try to Optimise
 		senseHome(itemGrid, colonies, entities->moves[i], entities->sniffs[i], entities->activities[i], deltaTime);
 		detectWall(entities->moves[i], entities->collisions[i], entities->activities[i], map, deltaTime, colonies); // Try to Optimise
@@ -521,6 +526,7 @@ Entities* initEntities(Colony* colonies, int entityCount) {
 		entities->collisions[i].targetPosition = {0.0f, 0.0f};
 		entities->collisions[i].refractionPosition = { 0.0f, 0.0f };
 		entities->collisions[i].collisionDistance = Config::ANT_COLLISION_DISTANCE;
+		entities->collisions[i].stopPheromone = false;
 
 		entities->activities[i].currentActivity = LEAVING_HOME;
 		entities->activities[i].dropStrength = Config::INITIAL_DROP_STRENGTH;
