@@ -353,7 +353,12 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, A
 	
 	
 	//Angle of the ray == ant's current direction
-	Vec2f angle = { cos(move.angle),  sin(move.angle) };
+	//Vec2f angle = { cos(move.angle),  sin(move.angle) };
+	Vec2f angles[] = { 
+		{ cos(move.angle),  sin(move.angle) },
+		{ cos(move.angle + collision.collisionAngle),  sin(move.angle + collision.collisionAngle) },
+		{ cos(move.angle - collision.collisionAngle),  sin(move.angle - collision.collisionAngle) }
+	};
 	//Initial target distance <-- unachieveable distance (to be whittled down)
 	float targetDistance = 1000000;
 	//Initial index of the closest target wall (-1 == no index found so far)
@@ -375,30 +380,33 @@ __device__ void detectWall(MoveComponent& move, CollisionComponent& collision, A
 
 		const float x3 = move.position.x;
 		const float y3 = move.position.y;
-		const float x4 = move.position.x + (angle.x * 1000.0f); //Angle is multiplied here so it can reach a boundary at a large distance
-		const float y4 = move.position.y + (angle.y * 1000.0f);
+		float u = 0.0;
+		for (auto& angle : angles) {
+			const float x4 = move.position.x + (angle.x * 1000.0f); //Angle is multiplied here so it can reach a boundary at a large distance
+			const float y4 = move.position.y + (angle.y * 1000.0f);
 
-		const float den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-		if (den == 0) { continue; }
-		const float t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
-		const float u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
+			const float den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+			if (den == 0) { continue; }
+			const float t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
+			float u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
 
-		if (t > 0 && t < 1 && u > 0) {
-			//Point at which the lines intersect
-			Vec2f targetPosition = { x1 + t * (x2 - x1) , y1 + t * (y2 - y1) };
-			//Simple pythagorus theorem
-			float distance = sqrtf(powf(targetPosition.x - move.position.x, 2.0f) + powf(targetPosition.y - move.position.y, 2.0f));
+			if (t > 0 && t < 1 && u > 0) {
+				//Point at which the lines intersect
+				Vec2f targetPosition = { x1 + t * (x2 - x1) , y1 + t * (y2 - y1) };
+				//Simple pythagorus theorem
+				float distance = sqrtf(powf(targetPosition.x - move.position.x, 2.0f) + powf(targetPosition.y - move.position.y, 2.0f));
 
-			//If the distance from the bounday is less than the current targetDistance (initially set to unachieveable number)
-			if (distance < targetDistance) {
-				//Store the current wall in memory
-				wallIndex = i;
-				targetDistance = distance;
-				collision.targetPosition = targetPosition;
-				collision.stopPheromone = true;
-			}
-			else {
-				collision.stopPheromone = false;
+				//If the distance from the bounday is less than the current targetDistance (initially set to unachieveable number)
+				if (distance < targetDistance) {
+					//Store the current wall in memory
+					wallIndex = i;
+					targetDistance = distance;
+					collision.targetPosition = targetPosition;
+					//collision.stopPheromone = true;
+				}
+				else {
+					//collision.stopPheromone = false;
+				}
 			}
 		}
 	}
@@ -529,6 +537,7 @@ Entities* initEntities(Colony* colonies, int entityCount) {
 		entities->collisions[i].targetPosition = {0.0f, 0.0f};
 		entities->collisions[i].refractionPosition = { 0.0f, 0.0f };
 		entities->collisions[i].collisionDistance = Config::ANT_COLLISION_DISTANCE;
+		entities->collisions[i].collisionAngle = Config::ANT_COLLISION_FOV;
 		entities->collisions[i].stopPheromone = false;
 
 		entities->activities[i].currentActivity = LEAVING_HOME;

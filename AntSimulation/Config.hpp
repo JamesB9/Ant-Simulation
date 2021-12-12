@@ -1,4 +1,6 @@
 #pragma once
+#define _USE_MATH_DEFINES
+#include "math.h"
 
 namespace Config {
 	////////////// WORLD SIZE //////////////
@@ -20,11 +22,12 @@ namespace Config {
 	////////////// ANTS //////////////
 	static const int ANT_COUNT					= 10000;
 	static const float ANT_MAX_SPEED			= 25.0f;
-	static const float ANT_TURN_FORCE			= ANT_MAX_SPEED * 1.5f;
+	static const float ANT_TURN_FORCE			= ANT_MAX_SPEED * 25.0f;
 	static const float ANT_ROAM_STRENGTH		= 0.75f;
-	static const float ANT_COLLISION_DISTANCE	= 25.0f;
+	static const float ANT_COLLISION_DISTANCE	= 5.0f;
+	static const float ANT_COLLISION_FOV		= M_PI_4;
 	static const int ANT_MAX_SNIFF_DISTANCE		= 5;
-	static const float ANT_SNIFF_STRENGTH = 5.0f;
+	static const float ANT_SNIFF_STRENGTH		= 5.0f;
 
 	static const float INITIAL_DROP_STRENGTH	= 0.01f; // Max Pheromone drop strength
 	static const float DROP_STRENGTH_REDUCTION  = 0.0001f; // Reduction in pheromone drop strength per second

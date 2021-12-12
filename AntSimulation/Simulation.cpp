@@ -168,7 +168,7 @@ void Simulation::updateCellFood(sf::Vector2f mousePos) {
 	int cellIndex = getCellIndex(itemGrid, mousePos.x, mousePos.y);
 	Cell& cell = itemGrid->worldCells[cellIndex];
 	//cell.foodCount < 45.0f ? cell.foodCount += 5 : cell.foodCount = 50;
-	cell.foodCount = 50;
+	cell.foodCount = 0.05 * Config::ANT_COUNT;
 	//food:5 , 0 25 0
 	//food:10, 0 51 0
 	//food:15, 0 76 0
