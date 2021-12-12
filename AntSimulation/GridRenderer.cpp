@@ -68,7 +68,7 @@ void GridRenderer::update(ItemGrid& grid, float deltaTime) {
 			cellColour = sf::Color(0, 255 * (cell.foodCount / 50.0f), 0);
 		}
 		else { // HASN'T GOT FOOD1
-			intensity = 255 * clip(cell.pheromones[0] + cell.pheromones[1], 0, 0.5);
+			intensity = 255 * clip((cell.pheromones[0] + cell.pheromones[1]) / Config::PHEROMONE_DISPLAY_UPPER_BOUND, 0, 1);
 			sf::Vector3f cellColourV = (cell.pheromones[0] * PHEROMONE_0_COLOUR) + (cell.pheromones[1] * PHEROMONE_1_COLOUR);
 			cellColour = sf::Color(clip(cellColourV.x, 0, 255), clip(cellColourV.y, 0, 255), clip(cellColourV.z, 0, 255), intensity);
 		}

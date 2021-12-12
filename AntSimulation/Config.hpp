@@ -8,14 +8,16 @@ namespace Config {
 	////////////// PHEROMONES //////////////
 	static const int ITEM_GRID_SIZE_X			= 160;
 	static const int ITEM_GRID_SIZE_Y			= 160;
-	static const float PHEROMONE_DECAY_STRENGH	= 10000 / 3000000.0f; // Pheromone removed from each cell per second
+	static const float PHEROMONE_DECAY_STRENGH	= 10000 / 2000000.0f; // Pheromone removed from each cell per second
 	static const float MAX_PHEROMONE_STORED_FOOD	= 50.0f; // Max amount of food per cell
 	static const float MAX_PHEROMONE_STORED_HOME	= 50.0f; // Max home pheromone intensity per cell
 
 	////////////// MAP //////////////
 	static const int MAP_SIZE_X					= 80;
 	static const int MAP_SIZE_Y					= 80;
-	static const int MAP_SEED					= -1; // -1 for random map
+	static const int MAP_SEED					= 111111111111; // -1 for random map
+
+	//DEMO SEED: -1616234067
 
 	////////////// ANTS //////////////
 	static const int ANT_COUNT					= 10000;
@@ -29,6 +31,8 @@ namespace Config {
 	static const float INITIAL_DROP_STRENGTH	= 0.01f; // Max Pheromone drop strength
 	static const float DROP_STRENGTH_REDUCTION  = 0.0001f; // Reduction in pheromone drop strength per second
 	static const float PHEROMONE_DROP_TIME = 0.075f; // Amount of time (seconds) between each pheromone drop by an ant
+
+	static const float PHEROMONE_DISPLAY_UPPER_BOUND = ((INITIAL_DROP_STRENGTH)*ANT_COUNT)/5.5;
 
 	////////////// COLONIES //////////////
 	static const int COLONY_COUNT = 1;

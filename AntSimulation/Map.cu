@@ -93,7 +93,7 @@ void createMap(Map* map) {
 		enableTiming = false;
 		//srand(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		int seed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
+		std::cout << "Seed: " << seed << std::endl;
 		map->seed = seed;
 		generateMap(*map);
 	}

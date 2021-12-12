@@ -176,8 +176,6 @@ void Simulation::generateRandom(bool generateFood) {
 
 	std::cout << "rand" << std::endl;
 	createColonies();
-	entities = initEntities(colonies, Config::ANT_COUNT);
-	setupStatesOnGPU(entities);
 	itemGrid = initItemGrid(Config::ITEM_GRID_SIZE_X, Config::ITEM_GRID_SIZE_Y);
 	map = makeMapPointer(Config::MAP_SIZE_X, Config::MAP_SIZE_Y);
 	createMap(map);
@@ -206,6 +204,7 @@ void Simulation::generateRandom(bool generateFood) {
 
 
 	entities = initEntities(colonies, Config::ANT_COUNT);
+	setupStatesOnGPU(entities);
 	genericSetup();
 }
 
