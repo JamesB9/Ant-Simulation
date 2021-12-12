@@ -198,7 +198,7 @@ void Simulation::generateRandom(bool generateFood) {
 		for (int j = (int)(foodPos->y * itemGridScaleFromMap) - (int)(1 * itemGridScaleFromMap); j <= (int)(foodPos->y * itemGridScaleFromMap) + (int)(1 * itemGridScaleFromMap); j++) {
 			int cellIndex = getCellIndex(*itemGrid, i, j);
 			Cell& cell = itemGrid->worldCells[cellIndex];
-			cell.foodCount = 50;
+			cell.foodCount = 0.05 * Config::ANT_COUNT;
 		}
 	}
 

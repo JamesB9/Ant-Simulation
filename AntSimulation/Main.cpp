@@ -79,6 +79,7 @@ int main() {
 
 		////////////// PROCESS EVENTS //////////////
 		sf::Event event;
+		bool windowMoved = false;
 		while (window.pollEvent(event))
 		{
 			// Close window: exit
@@ -92,9 +93,9 @@ int main() {
 				sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
 				view.setSize(sf::Vector2f(event.size.width, event.size.height));
 			}
-
 		}
 
+		if (deltaTime > 0.5) { continue; }
 
 		////////////// CONTROLS //////////////
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) deltaTime = 0; // Pause Simulation
