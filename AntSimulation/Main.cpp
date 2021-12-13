@@ -95,10 +95,10 @@ int main() {
 			}
 		}
 
-		if (deltaTime > 0.5) { continue; }
+		if (deltaTime > 0.25) { continue; }
 
 		////////////// CONTROLS //////////////
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) deltaTime = 0; // Pause Simulation
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) /*deltaTime = 0*/continue; // Pause Simulation
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) view.move(sf::Vector2f(-deltaTime * 100.0f, 0.0f));
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) view.move(sf::Vector2f(deltaTime * 100.0f, 0.0f));
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) view.move(sf::Vector2f(0.0f, -deltaTime * 100.0f));
