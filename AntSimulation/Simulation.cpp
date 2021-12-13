@@ -129,7 +129,7 @@ bool Simulation::loadFromFile(std::string path, bool antiAliasing) {
 					int cellIndex = getCellIndex(*itemGrid, (int)i, (int)j);
 					Cell& cell = itemGrid->worldCells[cellIndex];
 					//cout << "count: " << count << "| sum: " << sum << "| avg: " << greenAvg << endl;
-					cell.foodCount = (greenAvg / 25) * 5;
+					cell.foodCount = (greenAvg / 25) * 50;
 				}
 
 				//hive
@@ -158,12 +158,13 @@ bool Simulation::loadFromFile(std::string path, bool antiAliasing) {
 				if (color != sf::Color::Black && color != sf::Color::White) {
 					int cellIndex = getCellIndex(*itemGrid, (int)i, (int)j);
 					Cell& cell = itemGrid->worldCells[cellIndex];
-					cell.foodCount = (color.g / 25) * 5;
+					cell.foodCount = (color.g / 25) * 50;
 				}
 			}
 		}
 	}
 	entities = initEntities(colonies, Config::ANT_COUNT);
+	setupStatesOnGPU(entities);
 	map = makeMapPointer(path);
 
 	genericSetup();
