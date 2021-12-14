@@ -93,14 +93,14 @@
     <ClCompile Include="EntityRenderer.cpp" />
     <ClCompile Include="GridRenderer.cpp" />
     <ClCompile Include="Main.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="MarchingSquares.cpp" />
     <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="ThreadPoolManager.cpp" />
     <ClCompile Include="UnitTests.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

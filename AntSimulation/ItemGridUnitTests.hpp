@@ -40,7 +40,9 @@ namespace ItemGridUnitTests {
 		// Setup
 		ItemGrid* itemGrid = initItemGrid(80, 80);
 		itemGrid->worldCells[92].pheromones[0] = 50.0f;
+		//printf("%f", itemGrid->worldCells[92].pheromones[0]);
 		updateCell(itemGrid->worldCells[92], 1.0f);
+		//printf("%f", itemGrid->worldCells[92].pheromones[0]);
 			// Test
 		bool hasDecayed = itemGrid->worldCells[92].pheromones[0] == 50.0f - Config::PHEROMONE_DECAY_STRENGH;
 		if (hasDecayed) return TEST_PASS;

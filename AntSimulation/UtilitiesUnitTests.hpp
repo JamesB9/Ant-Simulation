@@ -31,11 +31,10 @@ namespace UtilitiesUnitTests {
 	TEST_RESULT test3() {
 		// Setup
 		Vec2f v1 = { 1.0f, 1.0f };
-		Vec2f v2 = { 1.0f, 10000.0f };
+		Vec2f v2 = { 2.0f, 1.0f };
 		float angle = getAngle(v1, v2);
-
 		// Test (within an 1000th)
-		if (angle <= M_PI_4+(M_PI_4/1000.0f) && angle >= M_PI_4 - (M_PI_4 / 1000.0f)) return TEST_PASS;
+		if (angle == 0) return TEST_PASS;
 		else return TEST_FAIL;
 	}
 
