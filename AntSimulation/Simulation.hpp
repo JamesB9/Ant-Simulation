@@ -85,6 +85,18 @@ public:
 	////////////////////////////////////////////////////////////
 	void render(sf::RenderWindow* window, TextRenderer* tr);
 
+	sf::Image* generateMapImage() {
+		sf::Image* image = new sf::Image();
+		image->create(map->width, map->height, sf::Color::White);
+
+		for (int x = 0; x < map->width; x++) {
+			for (int y = 0; y < map->height; y++) {
+				if (getMapValueAt(*map, x, y) == 1) image->setPixel(x, y, sf::Color::Black);
+			}
+		}
+
+		return image;
+	}
 	int getFoodCount(int colonyID);
 
 private:

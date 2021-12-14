@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 // Title:            Ant Simulation
 // Authors:           James Sergeant (100301636), James Burling (100266919), 
 //					  CallumGrimble (100243142) and Oliver Boys (100277126)
@@ -140,7 +140,7 @@ __device__ Vec2f randomInsideUnitCircle(curandState* state) {
 /// \return Vector reduced to a maximum of max
 ///
 ////////////////////////////////////////////////////////////
-__device__ Vec2f clamp(Vec2f& v, float max) {
+__host__ __device__ Vec2f clamp(Vec2f& v, float max) {
 	if (fabs(v.x) > max || fabs(v.y) > max) { // x or y larger than desired max
 		if (fabs(v.x) > fabs(v.y)) { //x bigger than y?
 			v = v * (max / fabs(v.x)); // scale whole vector by factor of max/x
@@ -163,10 +163,9 @@ __device__ Vec2f clamp(Vec2f& v, float max) {
 /// \return the angle between two vectors
 ///
 ////////////////////////////////////////////////////////////
-__device__ float getAngle(Vec2f& a, Vec2f& b) {
-	float dot = a.x * b.x + a.y * b.y;
-	float det = a.x * b.y - a.y * b.x;
-	return atan2f(det, dot);
+//arccos[(xa * xb + ya * yb) / (√(xa2 + ya2) * √(xb2 + yb2))]
+__host__ __device__ float getAngle(Vec2f& a, Vec2f& b) {
+    return atan2f((b.y - a.y), (b.x - a.x));
 }
 
 
@@ -179,23 +178,8 @@ __device__ float getAngle(Vec2f& a, Vec2f& b) {
 /// \return distance between the two vectors
 ///
 ////////////////////////////////////////////////////////////
-__device__ float getDistance(Vec2f& a, Vec2f& b) {
+__host__ __device__ float getDistance(Vec2f& a, Vec2f& b) {
     return sqrtf(powf(b.x - a.x, 2.0f) + powf(b.y - a.y, 2.0f));
-}
-
-
-////////////////////////////////////////////////////////////
-/// \brief [Outmoded Function] Find whether vector C is on the left side of the line between a and b
-/// 
-/// \param a
-/// \param b
-/// \param c
-/// 
-/// \return
-///
-////////////////////////////////////////////////////////////
-__device__ bool isLeft(Vec2f& a, Vec2f& b, Vec2f& c) {
-	return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) > 0;
 }
 
 
@@ -207,7 +191,7 @@ __device__ bool isLeft(Vec2f& a, Vec2f& b, Vec2f& c) {
 /// \return Positive version of angle a
 ///
 ////////////////////////////////////////////////////////////
-__device__ float normaliseRadian(float a) {
+__host__ __device__ float normaliseRadian(float a) {
 	a = fmodf(a, M_PI);
 	if (a < 0) { a += M_PI; }
 	return a;
@@ -223,7 +207,7 @@ __device__ float normaliseRadian(float a) {
 /// \return Normalized wall vector
 ///
 ////////////////////////////////////////////////////////////
-__device__ Vec2f normaliseSurface(Vec2f& a, Vec2f& b) {
+__host__ __device__ Vec2f normaliseSurface(Vec2f& a, Vec2f& b) {
 	float dx = b.x - a.x;
 	float dy = b.y - a.y;
 

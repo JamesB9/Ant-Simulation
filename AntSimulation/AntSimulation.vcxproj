@@ -91,11 +91,16 @@
   <ItemGroup>
     <ClCompile Include="EntityRenderer.cpp" />
     <ClCompile Include="GridRenderer.cpp" />
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Main.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="MarchingSquares.cpp" />
     <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="ThreadPoolManager.cpp" />
+    <ClCompile Include="UnitTests.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.hpp" />
@@ -106,13 +111,17 @@
     <ClInclude Include="GridRenderer.hpp" />
     <ClInclude Include="Colony.cuh" />
     <ClInclude Include="ItemGrid.cuh" />
+    <ClInclude Include="ItemGridUnitTests.hpp" />
     <ClInclude Include="Map.cuh" />
+    <ClInclude Include="MapUnitTests.hpp" />
     <ClInclude Include="MarchingSquares.hpp" />
     <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="Simulation.hpp" />
     <ClInclude Include="ThreadPoolManager.h" />
+    <ClInclude Include="UnitTests.hpp" />
     <ClInclude Include="Utilities.cuh" />
     <ClInclude Include="Utilities.h" />
+    <ClInclude Include="UtilitiesUnitTests.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

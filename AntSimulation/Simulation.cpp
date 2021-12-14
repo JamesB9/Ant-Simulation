@@ -153,12 +153,26 @@ bool Simulation::loadFromFile(std::string path, bool antiAliasing) {
 	else {
 		for (int i = 0; i < imgMap.getSize().x * scaleMultiplier; i++) {
 			for (int j = 0; j < imgMap.getSize().y * scaleMultiplier; j++) {
+
+				int cX = (int)(i / scaleMultiplier);
+				int cY = (int)(j / scaleMultiplier);
+
 				sf::Color color;
 				color = imgMap.getPixel((int)(i / scaleMultiplier), (int)(j / scaleMultiplier));
-				if (color != sf::Color::Black && color != sf::Color::White) {
+				if (color != sf::Color::Black && color != sf::Color::White && color.g > 0) {
 					int cellIndex = getCellIndex(*itemGrid, (int)i, (int)j);
 					Cell& cell = itemGrid->worldCells[cellIndex];
 					cell.foodCount = (color.g / 25) * 50;
+				}
+
+				if (color == sf::Color::Blue) {
+
+					if (!(prevColonyX == cX && prevColonyY == cY)) {
+						cout << "Colony Found: " << cX << "," << cY << endl;
+						prevColonyX = cX;
+						prevColonyY = cY;
+						updateColony(hiveCount, (int)(worldScaleFromMap * prevColonyX), (int)(worldScaleFromMap * prevColonyY));
+					}
 				}
 			}
 		}
@@ -298,7 +312,7 @@ void Simulation::render(sf::RenderWindow* window, TextRenderer* tr) {
 			tr->update("CELLINT", TextRenderer::MODIFY_TYPE::TEXT, "Intensity: [" + to_string(cell->pheromones[0]) +","+ to_string(cell->pheromones[1]) + "] \nFood Count: " + to_string(cell->foodCount));
 		}
 	}
-
+	
 	sf::CircleShape circle = sf::CircleShape(5);
 
 	circle.setFillColor(sf::Color::Magenta);
