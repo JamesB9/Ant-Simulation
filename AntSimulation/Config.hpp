@@ -25,7 +25,7 @@ namespace Config {
 	////////////// ANTS //////////////
 	static const int ANT_COUNT					= 10000;
 	static const float ANT_MAX_SPEED			= 25.0f;
-	static const float ANT_TURN_FORCE			= ANT_MAX_SPEED * 1.5f;
+	static const float ANT_TURN_FORCE			= ANT_MAX_SPEED * 25.0f;
 	static const float ANT_ROAM_STRENGTH		= 0.75f;
 	static const float ANT_COLLISION_DISTANCE	= 5.0f;
 	static const float ANT_COLLISION_FOV		= M_PI_4;
