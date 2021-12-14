@@ -29,6 +29,9 @@
 #include "Utilities.cuh"
 #include "Config.hpp"
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Image.hpp>
+#include <string>
+#include <algorithm>
 
 
 ////////////////////////////////////////////////////////////
