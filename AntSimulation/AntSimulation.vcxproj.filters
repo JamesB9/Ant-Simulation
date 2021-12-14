@@ -22,6 +22,12 @@
     <Filter Include="src\Simulation\Entities">
       <UniqueIdentifier>{cf16b9a4-8c86-4296-877e-12fb42358574}</UniqueIdentifier>
     </Filter>
+    <Filter Include="testing">
+      <UniqueIdentifier>{d498ed2e-8d25-43f5-afed-9dc01142647d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="testing\UnitTests">
+      <UniqueIdentifier>{74ecec9d-2792-4d29-88a7-23a13f6c3e92}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="ItemGrid.cu">
@@ -61,6 +67,9 @@
     </ClCompile>
     <ClCompile Include="ContextMenu.cpp">
       <Filter>src\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitTests.cpp">
+      <Filter>testing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +120,18 @@
     </ClInclude>
     <ClInclude Include="ContextMenu.hpp">
       <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTests.hpp">
+      <Filter>testing</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemGridUnitTests.hpp">
+      <Filter>testing\UnitTests</Filter>
+    </ClInclude>
+    <ClInclude Include="UtilitiesUnitTests.hpp">
+      <Filter>testing\UnitTests</Filter>
+    </ClInclude>
+    <ClInclude Include="MapUnitTests.hpp">
+      <Filter>testing\UnitTests</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

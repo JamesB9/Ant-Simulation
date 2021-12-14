@@ -312,7 +312,7 @@ void Simulation::render(sf::RenderWindow* window, TextRenderer* tr) {
 			tr->update("CELLINT", TextRenderer::MODIFY_TYPE::TEXT, "Intensity: [" + to_string(cell->pheromones[0]) +","+ to_string(cell->pheromones[1]) + "] \nFood Count: " + to_string(cell->foodCount));
 		}
 	}
-
+	
 	sf::CircleShape circle = sf::CircleShape(5);
 
 	circle.setFillColor(sf::Color::Magenta);

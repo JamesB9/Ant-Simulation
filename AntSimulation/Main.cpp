@@ -49,6 +49,7 @@ int main() {
 	float deltaTime;
 
 	//TEXT
+
 	TextRenderer tr;
 	tr.write("FPS", "FPS: ", 20, sf::Vector2f(0.0f, 0.0f));
 	tr.write("CELLPOS", "Position: []", 15, sf::Vector2f(0.0f, 25.0f));
@@ -62,12 +63,22 @@ int main() {
 		exit(EXIT_FAILURE);
 	}
 
+	/*
+	sf::Image* image = simulation.generateMapImage();
+	sf::Texture texture;
+	texture.loadFromImage(*image);
+	sf::Sprite sprite;
+	sprite.setScale(10, 10);
+	sprite.setTexture(texture, true);*/
+
 	////////////// MAIN SIMULATION LOOP //////////////
 	while (window.isOpen()) {
 
 		////////////// FPS & DELTATIME //////////////
 		deltaTime = deltaClock.restart().asSeconds();
 		int fps = 1 / deltaTime;
+
+		//printf("%d, %f\n", frame++, deltaTime);
 		//printf("FPS = %d\n", fps);
 		tr.update("FPS", TextRenderer::MODIFY_TYPE::TEXT, "FPS: "+to_string(fps));
 		tr.update("COLONYFOODCOUNT", TextRenderer::MODIFY_TYPE::TEXT, "Food In Colony: " + to_string(simulation.getFoodCount(0)));
@@ -127,12 +138,12 @@ int main() {
 		////////////// RENDERING //////////////
 		simulation.render(&window, &tr);
 		tr.render(window);
+		//window.draw(sprite);
 
 
 		////////////// UPDATE WINDOW //////////////
 		window.setView(view);
 		window.display();
 	}
-
 	return 0;
 }
