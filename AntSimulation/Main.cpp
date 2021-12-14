@@ -57,10 +57,10 @@ int main() {
 
 	//SIMULATION
 	Simulation simulation;
-	simulation.generateRandom();
-	/*if (!simulation.loadFromFile("Maps\\mapFoodMaze.png", true)) {
+	//simulation.generateRandom();
+	if (!simulation.loadFromFile("Maps\\mapFoodMaze.png")) {
 		exit(EXIT_FAILURE);
-	}*/
+	}
 
 	////////////// MAIN SIMULATION LOOP //////////////
 	while (window.isOpen()) {
